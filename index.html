@@ -56,9 +56,9 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
   <h2 style="margin-bottom:14px">🔐 تسجيل الدخول - شركة ميزو</h2>
   <div id="loginErr" style="color:#dc2626;font-size:13px;margin-bottom:10px;display:none">اسم المستخدم أو كلمة المرور غير صحيحة</div>
   <form onsubmit="doLogin(event)">
-    <div class="fg"><label>اسم المستخدم</label><input id="uIn" required></div>
+    <div class="fg"><label>اسم المستخدم</label><input id="uIn" required autocapitalize="off"></div>
     <div class="fg"><label>كلمة المرور</label><input type="password" id="pIn" required></div>
-    <button class="btn b1 w100">دخول للنظام</button>
+    <button type="submit" class="btn b1 w100">دخول للنظام</button>
   </form>
 </div>
 
@@ -67,29 +67,28 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
     <div class="nav-top">
       <h1 id="navTitle">🚀 شركة ميزو للشحن</h1>
       <div class="set-wrap" id="admSetWrap">
-        <button class="set-btn" onclick="tglSet()">⚙️ الإعدادات ▾</button>
+        <button type="button" class="set-btn" onclick="tglSet()">⚙️ الإعدادات ▾</button>
         <div class="set-menu" id="setMenu">
-          <button onclick="opPass('adm')">🔑 تغيير كلمة المرور</button>
-          <button style="color:#dc2626" onclick="doLogout()">🚪 تسجيل الخروج</button>
+          <button type="button" onclick="opPass('adm')">🔑 تغيير كلمة المرور</button>
+          <button type="button" style="color:#dc2626" onclick="doLogout()">🚪 تسجيل الخروج</button>
         </div>
       </div>
-      <button class="btn b4 hid" id="mrcOutBtn" style="padding:6px 10px;font-size:12px" onclick="doLogout()">🚪 خروج</button>
+      <button type="button" class="btn b4 hid" id="mrcOutBtn" style="padding:6px 10px;font-size:12px" onclick="doLogout()">🚪 خروج</button>
     </div>
     <div class="links" id="admLinks">
-      <button class="nbtn act" onclick="st('dash',this)">📊 الإدارة</button>
-      <button class="nbtn" onclick="st('shp',this)">📦 الشحنات</button>
-      <button class="nbtn" onclick="st('drv',this)">🛵 المناديب</button>
-      <button class="nbtn" onclick="st('mrc',this)">🏪 التجار</button>
+      <button type="button" class="nbtn act" onclick="st('dash',this)">📊 الإدارة</button>
+      <button type="button" class="nbtn" onclick="st('shp',this)">📦 الشحنات</button>
+      <button type="button" class="nbtn" onclick="st('drv',this)">🛵 المناديب</button>
+      <button type="button" class="nbtn" onclick="st('mrc',this)">🏪 التجار</button>
     </div>
   </div>
 
   <div class="box" id="admArea">
-    <!-- 1. الإدارة -->
     <div id="t-dash" class="tab act">
       <div class="sync"><span>🔄 النسخ الاحتياطي للبيانات:</span><div>
-        <button class="bsync" onclick="exp()">📥 تصدير</button>
-        <button class="bsync" onclick="document.getElementById('imp').click()">📤 استيراد</button>
-        <button class="bsync" style="background:#ef4444" onclick="clr()">🗑️ تصفير</button>
+        <button type="button" class="bsync" onclick="exp()">📥 تصدير</button>
+        <button type="button" class="bsync" onclick="document.getElementById('imp').click()">📤 استيراد</button>
+        <button type="button" class="bsync" style="background:#ef4444" onclick="clr()">🗑️ تصفير</button>
         <input type="file" id="imp" accept=".json" hidden onchange="imp(event)">
       </div></div>
       <div class="card" style="margin-bottom:12px"><select id="flt" onchange="rnd()" style="width:100%;padding:6px;font-weight:bold"><option value="ALL">جميع المناديب (الإجمالي العام)</option></select></div>
@@ -105,14 +104,13 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
       </div>
     </div>
 
-    <!-- 2. الشحنات -->
     <div id="t-shp" class="tab">
       <div class="sub-nav">
-        <button class="sbtn act" onclick="sst('pickup',this)">📥 استلام بيك أب (للمخزن)</button>
-        <button class="sbtn" onclick="sst('returns',this)">↩️ استلام مرتجعات</button>
+        <button type="button" class="sbtn act" onclick="sst('pickup',this)">📥 استلام بيك أب (للمخزن)</button>
+        <button type="button" class="sbtn" onclick="sst('returns',this)">↩️ استلام مرتجعات</button>
       </div>
       <div id="st-pickup" class="stab act">
-        <button class="btn b1" style="margin-bottom:12px" onclick="opS('')">+ استلام أوردر بيك أب جديد للمخزن</button>
+        <button type="button" class="btn b1" style="margin-bottom:12px" onclick="opS('')">+ استلام أوردر بيك أب جديد للمخزن</button>
         <div class="tbox"><table><thead><tr><th>اسم العميل</th><th>رقم الهاتف</th><th>العنوان</th><th>البيدج / التاجر</th><th>المنتج</th><th>الشحن</th><th>الإجمالي</th><th>تحميل لمندوب</th><th>حذف</th></tr></thead><tbody id="bW"></tbody></table></div>
       </div>
       <div id="st-returns" class="stab">
@@ -120,20 +118,17 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
       </div>
     </div>
 
-    <!-- 3. المناديب -->
     <div id="t-drv" class="tab">
-      <button class="btn b2" style="margin-bottom:12px" onclick="op('mD')">+ إضافة مندوب جديد</button>
+      <button type="button" class="btn b2" style="margin-bottom:12px" onclick="op('mD')">+ إضافة مندوب جديد</button>
       <div class="tbox"><table><thead><tr><th>اسم المندوب (اضغط للإدارة)</th><th>مسلم</th><th>قيد التوصيل</th><th>العهدة</th><th>عمولته</th><th>المطلوب تسليمه</th><th>حذف</th></tr></thead><tbody id="bD"></tbody></table></div>
     </div>
 
-    <!-- 4. التجار -->
     <div id="t-mrc" class="tab">
-      <button class="btn b3" style="margin-bottom:12px" onclick="op('mM')">+ إضافة تاجر / بيدج جديدة</button>
+      <button type="button" class="btn b3" style="margin-bottom:12px" onclick="op('mM')">+ إضافة تاجر / بيدج جديدة</button>
       <div id="bMList"></div>
     </div>
   </div>
 
-  <!-- بوابة التاجر المستقلة -->
   <div class="box hid" id="mrcArea">
     <div class="grid">
       <div class="card a"><div class="ct">بيك أب بالمخزن</div><div class="cv" id="ms0">0</div></div>
@@ -146,7 +141,4 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
   </div>
 </div>
 
-<!-- شاشة إدارة المندوب -->
 <div id="mDrvView" class="mod"><div class="mc" style="max-width:650px">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-    <h3 id="drvModalTitle">🛵 أوردرات المندوب</h3>

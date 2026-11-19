@@ -76,6 +76,8 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
 .perm-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px;margin-bottom:12px}
 .perm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:8px}
 .perm-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:bold;background:#fff;padding:7px 9px;border-radius:6px;border:1px solid #e2e8f0}
+.srch-bar{display:flex;gap:8px;align-items:center;margin-bottom:12px;background:#fff;padding:10px 12px;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.srch-bar input{flex:1;padding:8px 10px;border:1px solid #cbd5e1;border-radius:7px;font-size:13px;font-family:inherit}
 </style>
 </head>
 <body>
@@ -164,10 +166,18 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
       </div>
       <div id="st-pickup" class="stab act">
         <button type="button" class="btn b1" style="margin-bottom:12px" onclick="opS('')">+ استلام أوردر بيك أب جديد للمخزن</button>
+        <div class="srch-bar">
+          <input type="text" id="srchWh" placeholder="🔍 بحث في المستلم بالمخزن بالسريال أو رقم الهاتف..." oninput="rnd()">
+          <button type="button" class="bsync" style="background:#64748b;padding:7px 11px;font-size:12px" onclick="document.getElementById('srchWh').value='';rnd()">مسح</button>
+        </div>
         <div class="tbox"><table><thead><tr><th>السريال</th><th>اسم العميل</th><th>رقم الهاتف</th><th>العنوان</th><th>البيدج / التاجر</th><th>المنتج</th><th>الشحن</th><th>الإجمالي</th><th>تحميل لمندوب</th><th>حذف</th></tr></thead><tbody id="bW"></tbody></table></div>
       </div>
       <div id="st-returns" class="stab">
         <button type="button" class="btn b5" style="margin-bottom:12px" onclick="opDirectReturn()">+ إضافة مرتجع</button>
+        <div class="srch-bar">
+          <input type="text" id="srchRet" placeholder="🔍 بحث في المرتجعات بالسريال أو رقم الهاتف..." oninput="rnd()">
+          <button type="button" class="bsync" style="background:#64748b;padding:7px 11px;font-size:12px" onclick="document.getElementById('srchRet').value='';rnd()">مسح</button>
+        </div>
         <div class="tbox"><table><thead><tr><th>السريال</th><th>اسم العميل</th><th>رقم الهاتف</th><th>العنوان</th><th>البيدج / التاجر</th><th>آخر مندوب</th><th>المنتج</th><th>الحالة / السبب</th><th>إجراء</th></tr></thead><tbody id="bR"></tbody></table></div>
       </div>
     </div>
@@ -226,10 +236,21 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
       <div class="card a"><div class="ct">بيك أب بالمخزن</div><div class="cv" id="ms0">0</div></div>
       <div class="card"><div class="ct">قيد التوصيل</div><div class="cv" id="ms3">0</div></div>
       <div class="card g"><div class="ct">تم التسليم</div><div class="cv" id="ms2">0</div></div>
+      <div class="card r"><div class="ct">المرتجعات</div><div class="cv" id="msRetCnt">0</div></div>
       <div class="card r"><div class="ct">مرتجعات / ملغي / مؤجل</div><div class="cv" id="ms4">0</div></div>
       <div class="card g"><div class="ct">حسابك المستحق</div><div class="cv" id="ms5">0 ج.م</div></div>
     </div>
     <div class="tbox"><table><thead><tr><th>السريال</th><th>اسم العميل</th><th>الهاتف</th><th>العنوان</th><th>سعر المنتج</th><th>الشحن</th><th>حالة الأوردر</th></tr></thead><tbody id="bMrcView"></tbody></table></div>
+
+    <div class="card" style="margin-top:14px">
+      <strong style="display:block;margin-bottom:10px;font-size:14px">↩️ المرتجعات الخاصة بك وحالتها</strong>
+      <div class="tbox" style="margin-bottom:0">
+        <table>
+          <thead><tr><th>السريال</th><th>اسم العميل</th><th>الهاتف</th><th>العنوان</th><th>سعر المنتج</th><th>حالة المرتجع</th></tr></thead>
+          <tbody id="bMrcReturnsView"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <!-- لوحة المندوب -->
@@ -244,6 +265,33 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
     <div class="tbox"><table><thead><tr><th>السريال</th><th>اسم العميل</th><th>الهاتف</th><th>العنوان</th><th>التاجر</th><th>الإجمالي</th><th>تحديث الحالة</th></tr></thead><tbody id="bDrvSelfView"></tbody></table></div>
   </div>
 </div>
+
+<!-- مودال اختيار شحنات من المخزن لتحميلها لمندوب -->
+<div id="mPickWarehouseForDrv" class="mod"><div class="mc" style="max-width:720px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;flex-wrap:wrap">
+    <h3 id="pickDrvModalTitle">📦 اختيار شحنات من المخزن للمندوب</h3>
+    <button type="button" class="btn b4" style="padding:5px 10px" onclick="cl('mPickWarehouseForDrv')">✕</button>
+  </div>
+  <input type="hidden" id="pickTargetDrvId">
+  <div class="fg" style="margin-bottom:8px">
+    <input type="text" id="srchPickWh" placeholder="🔍 بحث في شحنات المخزن بالسريال أو رقم الهاتف..." oninput="renderPickWarehouseTable()">
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;background:#f8fafc;padding:8px 10px;border-radius:8px;margin-bottom:10px;border:1px solid #e2e8f0">
+    <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:bold;cursor:pointer">
+      <input type="checkbox" class="chk" id="pickAllWhChk" onchange="toggleAllWarehousePick(this.checked)">
+      <span>تحديد الكل</span>
+    </label>
+    <span style="font-size:12px;color:#475569;font-weight:bold" id="pickWhCountLbl">0 محدد</span>
+  </div>
+  <div class="tbox" style="max-height:55vh;overflow-y:auto">
+    <table style="min-width:600px">
+      <thead><tr><th style="width:38px"></th><th>السريال</th><th>العميل</th><th>الهاتف</th><th>العنوان</th><th>التاجر</th><th>الإجمالي</th></tr></thead>
+      <tbody id="bPickWarehouseRows"></tbody>
+    </table>
+  </div>
+  <button type="button" class="btn b1 w100" onclick="confirmAssignWarehouseToDrv()">✅ إضافة المحدد للمندوب (قيد التوصيل)</button>
+  <button type="button" class="btn b4 w100" onclick="cl('mPickWarehouseForDrv')">إغلاق</button>
+</div></div>
 
 <!-- مودال كلمة المرور (تغيير أو تأكيد باسورد المدير للأرباح) -->
 <div id="mPass" class="mod"><div class="mc">
@@ -419,6 +467,15 @@ let fbSyncAttached=false;
 let isApplyingCloud=false;
 
 const fixNum=str=>String(str||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
+const isReturnOrder=o=>['r','rw','rm','ref_nopay','cancel','postpone'].includes(o.st);
+
+function matchesSerialOrPhone(order, rawQuery){
+  const q=fixNum(rawQuery).toLowerCase().replace(/\s+/g,'');
+  if(!q)return true;
+  const serial=String(order.serial||'').toLowerCase().replace(/\s+/g,'');
+  const phone=fixNum(order.cp||'').toLowerCase().replace(/\s+/g,'');
+  return serial.includes(q) || phone.includes(q);
+}
 
 function normalizeDbShape(src){
   const j=src||{};
@@ -659,6 +716,59 @@ function svPass(){
   else if(tgt==='drv'){const dv=db.d.find(x=>x.id===id);if(dv)dv.p=val;}
   else{const mc=db.m.find(x=>x.id===id);if(mc)mc.p=val;}
   cl('mPass');sv();alert('تم تحديث كلمة المرور وحفظها');
+}
+
+function opPickWarehouseForDrv(drvId){
+  const dv=db.d.find(x=>x.id===drvId);if(!dv)return;
+  document.getElementById('pickTargetDrvId').value=drvId;
+  document.getElementById('pickDrvModalTitle').innerText='📦 إضافة شحنات من المخزن للمندوب: '+dv.n;
+  document.getElementById('srchPickWh').value='';
+  document.getElementById('pickAllWhChk').checked=false;
+  renderPickWarehouseTable();
+  op('mPickWarehouseForDrv');
+}
+
+function renderPickWarehouseTable(){
+  const q=document.getElementById('srchPickWh')?.value||'';
+  const prevChecked=new Set(Array.from(document.querySelectorAll('#bPickWarehouseRows input.wh-pick-chk:checked')).map(c=>c.value));
+  const whOrders=db.s.filter(x=>x.st==='w' && matchesSerialOrPhone(x,q));
+  document.getElementById('bPickWarehouseRows').innerHTML=whOrders.map(x=>`<tr>
+    <td><input type="checkbox" class="chk wh-pick-chk" value="${x.id}" ${prevChecked.has(String(x.id))?'checked':''} onchange="updatePickWhCount()"></td>
+    <td><span class="serial-tag">${x.serial||'-'}</span></td>
+    <td>${x.cn}</td>
+    <td><a class="ph-link" href="tel:${x.cp}">${x.cp}</a></td>
+    <td>${x.ca}</td>
+    <td>${gn(db.m,x.m)}</td>
+    <td><b>${(Number(x.p)||0)+(Number(x.f)||0)} ج.م</b></td>
+  </tr>`).join('')||'<tr><td colspan="7" style="text-align:center;color:#64748b">لا توجد شحنات مطابقة في المخزن</td></tr>';
+  updatePickWhCount();
+}
+
+function toggleAllWarehousePick(checked){
+  document.querySelectorAll('#bPickWarehouseRows input.wh-pick-chk').forEach(c=>c.checked=checked);
+  updatePickWhCount();
+}
+
+function updatePickWhCount(){
+  const cnt=document.querySelectorAll('#bPickWarehouseRows input.wh-pick-chk:checked').length;
+  document.getElementById('pickWhCountLbl').innerText=cnt+' محدد';
+}
+
+function confirmAssignWarehouseToDrv(){
+  const drvId=document.getElementById('pickTargetDrvId').value;
+  const dv=db.d.find(x=>x.id===drvId);if(!dv)return;
+  const ids=Array.from(document.querySelectorAll('#bPickWarehouseRows input.wh-pick-chk:checked')).map(c=>c.value);
+  if(!ids.length)return alert('اختر شحنة واحدة على الأقل من المخزن');
+
+  db.s.forEach(x=>{
+    if(ids.includes(String(x.id)) && x.st==='w'){
+      x.d=drvId;
+      x.st='p';
+    }
+  });
+  cl('mPickWarehouseForDrv');
+  sv();
+  alert(`تم تحميل (${ids.length}) شحنة للمندوب (${dv.n}) بنجاح`);
 }
 
 function toggleDrvCollapse(drvId){
@@ -1067,7 +1177,12 @@ function saveStatusReason(){
 }
 
 function asgD(id,did){if(!did)return;const x=db.s.find(i=>i.id==id);x.d=did;x.st='p';sv()}
-function upS(id,v){const x=db.s.find(i=>i.id==id);if(!x)return;x.st=v;if(v=='w')x.d='';sv()}
+function upS(id,v){
+  const x=db.s.find(i=>i.id==id);if(!x)return;
+  x.st=v;
+  if(v=='w'){x.d='';x.reasonSub='';x.reasonNote='';x.paidShip=0;}
+  sv();
+}
 const del=(t,id)=>{if(confirm('تأكيد الحذف؟')){db[t]=db[t].filter(x=>x.id!=id);sv()}};
 const clr=()=>{if(confirm('مسح جميع البيانات؟')){db={adm:db.adm,d:[],m:[],s:[],staff:db.staff,settlements:[],bizDate:getTodayStr()};sv()}};
 
@@ -1183,12 +1298,14 @@ function rnd(){
     const w=list.filter(x=>x.st==='w').length;
     const p=list.filter(x=>x.st==='p').length;
     const dList=list.filter(x=>x.st==='d');
+    const retList=list.filter(x=>isReturnOrder(x));
     const r=list.filter(x=>x.st!=='w' && x.st!=='p' && x.st!=='d').length;
     const due=dList.reduce((a,b)=>a+(Number(b.p)||0),0);
 
     document.getElementById('ms0').innerText=w;
     document.getElementById('ms3').innerText=p;
     document.getElementById('ms2').innerText=dList.length;
+    document.getElementById('msRetCnt').innerText=retList.length;
     document.getElementById('ms4').innerText=r;
     document.getElementById('ms5').innerText=due+' ج.م';
 
@@ -1201,6 +1318,15 @@ function rnd(){
       <td>${x.f} ج.م</td>
       <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${statusBadgeHtml(x)}</span></td>
     </tr>`).join('')||'<tr><td colspan="7" style="text-align:center;color:#64748b">لا توجد شحنات مسجلة حتى الآن</td></tr>';
+
+    document.getElementById('bMrcReturnsView').innerHTML=retList.map(x=>`<tr>
+      <td><span class="serial-tag">${x.serial||'-'}</span></td>
+      <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${x.cn}</span></td>
+      <td>${x.cp}</td>
+      <td>${x.ca}</td>
+      <td>${x.p} ج.م</td>
+      <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${statusBadgeHtml(x)}</span></td>
+    </tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:#64748b">لا توجد مرتجعات مسجلة حتى الآن</td></tr>';
     return;
   }
 
@@ -1241,8 +1367,10 @@ function rnd(){
     <td>${s.collectedCount||0}</td>
   </tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:#64748b">لا توجد تسويات محفوظة بعد</td></tr>';
 
+  const whQuery=document.getElementById('srchWh')?.value||'';
   const drvOpts='<option value="">-- اختر مندوب --</option>'+db.d.map(x=>`<option value="${x.id}">${x.n}</option>`).join('');
-  document.getElementById('bW').innerHTML=db.s.filter(x=>x.st==='w').map(x=>`<tr>
+  const whFiltered=db.s.filter(x=>x.st==='w' && matchesSerialOrPhone(x,whQuery));
+  document.getElementById('bW').innerHTML=whFiltered.map(x=>`<tr>
     <td><span class="serial-tag">${x.serial||'-'}</span></td>
     <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${x.cn}</span></td>
     <td><a class="ph-link" href="tel:${x.cp}">${x.cp}</a></td>
@@ -1253,9 +1381,10 @@ function rnd(){
     <td><b>${x.p+x.f} ج.م</b></td>
     <td><select onchange="asgD('${x.id}',this.value)" style="padding:5px;border-radius:6px">${drvOpts}</select></td>
     <td><button type="button" class="btn b4" style="padding:4px 8px;font-size:11px" onclick="del('s','${x.id}')">حذف</button></td>
-  </tr>`).join('')||'<tr><td colspan="10" style="text-align:center;color:#64748b">المخزن فارغ حالياً</td></tr>';
+  </tr>`).join('')||`<tr><td colspan="10" style="text-align:center;color:#64748b">${whQuery.trim()?'لا توجد نتائج مطابقة في المخزن':'المخزن فارغ حالياً'}</td></tr>`;
 
-  const retRows=db.s.filter(x=>x.st==='r' || x.st==='rw' || x.st==='rm' || x.st==='ref_nopay' || x.st==='cancel' || x.st==='postpone');
+  const retQuery=document.getElementById('srchRet')?.value||'';
+  const retRows=db.s.filter(x=>isReturnOrder(x) && matchesSerialOrPhone(x,retQuery));
   document.getElementById('bR').innerHTML=retRows.map(x=>`<tr>
     <td><span class="serial-tag">${x.serial||'-'}</span></td>
     <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${x.cn}</span></td>
@@ -1266,10 +1395,13 @@ function rnd(){
     <td>${x.p} ج.م</td>
     <td>${statusBadgeHtml(x)}</td>
     <td>
-      ${(x.st==='r'||x.st==='ref_nopay'||x.st==='cancel'||x.st==='postpone')?`<button type="button" class="btn b5" style="padding:4px 8px;font-size:11px" onclick="upS('${x.id}','rw')">استلام للمخزن</button>`:
-        x.st==='rw'?`<button type="button" class="btn b3" style="padding:4px 8px;font-size:11px" onclick="upS('${x.id}','rm')">تسليم للتاجر</button>`:'-'}
+      <div style="display:flex;gap:4px;flex-wrap:wrap">
+        ${(x.st==='r'||x.st==='ref_nopay'||x.st==='cancel'||x.st==='postpone')?`<button type="button" class="btn b5" style="padding:4px 8px;font-size:11px" onclick="upS('${x.id}','rw')">استلام للمخزن</button>`:''}
+        ${x.st==='rw'?`<button type="button" class="btn b3" style="padding:4px 8px;font-size:11px" onclick="upS('${x.id}','rm')">تسليم للتاجر</button>`:''}
+        <button type="button" class="btn b1" style="padding:4px 8px;font-size:11px" onclick="upS('${x.id}','w')">استعادة للمخزن (بيك أب)</button>
+      </div>
     </td>
-  </tr>`).join('')||'<tr><td colspan="9" style="text-align:center;color:#64748b">لا توجد مرتجعات</td></tr>';
+  </tr>`).join('')||`<tr><td colspan="9" style="text-align:center;color:#64748b">${retQuery.trim()?'لا توجد مرتجعات مطابقة للبحث':'لا توجد مرتجعات'}</td></tr>`;
 
   const canManageDrv = cur.role==='adm' || cur.role==='branch_manager';
   document.getElementById('bDList').innerHTML=db.d.map(d=>{
@@ -1303,6 +1435,7 @@ function rnd(){
           ${canManageDrv?`<span style="font-size:12px;color:#64748b;margin-right:8px">(دخول: <b>${d.u||'-'}</b> / <b>${d.p||'-'}</b>)</span>`:''}
         </div>
         <div style="display:flex;gap:5px;flex-wrap:wrap">
+          ${canManageDrv?`<button type="button" class="btn b1" style="padding:5px 9px;font-size:11px" onclick="opPickWarehouseForDrv('${d.id}')">+ إضافة شحنة</button>`:''}
           <button type="button" class="btn b6" style="padding:5px 9px;font-size:11px" onclick="collectDrvCustody('${d.id}')">💰 استلام عهدة التحصيل (${custodyDue} ج.م)</button>
           ${canManageDrv?`
             <button type="button" class="btn b2" style="padding:5px 9px;font-size:11px" onclick="opPass('drv','${d.id}')">🔑 الباسورد</button>

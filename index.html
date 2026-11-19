@@ -55,7 +55,7 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
 .bsync{background:#0284c7;color:#fff;border:none;padding:5px 10px;border-radius:5px;font-size:11px;font-weight:bold;cursor:pointer}
 
 .drv-box{background:#fff;border-radius:12px;padding:14px;margin-bottom:14px;border-right:5px solid #2563eb;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.drv-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding-bottom:10px;border-bottom:1px solid #f1f5f9}
+.drv-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding-bottom:8px;border-bottom:1px solid #f1f5f9}
 .drv-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;font-size:12px;font-weight:bold}
 .drv-collapsible{margin-top:8px}
 .drv-collapsible.collapsed{display:none}
@@ -81,6 +81,7 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
 .scan-list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
 .scan-item{border:1px solid #e2e8f0;border-radius:8px;padding:10px;background:#f8fafc;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .scan-item.err{border-color:#fca5a5;background:#fef2f2}
+.mrc-due-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;font-weight:bold}
 </style>
 </head>
 <body>
@@ -185,7 +186,7 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
       </div>
     </div>
 
-    <!-- صفحة المناديب (مقسمة إلى تابتين) -->
+    <!-- صفحة المناديب -->
     <div id="t-drv" class="tab">
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px" id="drvTopActions">
         <button type="button" class="btn b2" id="addDrvBtn" onclick="op('mD')">+ إضافة مندوب بحساب دخول</button>
@@ -198,15 +199,24 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
       </div>
 
       <div id="dt-active" class="dtab act">
+        <div class="srch-bar">
+          <input type="text" id="srchDrvActive" placeholder="🔍 بحث باسم المندوب أو رقم تليفونه..." oninput="rnd()">
+          <button type="button" class="bsync" style="background:#64748b;padding:7px 11px;font-size:12px" onclick="document.getElementById('srchDrvActive').value='';rnd()">مسح</button>
+        </div>
         <div id="bDActiveList"></div>
       </div>
 
       <div id="dt-all" class="dtab">
+        <div class="srch-bar">
+          <input type="text" id="srchDrvAll" placeholder="🔍 بحث في كل المناديب بالاسم أو رقم التليفون..." oninput="rnd()">
+          <button type="button" class="bsync" style="background:#64748b;padding:7px 11px;font-size:12px" onclick="document.getElementById('srchDrvAll').value='';rnd()">مسح</button>
+        </div>
         <div class="tbox">
           <table>
             <thead>
               <tr>
                 <th>اسم المندوب</th>
+                <th>رقم التليفون</th>
                 <th>اليوزر</th>
                 <th>الباسورد</th>
                 <th>عمولة الأوردر</th>
@@ -226,7 +236,7 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
       <div id="bMList"></div>
     </div>
 
-    <!-- صفحة إدارة الصلاحيات والحسابات الداخلية (للمدير فقط) -->
+    <!-- صفحة إدارة الصلاحيات والحسابات الداخلية -->
     <div id="t-staff" class="tab">
       <div class="card" style="margin-bottom:12px">
         <strong style="display:block;margin-bottom:10px;font-size:14px">👥 إنشاء حساب داخلي وتحديد صلاحياته</strong>
@@ -295,6 +305,25 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
   </div>
 </div>
 
+<!-- مودال تحصيل التجار -->
+<div id="mCollectMrc" class="mod"><div class="mc">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <h3 id="collectMrcTitle">💰 تحصيل التاجر</h3>
+    <button type="button" class="btn b4" style="padding:4px 9px" onclick="cl('mCollectMrc')">✕</button>
+  </div>
+  <input type="hidden" id="collectTargetMrcId">
+  <div class="mrc-due-box">
+    <span>المستحق للتاجر حالياً:</span>
+    <span style="color:#15803d;font-size:16px" id="collectMrcDueLbl">0 ج.م</span>
+  </div>
+  <div class="fg">
+    <label>المبلغ الذي سيحصله / يأخذه التاجر (ج.م)</label>
+    <input type="number" id="collectMrcAmtIn" min="0" step="any" placeholder="مثال: 3000" onkeydown="if(event.key==='Enter')confirmCollectMerchant()">
+  </div>
+  <button type="button" class="btn b3 w100" onclick="confirmCollectMerchant()">تم</button>
+  <button type="button" class="btn b4 w100" onclick="cl('mCollectMrc')">إغلاق</button>
+</div></div>
+
 <!-- مودال إضافة شحنات للمندوب عن طريق السريال / الباركود -->
 <div id="mScanSerialToDrv" class="mod"><div class="mc" style="max-width:680px">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;flex-wrap:wrap">
@@ -343,7 +372,7 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
       <tbody id="bPickWarehouseRows"></tbody>
     </table>
   </div>
-  <button type="button" class="btn b1 w100" onclick="confirmAssignWarehouseToDrv()">✅ إضافة المحدد للمندوب (قيد التوصيل)</button>
+  <button type="button" class="btn b1 w100" onclick="confirmAssignWarehouseToDrv()">تحميل</button>
   <button type="button" class="btn b4 w100" onclick="cl('mPickWarehouseForDrv')">إغلاق</button>
 </div></div>
 
@@ -359,6 +388,7 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
 <!-- مودال إضافة مندوب -->
 <div id="mD" class="mod"><div class="mc"><h3>🛵 إضافة مندوب جديد</h3>
   <div class="fg"><label>اسم المندوب</label><input id="dN"></div>
+  <div class="fg"><label>رقم الهاتف</label><input id="dPh" placeholder="01xxxxxxxxx"></div>
   <div class="fg"><label>اسم المستخدم للمندوب (Username)</label><input id="dU" autocapitalize="off" autocomplete="off"></div>
   <div class="fg"><label>كلمة مرور المندوب (Password)</label><input id="dP" autocomplete="off"></div>
   <div class="fg"><label>عمولة الأوردر المسلم (ج.م - قبض أسبوعي)</label><input type="number" id="dC" value="30"></div>
@@ -514,7 +544,7 @@ let cur=null;
 try{cur=JSON.parse(sessionStorage.getItem('mz_cur_v3'));}catch(e){cur=null;}
 
 let openGroups={};
-let collapsedDrvs={};
+let expandedDrvs={};
 let profitUnlocked=false;
 let passActionMode='change';
 let fbSyncAttached=false;
@@ -522,6 +552,20 @@ let isApplyingCloud=false;
 
 const fixNum=str=>String(str||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
 const isReturnOrder=o=>['r','rw','rm','ref_nopay','cancel','postpone'].includes(o.st);
+const isActiveMerchantReturn=o=>isReturnOrder(o) && o.st!=='rm' && !o.merchantRetSettled;
+
+function getMerchantOrderRemainingDue(o){
+  if(o.st!=='d' || o.merchantSettled)return 0;
+  const fullP=Number(o.p)||0;
+  const settledPart=Number(o.merchantSettledAmt)||0;
+  return Math.max(0, fullP - settledPart);
+}
+
+function getMerchantTotalDue(mrcId){
+  return db.s
+    .filter(x=>x.m===mrcId && x.st==='d' && !x.merchantSettled)
+    .reduce((sum,o)=>sum+getMerchantOrderRemainingDue(o),0);
+}
 
 function matchesSerialOrPhone(order, rawQuery){
   const q=fixNum(rawQuery).toLowerCase().replace(/\s+/g,'');
@@ -529,6 +573,14 @@ function matchesSerialOrPhone(order, rawQuery){
   const serial=String(order.serial||'').toLowerCase().replace(/\s+/g,'');
   const phone=fixNum(order.cp||'').toLowerCase().replace(/\s+/g,'');
   return serial.includes(q) || phone.includes(q);
+}
+
+function matchesDriverNameOrPhone(drv, rawQuery){
+  const q=fixNum(rawQuery).toLowerCase().replace(/\s+/g,'');
+  if(!q)return true;
+  const name=String(drv.n||'').toLowerCase();
+  const phone=fixNum(drv.ph||drv.phone||'').toLowerCase().replace(/\s+/g,'');
+  return name.includes(q) || phone.includes(q);
 }
 
 function normalizeDbShape(src){
@@ -631,6 +683,14 @@ function getOrderProfit(o){
   return 0;
 }
 
+// التسوية اليومية خاصة بالشركة والمناديب والمحاسب فقط ولا تمس مستحقات أو مرتجعات التجار غير المسواة
+function shouldPurgeOnSettlement(o){
+  if(o.st==='w' || o.st==='postpone')return false;
+  if(o.st==='d' && !o.merchantSettled)return false;
+  if(isReturnOrder(o) && o.st!=='rm' && !o.merchantRetSettled)return false;
+  return true;
+}
+
 function recordSettlement(typeLabel){
   const activeDate=db.bizDate||getTodayStr();
   const list=db.s||[];
@@ -655,7 +715,7 @@ function checkMidnightReset(){
     const hasActivity=db.s.some(x=>x.st==='d'||x.st==='ref_pay'||x.st==='p'||x.st==='r'||x.st==='rw');
     if(hasActivity){
       recordSettlement('تصفير تلقائي 12 منتصف الليل');
-      db.s=db.s.filter(x=>x.st==='w'||x.st==='postpone');
+      db.s=db.s.filter(x=>!shouldPurgeOnSettlement(x));
     }
     db.bizDate=today;
     sv();
@@ -665,12 +725,67 @@ function checkMidnightReset(){
 function manualSettleToday(){
   document.getElementById('setMenu').classList.remove('sh');
   if(!hasPerm('settle'))return alert('لا تملك صلاحية التسوية اليومية');
-  if(!confirm('تسوية وحفظ يومية ('+(db.bizDate||getTodayStr())+') وتصفير الأوردرات المنتهية؟'))return;
+  if(!confirm('تسوية وحفظ يومية ('+(db.bizDate||getTodayStr())+') للشركة والمناديب مع الإبقاء على مستحقات ومرتجعات التجار؟'))return;
   recordSettlement('تسوية يومية');
-  db.s=db.s.filter(x=>x.st==='w'||x.st==='postpone');
+  db.s=db.s.filter(x=>!shouldPurgeOnSettlement(x));
   db.bizDate=getTodayStr();
   sv();
-  alert('تم حفظ التسوية اليومية وتصفير اليوم بنجاح');
+  alert('تم حفظ التسوية اليومية للشركة بنجاح');
+}
+
+function opCollectMerchant(mrcId){
+  const mc=db.m.find(x=>x.id===mrcId);if(!mc)return;
+  const due=getMerchantTotalDue(mrcId);
+  document.getElementById('collectTargetMrcId').value=mrcId;
+  document.getElementById('collectMrcTitle').innerText='💰 تحصيل التاجر: '+mc.n;
+  document.getElementById('collectMrcDueLbl').innerText=due+' ج.م';
+  document.getElementById('collectMrcAmtIn').value=due>0?due:0;
+  op('mCollectMrc');
+  setTimeout(()=>document.getElementById('collectMrcAmtIn').focus(),80);
+}
+
+function confirmCollectMerchant(){
+  const mrcId=document.getElementById('collectTargetMrcId').value;
+  const mc=db.m.find(x=>x.id===mrcId);if(!mc)return;
+  const currentDue=getMerchantTotalDue(mrcId);
+  let payAmt=+fixNum(document.getElementById('collectMrcAmtIn').value);
+  if(isNaN(payAmt) || payAmt<=0)return alert('أدخل مبلغاً صحيحاً أكبر من صفر');
+  if(payAmt>currentDue)return alert(`المبلغ المدخل (${payAmt} ج.م) أكبر من المستحق للتاجر (${currentDue} ج.م)`);
+
+  let remainingToSettle=payAmt;
+  const deliveredOrders=db.s.filter(x=>x.m===mrcId && x.st==='d' && !x.merchantSettled);
+
+  for(const o of deliveredOrders){
+    if(remainingToSettle<=0)break;
+    const remOrdDue=getMerchantOrderRemainingDue(o);
+    if(remOrdDue<=0){
+      o.merchantSettled=true;
+      continue;
+    }
+    if(remainingToSettle>=remOrdDue){
+      remainingToSettle -= remOrdDue;
+      o.merchantSettledAmt=(Number(o.p)||0);
+      o.merchantSettled=true;
+    }else{
+      o.merchantSettledAmt=(Number(o.merchantSettledAmt)||0) + remainingToSettle;
+      remainingToSettle=0;
+    }
+  }
+
+  // إزالة الأوردرات التي تمت تسويتها بالكامل من قائمة الأوردرات المسلمة إذا كانت قد مرّت بتسوية يومية سابقة
+  db.s=db.s.filter(x=>!(x.m===mrcId && x.st==='d' && x.merchantSettled && x._afterSettlement));
+
+  cl('mCollectMrc');
+  sv();
+  alert(`تم خصم (${payAmt} ج.م) من حساب (${mc.n}) وتحديث أوردراته المسلمة`);
+}
+
+function deliverReturnToMerchant(orderId){
+  const o=db.s.find(x=>x.id===orderId);if(!o)return;
+  if(!confirm(`تأكيد تسليم المرتجع (${o.serial||o.cn}) للتاجر (${gn(db.m,o.m)}) وتصفيره من عند التاجر وعندك؟`))return;
+  o.st='rm';
+  o.merchantRetSettled=true;
+  sv();
 }
 
 function ensureSerials(){
@@ -801,7 +916,6 @@ function svPass(){
   cl('mPass');sv();alert('تم تحديث كلمة المرور وحفظها');
 }
 
-// فتح مودال مسح/ضرب أكتر من سريال (باركود) لتحميلها لمندوب
 let currentMatchedScanIds=[];
 
 function opScanSerialToDrv(drvId){
@@ -896,6 +1010,7 @@ function confirmScannedOrdersToDrv(){
       updatedCnt++;
     }
   });
+  expandedDrvs[drvId]=true;
   cl('mScanSerialToDrv');
   sv();
   alert(`تم تحميل (${updatedCnt}) أوردر للمندوب (${dv.n}) بنجاح`);
@@ -949,15 +1064,16 @@ function confirmAssignWarehouseToDrv(){
       x.st='p';
     }
   });
+  expandedDrvs[drvId]=true;
   cl('mPickWarehouseForDrv');
   sv();
   alert(`تم تحميل (${ids.length}) شحنة للمندوب (${dv.n}) بنجاح`);
 }
 
-function toggleDrvCollapse(drvId){
-  collapsedDrvs[drvId]=!collapsedDrvs[drvId];
+function toggleDrvExpand(drvId){
+  expandedDrvs[drvId]=!expandedDrvs[drvId];
   const el=document.getElementById('drv-col-'+drvId);
-  if(el)el.classList.toggle('collapsed',!!collapsedDrvs[drvId]);
+  if(el)el.classList.toggle('collapsed',!expandedDrvs[drvId]);
 }
 
 function tglGrp(key){
@@ -1210,13 +1326,14 @@ function addStaffAcc(){
 
 function addD(){
   const n=document.getElementById('dN').value.trim();
+  const ph=fixNum(document.getElementById('dPh').value);
   const u=fixNum(document.getElementById('dU').value).toLowerCase();
   const p=fixNum(document.getElementById('dP').value);
   if(!n||!u||!p)return alert('أكمل اسم المندوب واسم المستخدم وكلمة المرور');
   const dup=db.staff.some(x=>String(x.u||'').toLowerCase()===u)||db.d.some(x=>String(x.u||'').toLowerCase()===u)||db.m.some(x=>String(x.u||'').toLowerCase()===u)||u===String(db.adm.u).toLowerCase();
   if(dup)return alert('اسم المستخدم مستخدم من قبل، اختر اسماً آخر');
-  db.d.push({id:Date.now()+'',n:n,u:u,p:p,c:+fixNum(document.getElementById('dC').value)||0});
-  document.getElementById('dN').value='';document.getElementById('dU').value='';document.getElementById('dP').value='';cl('mD');sv();
+  db.d.push({id:Date.now()+'',n:n,ph:ph,u:u,p:p,c:+fixNum(document.getElementById('dC').value)||0});
+  document.getElementById('dN').value='';document.getElementById('dPh').value='';document.getElementById('dU').value='';document.getElementById('dP').value='';cl('mD');sv();
 }
 
 function addM(){
@@ -1254,8 +1371,10 @@ function addS(){
     p:+fixNum(document.getElementById('sP').value)||0,
     f:+fixNum(document.getElementById('sF').value)||0,
     st:drvId?'p':'w',
-    paidShip:0,reasonSub:'',reasonNote:'',custodyCollected:false,directRet:false
+    paidShip:0,reasonSub:'',reasonNote:'',custodyCollected:false,directRet:false,
+    merchantSettled:false,merchantSettledAmt:0,merchantRetSettled:false
   });
+  if(drvId)expandedDrvs[drvId]=true;
   document.getElementById('sName').value='';document.getElementById('sPhone').value='';document.getElementById('sAddr').value='';
   cl('mS');sv();
 }
@@ -1289,7 +1408,8 @@ function addDirectReturn(){
     p:+fixNum(document.getElementById('rP').value)||0,
     f:0,
     st:'rw',
-    paidShip:0,reasonSub:'مرتجع مباشر',reasonNote:note,custodyCollected:false,directRet:true
+    paidShip:0,reasonSub:'مرتجع مباشر',reasonNote:note,custodyCollected:false,directRet:true,
+    merchantSettled:false,merchantSettledAmt:0,merchantRetSettled:false
   });
   cl('mDirectRet');
   sv();
@@ -1359,9 +1479,18 @@ function saveStatusReason(){
   sv();
 }
 
-function asgD(id,did){if(!did)return;const x=db.s.find(i=>i.id==id);x.d=did;x.st='p';sv()}
+function asgD(id,did){
+  if(!did)return;
+  const x=db.s.find(i=>i.id==id);
+  x.d=did;
+  x.st='p';
+  expandedDrvs[did]=true;
+  sv();
+}
+
 function upS(id,v){
   const x=db.s.find(i=>i.id==id);if(!x)return;
+  if(v==='rm')return deliverReturnToMerchant(id);
   x.st=v;
   if(v=='w'){x.d='';x.reasonSub='';x.reasonNote='';x.paidShip=0;}
   sv();
@@ -1394,17 +1523,31 @@ const clr=()=>{if(confirm('مسح جميع البيانات؟')){db={adm:db.adm,
 
 function opMrcOrdersByCat(mrcId,cat){
   const mc=db.m.find(x=>x.id===mrcId);if(!mc)return;
-  const titles={d:'✅ الأوردرات المسلمة - '+mc.n,postpone:'⏳ الأوردرات المؤجلة - '+mc.n,cancel:'❌ الأوردرات الملغاة - '+mc.n};
+  const titles={
+    d:'✅ الأوردرات المسلمة - '+mc.n,
+    postpone:'⏳ الأوردرات المؤجلة - '+mc.n,
+    cancel:'❌ الأوردرات الملغاة - '+mc.n,
+    ret:'↩️ المرتجعات المستحقة - '+mc.n
+  };
   document.getElementById('mrcOrdModalTitle').innerText=titles[cat]||'أوردرات التاجر';
-  const rows=db.s.filter(x=>x.m===mrcId && x.st===cat);
-  document.getElementById('bMrcFilteredOrders').innerHTML=rows.map(x=>`<tr>
-    <td><span class="serial-tag">${x.serial||'-'}</span></td>
-    <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${x.cn}</span></td>
-    <td><a class="ph-link" href="tel:${x.cp}">${x.cp}</a></td>
-    <td>${x.ca}</td>
-    <td>${x.p} ج.م</td>
-    <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${statusBadgeHtml(x)}</span></td>
-  </tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:#64748b">لا توجد أوردرات في هذا البند</td></tr>';
+  let rows=[];
+  if(cat==='d')rows=db.s.filter(x=>x.m===mrcId && x.st==='d' && !x.merchantSettled);
+  else if(cat==='ret')rows=db.s.filter(x=>x.m===mrcId && isActiveMerchantReturn(x));
+  else rows=db.s.filter(x=>x.m===mrcId && x.st===cat);
+
+  document.getElementById('bMrcFilteredOrders').innerHTML=rows.map(x=>{
+    const amtDisp = (cat==='d' && (Number(x.merchantSettledAmt)||0)>0)
+      ? `${getMerchantOrderRemainingDue(x)} ج.م (من ${x.p})`
+      : `${x.p} ج.م`;
+    return `<tr>
+      <td><span class="serial-tag">${x.serial||'-'}</span></td>
+      <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${x.cn}</span></td>
+      <td><a class="ph-link" href="tel:${x.cp}">${x.cp}</a></td>
+      <td>${x.ca}</td>
+      <td>${amtDisp}</td>
+      <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${statusBadgeHtml(x)}</span></td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="6" style="text-align:center;color:#64748b">لا توجد أوردرات في هذا البند</td></tr>';
   op('mMrcOrders');
 }
 
@@ -1503,29 +1646,33 @@ function rnd(){
     const list=db.s.filter(x=>x.m===cur.id);
     const w=list.filter(x=>x.st==='w').length;
     const p=list.filter(x=>x.st==='p').length;
-    const dList=list.filter(x=>x.st==='d');
-    const retList=list.filter(x=>isReturnOrder(x));
-    const r=list.filter(x=>x.st!=='w' && x.st!=='p' && x.st!=='d').length;
-    const due=dList.reduce((a,b)=>a+(Number(b.p)||0),0);
+    const dList=list.filter(x=>x.st==='d' && !x.merchantSettled);
+    const activeRetList=list.filter(x=>isActiveMerchantReturn(x));
+    const r=list.filter(x=>x.st!=='w' && x.st!=='p' && x.st!=='d' && x.st!=='rm').length;
+    const due=getMerchantTotalDue(cur.id);
 
     document.getElementById('ms0').innerText=w;
     document.getElementById('ms3').innerText=p;
     document.getElementById('ms2').innerText=dList.length;
-    document.getElementById('msRetCnt').innerText=retList.length;
+    document.getElementById('msRetCnt').innerText=activeRetList.length;
     document.getElementById('ms4').innerText=r;
     document.getElementById('ms5').innerText=due+' ج.م';
 
-    document.getElementById('bMrcView').innerHTML=list.map(x=>`<tr>
-      <td><span class="serial-tag">${x.serial||'-'}</span></td>
-      <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${x.cn}</span></td>
-      <td>${x.cp}</td>
-      <td>${x.ca}</td>
-      <td>${x.p} ج.م</td>
-      <td>${x.f} ج.م</td>
-      <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${statusBadgeHtml(x)}</span></td>
-    </tr>`).join('')||'<tr><td colspan="7" style="text-align:center;color:#64748b">لا توجد شحنات مسجلة حتى الآن</td></tr>';
+    const visibleMrcOrders=list.filter(x=>!(x.st==='d' && x.merchantSettled) && x.st!=='rm');
+    document.getElementById('bMrcView').innerHTML=visibleMrcOrders.map(x=>{
+      const dueCell = x.st==='d' ? getMerchantOrderRemainingDue(x) : (Number(x.p)||0);
+      return `<tr>
+        <td><span class="serial-tag">${x.serial||'-'}</span></td>
+        <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${x.cn}</span></td>
+        <td>${x.cp}</td>
+        <td>${x.ca}</td>
+        <td>${dueCell} ج.م</td>
+        <td>${x.f} ج.م</td>
+        <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${statusBadgeHtml(x)}</span></td>
+      </tr>`;
+    }).join('')||'<tr><td colspan="7" style="text-align:center;color:#64748b">لا توجد شحنات مسجلة حتى الآن</td></tr>';
 
-    document.getElementById('bMrcReturnsView').innerHTML=retList.map(x=>`<tr>
+    document.getElementById('bMrcReturnsView').innerHTML=activeRetList.map(x=>`<tr>
       <td><span class="serial-tag">${x.serial||'-'}</span></td>
       <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${x.cn}</span></td>
       <td>${x.cp}</td>
@@ -1547,10 +1694,12 @@ function rnd(){
   const wCnt=db.s.filter(x=>x.st==='w').length;
   const pCnt=list.filter(x=>x.st==='p').length;
   const dList=list.filter(x=>x.st==='d');
-  const rCnt=list.filter(x=>x.st!=='w' && x.st!=='p' && x.st!=='d').length;
+  const rCnt=list.filter(x=>x.st!=='w' && x.st!=='p' && x.st!=='d' && x.st!=='rm').length;
 
   const totCol=list.reduce((a,b)=>a+getOrderCollectedAmount(b),0);
-  const mrcDue=dList.reduce((a,b)=>a+(Number(b.p)||0),0);
+  const mrcDue=selD==='ALL'
+    ? db.m.reduce((sum,mc)=>sum+getMerchantTotalDue(mc.id),0)
+    : db.s.filter(x=>x.d===selD && x.st==='d' && !x.merchantSettled).reduce((a,b)=>a+getMerchantOrderRemainingDue(b),0);
   const drvCom=dList.reduce((a,b)=>{const dv=db.d.find(i=>i.id===b.d);return a+(dv?dv.c:0);},0);
   const profitVal=list.reduce((a,b)=>a+getOrderProfit(b),0);
 
@@ -1590,7 +1739,7 @@ function rnd(){
   </tr>`).join('')||`<tr><td colspan="10" style="text-align:center;color:#64748b">${whQuery.trim()?'لا توجد نتائج مطابقة في المخزن':'المخزن فارغ حالياً'}</td></tr>`;
 
   const retQuery=document.getElementById('srchRet')?.value||'';
-  const retRows=db.s.filter(x=>isReturnOrder(x) && matchesSerialOrPhone(x,retQuery));
+  const retRows=db.s.filter(x=>isActiveMerchantReturn(x) && matchesSerialOrPhone(x,retQuery));
   document.getElementById('bR').innerHTML=retRows.map(x=>`<tr>
     <td><span class="serial-tag">${x.serial||'-'}</span></td>
     <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${x.cn}</span></td>
@@ -1603,24 +1752,27 @@ function rnd(){
     <td>
       <div style="display:flex;gap:4px;flex-wrap:wrap">
         ${(x.st==='r'||x.st==='ref_nopay'||x.st==='cancel'||x.st==='postpone')?`<button type="button" class="btn b5" style="padding:4px 8px;font-size:11px" onclick="upS('${x.id}','rw')">استلام للمخزن</button>`:''}
-        ${x.st==='rw'?`<button type="button" class="btn b3" style="padding:4px 8px;font-size:11px" onclick="upS('${x.id}','rm')">تسليم للتاجر</button>`:''}
+        <button type="button" class="btn b3" style="padding:4px 8px;font-size:11px" onclick="deliverReturnToMerchant('${x.id}')">تسليم للتاجر</button>
         <button type="button" class="btn b1" style="padding:4px 8px;font-size:11px" onclick="upS('${x.id}','w')">استعادة للمخزن (بيك أب)</button>
       </div>
     </td>
   </tr>`).join('')||`<tr><td colspan="9" style="text-align:center;color:#64748b">${retQuery.trim()?'لا توجد مرتجعات مطابقة للبحث':'لا توجد مرتجعات'}</td></tr>`;
 
   const canManageDrv = cur.role==='adm' || cur.role==='branch_manager';
+  const drvActiveQuery=document.getElementById('srchDrvActive')?.value||'';
+  const filteredActiveDrivers=db.d.filter(d=>matchesDriverNameOrPhone(d,drvActiveQuery));
 
-  // التابة الأولى: مناديب عليهم شغل (بدون حذف وبدون يوزر وباسورد)
-  const activeDrivers = db.d.filter(d => db.s.some(x => x.d === d.id && x.st !== 'w' && x.st !== 'rw' && x.st !== 'rm'));
-  document.getElementById('bDActiveList').innerHTML=activeDrivers.map(d=>{
+  // عرض جميع المناديب: في البداية مختصر (باركود + المبلغ المتوقع تحصيله) وباقي التفاصيل مخفية حتى الضغط على المندوب
+  document.getElementById('bDActiveList').innerHTML=filteredActiveDrivers.map(d=>{
     const dPending=db.s.filter(x=>x.d===d.id && x.st==='p');
     const dRet=db.s.filter(x=>x.d===d.id && (x.st==='r' || x.st==='ref_nopay' || x.st==='cancel' || x.st==='postpone'));
     const dDone=db.s.filter(x=>x.d===d.id && x.st==='d');
+    const hasAssignedWork = dPending.length>0 || dRet.length>0 || dDone.length>0;
+    const expectedCollection = dPending.reduce((sum,o)=>sum+((Number(o.p)||0)+(Number(o.f)||0)),0);
     const com=dDone.length*d.c;
     const custodyDue=db.s.filter(x=>x.d===d.id && (x.st==='d'||x.st==='ref_pay') && !x.custodyCollected)
       .reduce((sum,o)=>sum+getOrderCollectedAmount(o),0);
-    const isCollapsed=!!collapsedDrvs[d.id];
+    const isExpanded=!!expandedDrvs[d.id];
 
     const pendingBtns=canManageDrv?`
       <button type="button" class="mbtn b1" onclick="bulkDrvAction('${d.id}','p','w')">📥 استلام في المخزن</button>
@@ -1640,37 +1792,45 @@ function rnd(){
     return `<div class="drv-box">
       <div class="drv-head">
         <div>
-          <span class="link-name" style="font-size:15px" onclick="toggleDrvCollapse('${d.id}')">🛵 ${d.n}</span>
+          <span class="link-name" style="font-size:15px" onclick="toggleDrvExpand('${d.id}')">🛵 ${d.n}</span>
+          ${d.ph?`<a class="ph-link" style="margin-right:8px;font-size:12px" href="tel:${d.ph}">📞 ${d.ph}</a>`:''}
         </div>
-        <div style="display:flex;gap:5px;flex-wrap:wrap">
+        <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">
           ${canManageDrv?`
             <button type="button" class="btn b1" style="padding:5px 9px;font-size:11px" onclick="opPickWarehouseForDrv('${d.id}')">+ إضافة شحنة</button>
             <button type="button" class="btn b2" style="padding:5px 9px;font-size:11px" title="إضافة شحنات بالباركود / السريال" onclick="opScanSerialToDrv('${d.id}')">▮▮▮▮</button>
           `:''}
-          <button type="button" class="btn b6" style="padding:5px 9px;font-size:11px" onclick="collectDrvCustody('${d.id}')">💰 استلام عهدة التحصيل (${custodyDue} ج.م)</button>
+          ${hasAssignedWork?`<button type="button" class="btn b6" style="padding:5px 9px;font-size:11px" onclick="collectDrvCustody('${d.id}')">💰 استلام عهدة التحصيل (${custodyDue} ج.م)</button>`:''}
         </div>
       </div>
       <div class="drv-meta">
-        <span class="badge">قيد التوصيل: ${dPending.length}</span>
-        <span class="badge bg-r">مرتجع / حالات: ${dRet.length}</span>
-        <span class="badge bg-g">تم التسليم: ${dDone.length}</span>
-        <span class="badge bg-a">عمولته (أسبوعية): ${com} ج.م</span>
-        <span class="badge bg-p">عهدة التحصيل المستحقة: ${custodyDue} ج.م</span>
+        <span class="badge bg-a">المتوقع تحصيله: ${expectedCollection} ج.م</span>
+        ${hasAssignedWork?`
+          <span class="badge">قيد التوصيل: ${dPending.length}</span>
+          <span class="badge bg-r">مرتجع / حالات: ${dRet.length}</span>
+          <span class="badge bg-g">تم التسليم: ${dDone.length}</span>
+          <span class="badge bg-p">عهدة التحصيل المستحقة: ${custodyDue} ج.م</span>
+        `:''}
       </div>
-      <div id="drv-col-${d.id}" class="drv-collapsible ${isCollapsed?'collapsed':''}">
-        ${renderDrvGroup(d.id,'p','🚚 قيد التوصيل','',dPending,pendingBtns)}
-        ${renderDrvGroup(d.id,'r','↩️ مرتجع','bg-r',dRet,retBtns)}
-        ${renderDrvGroup(d.id,'d','✅ تم التسليم','bg-g',dDone,doneBtns)}
+      <div id="drv-col-${d.id}" class="drv-collapsible ${isExpanded?'':'collapsed'}">
+        ${hasAssignedWork?`
+          <div style="margin-bottom:8px;font-size:12px;color:#475569;font-weight:bold">عمولته (أسبوعية): ${com} ج.م</div>
+          ${renderDrvGroup(d.id,'p','🚚 قيد التوصيل','',dPending,pendingBtns)}
+          ${renderDrvGroup(d.id,'r','↩️ مرتجع','bg-r',dRet,retBtns)}
+          ${renderDrvGroup(d.id,'d','✅ تم التسليم','bg-g',dDone,doneBtns)}
+        `:'<div style="padding:10px;color:#64748b;font-size:12px">لا توجد شحنات محمّلة على هذا المندوب حالياً</div>'}
       </div>
     </div>`;
-  }).join('')||'<div class="card" style="text-align:center;color:#64748b">لا يوجد مناديب عليهم شغل حالياً</div>';
+  }).join('')||'<div class="card" style="text-align:center;color:#64748b">لا يوجد مناديب مطابقون للبحث</div>';
 
-  // التابة الثانية: كل المناديب (الاسم، اليوزر، الباسورد، العمولة، تعديل اليوزر/الباسورد، وحذف مع إرجاع الأوردرات للمخزن)
-  document.getElementById('bDAllTable').innerHTML=db.d.map(d=>{
+  const drvAllQuery=document.getElementById('srchDrvAll')?.value||'';
+  const filteredAllDrivers=db.d.filter(d=>matchesDriverNameOrPhone(d,drvAllQuery));
+  document.getElementById('bDAllTable').innerHTML=filteredAllDrivers.map(d=>{
     const dDoneCount=db.s.filter(x=>x.d===d.id && x.st==='d').length;
     const totalCom=dDoneCount*(Number(d.c)||0);
     return `<tr>
       <td><b>🛵 ${d.n}</b></td>
+      <td>${d.ph?`<a class="ph-link" href="tel:${d.ph}">${d.ph}</a>`:'-'}</td>
       <td><b>${d.u||'-'}</b></td>
       <td><b>${d.p||'-'}</b></td>
       <td>${Number(d.c)||0} ج.م / أوردر</td>
@@ -1685,14 +1845,15 @@ function rnd(){
         </div>
       </td>
     </tr>`;
-  }).join('')||'<tr><td colspan="6" style="text-align:center;color:#64748b">لا يوجد مناديب مضافين</td></tr>';
+  }).join('')||'<tr><td colspan="7" style="text-align:center;color:#64748b">لا يوجد مناديب مضافين</td></tr>';
 
   document.getElementById('bMList').innerHTML=db.m.map(m=>{
     const ms=db.s.filter(x=>x.m===m.id);
-    const md=ms.filter(x=>x.st==='d');
+    const md=ms.filter(x=>x.st==='d' && !x.merchantSettled);
+    const mRet=ms.filter(x=>isActiveMerchantReturn(x));
     const mPostpone=ms.filter(x=>x.st==='postpone');
     const mCancel=ms.filter(x=>x.st==='cancel');
-    const due=md.reduce((a,b)=>a+(Number(b.p)||0),0);
+    const due=getMerchantTotalDue(m.id);
 
     return `<div class="mrc-card">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
@@ -1702,6 +1863,7 @@ function rnd(){
           <span style="font-size:12px;color:#64748b;margin-right:6px">(دخول: <b>${m.u}</b> / <b>${m.p}</b>)</span>
         </div>
         <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <button type="button" class="btn b3" style="padding:5px 9px;font-size:11px" onclick="opCollectMerchant('${m.id}')">💰 تحصيل التجار</button>
           <button type="button" class="btn b1" style="padding:5px 9px;font-size:11px" onclick="opSerialCfg('${m.id}')">🔢 السريال والتسلسل</button>
           <button type="button" class="btn b2" style="padding:5px 9px;font-size:11px" onclick="opPass('mrc','${m.id}')">🔑 الباسورد</button>
           <button type="button" class="btn b4" style="padding:5px 9px;font-size:11px" onclick="del('m','${m.id}')">حذف</button>
@@ -1709,6 +1871,7 @@ function rnd(){
       </div>
       <div class="mrc-stats">
         <span class="badge bg-g" onclick="opMrcOrdersByCat('${m.id}','d')">✅ مسلم (${md.length})</span>
+        <span class="badge bg-r" onclick="opMrcOrdersByCat('${m.id}','ret')">↩️ مرتجعات (${mRet.length})</span>
         <span class="badge bg-p" onclick="opMrcOrdersByCat('${m.id}','postpone')">⏳ مؤجل (${mPostpone.length})</span>
         <span class="badge bg-r" onclick="opMrcOrdersByCat('${m.id}','cancel')">❌ ملغي (${mCancel.length})</span>
         <span class="badge bg-a">مستحقات التاجر: ${due} ج.م</span>

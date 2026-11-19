@@ -78,6 +78,9 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
 .perm-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:bold;background:#fff;padding:7px 9px;border-radius:6px;border:1px solid #e2e8f0}
 .srch-bar{display:flex;gap:8px;align-items:center;margin-bottom:12px;background:#fff;padding:10px 12px;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .srch-bar input{flex:1;padding:8px 10px;border:1px solid #cbd5e1;border-radius:7px;font-size:13px;font-family:inherit}
+.scan-list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.scan-item{border:1px solid #e2e8f0;border-radius:8px;padding:10px;background:#f8fafc;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.scan-item.err{border-color:#fca5a5;background:#fef2f2}
 </style>
 </head>
 <body>
@@ -265,6 +268,31 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
     <div class="tbox"><table><thead><tr><th>السريال</th><th>اسم العميل</th><th>الهاتف</th><th>العنوان</th><th>التاجر</th><th>الإجمالي</th><th>تحديث الحالة</th></tr></thead><tbody id="bDrvSelfView"></tbody></table></div>
   </div>
 </div>
+
+<!-- مودال إضافة شحنات للمندوب عن طريق السريال / الباركود -->
+<div id="mScanSerialToDrv" class="mod"><div class="mc" style="max-width:680px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;flex-wrap:wrap">
+    <h3 id="scanDrvModalTitle">▮▮▮▮ إضافة شحنات بالباركود / السريال</h3>
+    <button type="button" class="btn b4" style="padding:5px 10px" onclick="cl('mScanSerialToDrv')">✕</button>
+  </div>
+  <input type="hidden" id="scanTargetDrvId">
+  <div class="fg">
+    <label>اضرب أو اكتب السريالات (كل سريال في سطر مستقل - أو اضغط Enter)</label>
+    <textarea id="scanSerialsInput" rows="5" placeholder="مثال:&#10;MIZ-001&#10;MIZ-002&#10;MIZ-003" dir="ltr" style="text-align:left;font-family:monospace;font-size:14px" oninput="livePreviewScannedOrders()"></textarea>
+  </div>
+  <button type="button" class="btn b2 w100" onclick="triggerScanLoadPreview()">📥 تحميل (عرض الأوردرات أسفل بعضها)</button>
+
+  <div id="scanPreviewSection" class="hid" style="margin-top:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <strong style="font-size:13px" id="scanMatchedSummary">الأوردرات المطابقة:</strong>
+      <button type="button" class="bsync" style="background:#64748b" onclick="clearScannedSerials()">مسح الكل</button>
+    </div>
+    <div id="scanMatchedList" class="scan-list"></div>
+    <button type="button" class="btn b3 w100" id="confirmScanAssignBtn" onclick="confirmScannedOrdersToDrv()">✅ تأكيد تحميل الأوردرات للمندوب</button>
+  </div>
+
+  <button type="button" class="btn b4 w100" onclick="cl('mScanSerialToDrv')">إغلاق</button>
+</div></div>
 
 <!-- مودال اختيار شحنات من المخزن لتحميلها لمندوب -->
 <div id="mPickWarehouseForDrv" class="mod"><div class="mc" style="max-width:720px">
@@ -716,6 +744,106 @@ function svPass(){
   else if(tgt==='drv'){const dv=db.d.find(x=>x.id===id);if(dv)dv.p=val;}
   else{const mc=db.m.find(x=>x.id===id);if(mc)mc.p=val;}
   cl('mPass');sv();alert('تم تحديث كلمة المرور وحفظها');
+}
+
+// فتح مودال مسح/ضرب أكتر من سريال (باركود) لتحميلها لمندوب
+let currentMatchedScanIds=[];
+
+function opScanSerialToDrv(drvId){
+  const dv=db.d.find(x=>x.id===drvId);if(!dv)return;
+  document.getElementById('scanTargetDrvId').value=drvId;
+  document.getElementById('scanDrvModalTitle').innerText='▮▮▮▮ إضافة شحنات بالباركود للمندوب: '+dv.n;
+  const ta=document.getElementById('scanSerialsInput');
+  ta.value='';
+  currentMatchedScanIds=[];
+  document.getElementById('scanMatchedList').innerHTML='';
+  document.getElementById('scanPreviewSection').classList.add('hid');
+  op('mScanSerialToDrv');
+  setTimeout(()=>ta.focus(),80);
+}
+
+function clearScannedSerials(){
+  document.getElementById('scanSerialsInput').value='';
+  currentMatchedScanIds=[];
+  document.getElementById('scanMatchedList').innerHTML='';
+  document.getElementById('scanPreviewSection').classList.add('hid');
+}
+
+function parseScannedSerialsList(){
+  const raw=fixNum(document.getElementById('scanSerialsInput').value||'');
+  const lines=raw.split(/[\r\n,]+/).map(s=>s.trim().toUpperCase()).filter(Boolean);
+  return Array.from(new Set(lines));
+}
+
+function buildScanMatchesHtml(serials){
+  const matchedIds=[];
+  const cardsHtml=serials.map(ser=>{
+    const found=db.s.find(x=>String(x.serial||'').trim().toUpperCase()===ser);
+    if(!found){
+      return `<div class="scan-item err">
+        <div><span class="serial-tag">${ser}</span> <span style="color:#b91c1c;font-weight:bold;font-size:12px">سريال غير موجود في النظام</span></div>
+      </div>`;
+    }
+    matchedIds.push(found.id);
+    const total=(Number(found.p)||0)+(Number(found.f)||0);
+    return `<div class="scan-item">
+      <div>
+        <span class="serial-tag">${found.serial}</span>
+        <strong style="margin-right:6px">${found.cn}</strong>
+        <span style="font-size:12px;color:#64748b;margin-right:6px">(${gn(db.m,found.m)} - ${found.cp})</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <b>${total} ج.م</b>
+        ${statusBadgeHtml(found)}
+      </div>
+    </div>`;
+  }).join('');
+  return {cardsHtml,matchedIds};
+}
+
+function triggerScanLoadPreview(){
+  const serials=parseScannedSerialsList();
+  if(!serials.length)return alert('اكتب أو اضرب سريال واحد على الأقل أولاً');
+  const {cardsHtml,matchedIds}=buildScanMatchesHtml(serials);
+  currentMatchedScanIds=matchedIds;
+  document.getElementById('scanMatchedSummary').innerText=`الأوردرات التي تم وضع سريالها (${matchedIds.length} مطابق من أصل ${serials.length}):`;
+  document.getElementById('scanMatchedList').innerHTML=cardsHtml;
+  document.getElementById('scanPreviewSection').classList.remove('hid');
+}
+
+function livePreviewScannedOrders(){
+  const section=document.getElementById('scanPreviewSection');
+  if(section.classList.contains('hid'))return;
+  const serials=parseScannedSerialsList();
+  if(!serials.length){
+    currentMatchedScanIds=[];
+    document.getElementById('scanMatchedSummary').innerText='الأوردرات المطابقة: 0';
+    document.getElementById('scanMatchedList').innerHTML='';
+    return;
+  }
+  const {cardsHtml,matchedIds}=buildScanMatchesHtml(serials);
+  currentMatchedScanIds=matchedIds;
+  document.getElementById('scanMatchedSummary').innerText=`الأوردرات التي تم وضع سريالها (${matchedIds.length} مطابق من أصل ${serials.length}):`;
+  document.getElementById('scanMatchedList').innerHTML=cardsHtml;
+}
+
+function confirmScannedOrdersToDrv(){
+  const drvId=document.getElementById('scanTargetDrvId').value;
+  const dv=db.d.find(x=>x.id===drvId);if(!dv)return;
+  if(!currentMatchedScanIds.length)return alert('لا توجد أوردرات مطابقة لتحميلها');
+
+  let updatedCnt=0;
+  db.s.forEach(x=>{
+    if(currentMatchedScanIds.includes(x.id)){
+      x.d=drvId;
+      x.st='p';
+      x.custodyCollected=false;
+      updatedCnt++;
+    }
+  });
+  cl('mScanSerialToDrv');
+  sv();
+  alert(`تم تحميل (${updatedCnt}) أوردر للمندوب (${dv.n}) بنجاح`);
 }
 
 function opPickWarehouseForDrv(drvId){
@@ -1435,7 +1563,10 @@ function rnd(){
           ${canManageDrv?`<span style="font-size:12px;color:#64748b;margin-right:8px">(دخول: <b>${d.u||'-'}</b> / <b>${d.p||'-'}</b>)</span>`:''}
         </div>
         <div style="display:flex;gap:5px;flex-wrap:wrap">
-          ${canManageDrv?`<button type="button" class="btn b1" style="padding:5px 9px;font-size:11px" onclick="opPickWarehouseForDrv('${d.id}')">+ إضافة شحنة</button>`:''}
+          ${canManageDrv?`
+            <button type="button" class="btn b1" style="padding:5px 9px;font-size:11px" onclick="opPickWarehouseForDrv('${d.id}')">+ إضافة شحنة</button>
+            <button type="button" class="btn b2" style="padding:5px 9px;font-size:11px" title="إضافة شحنات بالباركود / السريال" onclick="opScanSerialToDrv('${d.id}')">▮▮▮▮</button>
+          `:''}
           <button type="button" class="btn b6" style="padding:5px 9px;font-size:11px" onclick="collectDrvCustody('${d.id}')">💰 استلام عهدة التحصيل (${custodyDue} ج.م)</button>
           ${canManageDrv?`
             <button type="button" class="btn b2" style="padding:5px 9px;font-size:11px" onclick="opPass('drv','${d.id}')">🔑 الباسورد</button>

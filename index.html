@@ -48,14 +48,29 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
 .ph-link{color:#0284c7;text-decoration:none;font-weight:bold}
 .sync{background:#e0f2fe;padding:8px 12px;border-radius:8px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:bold;color:#0369a1}
 .bsync{background:#0284c7;color:#fff;border:none;padding:5px 10px;border-radius:5px;font-size:11px;font-weight:bold;cursor:pointer}
+
+/* كروت وتبويبات المناديب المجمعة */
+.drv-box{background:#fff;border-radius:12px;padding:14px;margin-bottom:14px;border-right:5px solid #2563eb;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.drv-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding-bottom:10px;border-bottom:1px solid #f1f5f9}
+.drv-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;font-size:12px;font-weight:bold}
+.grp-wrap{margin-top:10px;border:1px solid #e2e8f0;border-radius:9px;overflow:hidden;background:#f8fafc}
+.grp-bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding:9px 12px;background:#f1f5f9;cursor:pointer;user-select:none}
+.grp-title{display:flex;align-items:center;gap:8px;font-weight:bold;font-size:13px}
+.grp-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.grp-body{display:none;background:#fff;overflow-x:auto}
+.grp-body.open{display:block}
+.grp-body table{min-width:580px;margin-bottom:0}
+.chk{width:16px;height:16px;cursor:pointer;accent-color:#2563eb}
+.mbtn{border:none;color:#fff;padding:5px 9px;border-radius:6px;font-size:11px;font-weight:bold;cursor:pointer}
 </style>
 </head>
 <body>
+
 <div id="loginView" class="login-box">
   <h2 style="margin-bottom:14px">🔐 تسجيل الدخول - شركة ميزو</h2>
   <div id="loginErr" style="color:#dc2626;font-size:13px;margin-bottom:10px;display:none">اسم المستخدم أو كلمة المرور غير صحيحة</div>
-  <div class="fg"><label>اسم المستخدم</label><input type="text" id="uIn" placeholder="admin" autocapitalize="off" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"></div>
-  <div class="fg"><label>كلمة المرور</label><input type="password" id="pIn" placeholder="1234" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"></div>
+  <div class="fg"><label>اسم المستخدم</label><input type="text" id="uIn" autocapitalize="off" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"></div>
+  <div class="fg"><label>كلمة المرور</label><input type="password" id="pIn" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"></div>
   <button type="button" class="btn b1 w100" onclick="doLogin()">دخول للنظام</button>
 </div>
 
@@ -70,7 +85,7 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
           <button type="button" style="color:#dc2626" onclick="doLogout()">🚪 تسجيل الخروج</button>
         </div>
       </div>
-      <button type="button" class="btn b4 hid" id="mrcOutBtn" style="padding:6px 10px;font-size:12px" onclick="doLogout()">🚪 خروج</button>
+      <button type="button" class="btn b4 hid" id="roleOutBtn" style="padding:6px 10px;font-size:12px" onclick="doLogout()">🚪 خروج</button>
     </div>
     <div class="links" id="admLinks">
       <button type="button" class="nbtn act" onclick="st('dash',this)">📊 الإدارة</button>
@@ -116,8 +131,11 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
     </div>
 
     <div id="t-drv" class="tab">
-      <button type="button" class="btn b2" style="margin-bottom:12px" onclick="op('mD')">+ إضافة مندوب جديد</button>
-      <div class="tbox"><table><thead><tr><th>اسم المندوب (اضغط للإدارة)</th><th>مسلم</th><th>قيد التوصيل</th><th>العهدة</th><th>عمولته</th><th>المطلوب تسليمه</th><th>حذف</th></tr></thead><tbody id="bD"></tbody></table></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <button type="button" class="btn b2" onclick="op('mD')">+ إضافة مندوب بحساب دخول</button>
+        <button type="button" class="btn b1" onclick="opS('')">+ إضافة أوردر جديد</button>
+      </div>
+      <div id="bDList"></div>
     </div>
 
     <div id="t-mrc" class="tab">
@@ -126,6 +144,7 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
     </div>
   </div>
 
+  <!-- لوحة التاجر -->
   <div class="box hid" id="mrcArea">
     <div class="grid">
       <div class="card a"><div class="ct">بيك أب بالمخزن</div><div class="cv" id="ms0">0</div></div>
@@ -135,6 +154,18 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
       <div class="card g"><div class="ct">حسابك المستحق</div><div class="cv" id="ms5">0 ج.م</div></div>
     </div>
     <div class="tbox"><table><thead><tr><th>اسم العميل</th><th>الهاتف</th><th>العنوان</th><th>سعر المنتج</th><th>الشحن</th><th>حالة الأوردر</th></tr></thead><tbody id="bMrcView"></tbody></table></div>
+  </div>
+
+  <!-- لوحة المندوب -->
+  <div class="box hid" id="drvArea">
+    <div class="grid">
+      <div class="card"><div class="ct">قيد التوصيل</div><div class="cv" id="ds1">0</div></div>
+      <div class="card g"><div class="ct">تم التسليم</div><div class="cv" id="ds2">0</div></div>
+      <div class="card r"><div class="ct">مرتجعات</div><div class="cv" id="ds3">0</div></div>
+      <div class="card a"><div class="ct">عمولتي الحالية</div><div class="cv" id="ds4">0 ج.م</div></div>
+      <div class="card p"><div class="ct">المطلوب تسليمه</div><div class="cv" id="ds5">0 ج.م</div></div>
+    </div>
+    <div class="tbox"><table><thead><tr><th>اسم العميل</th><th>الهاتف</th><th>العنوان</th><th>التاجر</th><th>الإجمالي</th><th>تحديث الحالة</th></tr></thead><tbody id="bDrvSelfView"></tbody></table></div>
   </div>
 </div>
 
@@ -160,20 +191,22 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
 
 <div id="mPass" class="mod"><div class="mc"><h3>🔑 تغيير كلمة المرور</h3>
   <input type="hidden" id="passTgt"><input type="hidden" id="passId">
-  <div class="fg"><label>كلمة المرور الجديدة</label><input id="newPassIn"></div>
+  <div class="fg"><label>كلمة المرور الجديدة</label><input id="newPassIn" autocomplete="off"></div>
   <button type="button" class="btn b1 w100" onclick="svPass()">حفظ</button><button type="button" class="btn b4 w100" onclick="cl('mPass')">إغلاق</button>
 </div></div>
 
 <div id="mD" class="mod"><div class="mc"><h3>🛵 إضافة مندوب جديد</h3>
   <div class="fg"><label>اسم المندوب</label><input id="dN"></div>
+  <div class="fg"><label>اسم المستخدم للمندوب (Username)</label><input id="dU" autocapitalize="off" autocomplete="off"></div>
+  <div class="fg"><label>كلمة مرور المندوب (Password)</label><input id="dP" autocomplete="off"></div>
   <div class="fg"><label>عمولة الأوردر المسلم (ج.م)</label><input type="number" id="dC" value="30"></div>
   <button type="button" class="btn b1 w100" onclick="addD()">حفظ المندوب</button><button type="button" class="btn b4 w100" onclick="cl('mD')">إغلاق</button>
 </div></div>
 
 <div id="mM" class="mod"><div class="mc"><h3>🏪 إنشاء حساب تاجر / بيدج</h3>
   <div class="fg"><label>اسم المتجر / البيدج</label><input id="mN"></div>
-  <div class="fg"><label>اسم المستخدم (Username)</label><input id="mU" autocapitalize="off"></div>
-  <div class="fg"><label>كلمة المرور (Password)</label><input id="mP"></div>
+  <div class="fg"><label>اسم المستخدم (Username)</label><input id="mU" autocapitalize="off" autocomplete="off"></div>
+  <div class="fg"><label>كلمة المرور (Password)</label><input id="mP" autocomplete="off"></div>
   <button type="button" class="btn b1 w100" onclick="addM()">حفظ وإنشاء الحساب</button><button type="button" class="btn b4 w100" onclick="cl('mM')">إغلاق</button>
 </div></div>
 
@@ -200,6 +233,8 @@ let db={
 let cur=null;
 try{cur=JSON.parse(sessionStorage.getItem('mz_cur_v2'));}catch(e){cur=null;}
 let activeDrvId='', activeMrcRetId='';
+// حفظ حالة فتح/إغلاق تبويبات كل مندوب: { "drvId_p": true, "drvId_r": false, ... }
+let openGroups={};
 
 const fixNum=str=>String(str).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
 const sv=()=>{localStorage.setItem('mz_db_v2',JSON.stringify(db));rnd();if(activeDrvId)opDrvModal(activeDrvId);if(activeMrcRetId)opMrcRet(activeMrcRetId);};
@@ -208,11 +243,52 @@ const tglSet=()=>document.getElementById('setMenu').classList.toggle('sh');
 const st=(id,b)=>{document.querySelectorAll('.tab').forEach(e=>e.classList.remove('act'));document.querySelectorAll('.nbtn').forEach(e=>e.classList.remove('act'));document.getElementById('t-'+id).classList.add('act');b.classList.add('act')};
 const sst=(id,b)=>{document.querySelectorAll('.stab').forEach(e=>e.classList.remove('act'));document.querySelectorAll('.sbtn').forEach(e=>e.classList.remove('act'));document.getElementById('st-'+id).classList.add('act');b.classList.add('act')};
 
+function tglGrp(key){
+  openGroups[key]=!openGroups[key];
+  const body=document.getElementById('grp-'+key);
+  if(body)body.classList.toggle('open',!!openGroups[key]);
+}
+
+function toggleAllInGrp(key,masterChk){
+  const body=document.getElementById('grp-'+key);
+  if(!body)return;
+  body.querySelectorAll('input.row-chk').forEach(c=>c.checked=masterChk.checked);
+}
+
+function getCheckedIds(key){
+  const body=document.getElementById('grp-'+key);
+  if(!body)return[];
+  return Array.from(body.querySelectorAll('input.row-chk:checked')).map(c=>c.value);
+}
+
+// تنفيذ إجراء جماعي على الأوردرات المحددة داخل تبويب مندوب
+// newSt: 'w' (استلام في المخزن)، 'rw' (استلام في المرتجع)، 'd' (تم التسليم)، 'r' (مرتجع)
+function bulkDrvAction(drvId,grpCode,newSt){
+  const key=drvId+'_'+grpCode;
+  const ids=getCheckedIds(key);
+  if(!ids.length)return alert('اختر أوردر واحداً على الأقل أولاً');
+
+  const labels={w:'استلام في المخزن',rw:'استلام في المرتجع',d:'تم التسليم',r:'مرتجع'};
+  if(!confirm(`تأكيد (${labels[newSt]||newSt}) لعدد (${ids.length}) أوردر؟`))return;
+
+  db.s.forEach(x=>{
+    if(ids.includes(String(x.id))){
+      x.st=newSt;
+      if(newSt==='w')x.d=''; // إرجاعه للمخزن كأوردر بيك أب جاهز للتحميل
+    }
+  });
+  sv();
+}
+
 function doLogin(){
   const u=fixNum(document.getElementById('uIn').value).toLowerCase();
   const p=fixNum(document.getElementById('pIn').value);
   if(u===String(db.adm.u).toLowerCase()&&p===String(db.adm.p)){
     cur={role:'adm'};sessionStorage.setItem('mz_cur_v2',JSON.stringify(cur));init();return;
+  }
+  const drv=db.d.find(x=>String(x.u||'').toLowerCase()===u&&fixNum(x.p||'')===p);
+  if(drv){
+    cur={role:'drv',id:drv.id};sessionStorage.setItem('mz_cur_v2',JSON.stringify(cur));init();return;
   }
   const mc=db.m.find(x=>String(x.u||'').toLowerCase()===u&&fixNum(x.p||'')===p);
   if(mc){
@@ -220,20 +296,53 @@ function doLogin(){
   }
   document.getElementById('loginErr').style.display='block';
 }
-function doLogout(){sessionStorage.removeItem('mz_cur_v2');cur=null;location.reload();}
+
+function doLogout(){
+  sessionStorage.removeItem('mz_cur_v2');
+  cur=null;
+  document.getElementById('uIn').value='';
+  document.getElementById('pIn').value='';
+  document.getElementById('loginErr').style.display='none';
+  init();
+}
 
 function init(){
-  if(!cur){document.getElementById('loginView').classList.remove('hid');document.getElementById('appView').classList.add('hid');return;}
-  document.getElementById('loginView').classList.add('hid');document.getElementById('appView').classList.remove('hid');
+  if(!cur){
+    document.getElementById('uIn').value='';
+    document.getElementById('pIn').value='';
+    document.getElementById('loginView').classList.remove('hid');
+    document.getElementById('appView').classList.add('hid');
+    return;
+  }
+  document.getElementById('loginView').classList.add('hid');
+  document.getElementById('appView').classList.remove('hid');
+
   if(cur.role==='adm'){
     document.getElementById('navTitle').innerText='🚀 شركة ميزو للشحن (المدير)';
-    document.getElementById('admSetWrap').classList.remove('hid');document.getElementById('mrcOutBtn').classList.add('hid');
-    document.getElementById('admLinks').classList.remove('hid');document.getElementById('admArea').classList.remove('hid');document.getElementById('mrcArea').classList.add('hid');
+    document.getElementById('admSetWrap').classList.remove('hid');
+    document.getElementById('roleOutBtn').classList.add('hid');
+    document.getElementById('admLinks').classList.remove('hid');
+    document.getElementById('admArea').classList.remove('hid');
+    document.getElementById('mrcArea').classList.add('hid');
+    document.getElementById('drvArea').classList.add('hid');
+  }else if(cur.role==='drv'){
+    const dv=db.d.find(x=>x.id===cur.id);if(!dv){doLogout();return;}
+    document.getElementById('navTitle').innerText='🛵 المندوب: '+dv.n;
+    document.getElementById('admSetWrap').classList.add('hid');
+    document.getElementById('roleOutBtn').classList.remove('hid');
+    document.getElementById('admLinks').classList.add('hid');
+    document.getElementById('admArea').classList.add('hid');
+    document.getElementById('mrcArea').classList.add('hid');
+    document.getElementById('drvArea').classList.remove('hid');
   }else{
     const mc=db.m.find(x=>x.id===cur.id);if(!mc){doLogout();return;}
     document.getElementById('navTitle').innerText='🏪 '+mc.n;
-    document.getElementById('admSetWrap').classList.add('hid');document.getElementById('mrcOutBtn').classList.remove('hid');
-    document.getElementById('admLinks').classList.add('hid');document.getElementById('admArea').classList.add('hid');document.getElementById('mrcArea').classList.remove('hid');
+    document.getElementById('admSetWrap').classList.add('hid');
+    document.getElementById('roleOutBtn').classList.remove('hid');
+    document.getElementById('admLinks').classList.add('hid');
+    document.getElementById('admArea').classList.add('hid');
+    document.getElementById('mrcArea').classList.remove('hid');
+    document.getElementById('drvArea').classList.add('hid');
   }
   rnd();
 }
@@ -241,18 +350,29 @@ function init(){
 function opPass(tgt,id=''){document.getElementById('setMenu').classList.remove('sh');document.getElementById('passTgt').value=tgt;document.getElementById('passId').value=id;document.getElementById('newPassIn').value='';op('mPass');}
 function svPass(){
   const np=fixNum(document.getElementById('newPassIn').value);if(!np)return alert('اكتب كلمة المرور');
-  if(document.getElementById('passTgt').value==='adm')db.adm.p=np;else{const mc=db.m.find(x=>x.id===document.getElementById('passId').value);if(mc)mc.p=np;}
+  const tgt=document.getElementById('passTgt').value, id=document.getElementById('passId').value;
+  if(tgt==='adm')db.adm.p=np;
+  else if(tgt==='drv'){const dv=db.d.find(x=>x.id===id);if(dv)dv.p=np;}
+  else{const mc=db.m.find(x=>x.id===id);if(mc)mc.p=np;}
   cl('mPass');sv();alert('تم تحديث كلمة المرور وحفظها');
 }
 
 function addD(){
-  const n=document.getElementById('dN').value.trim();if(!n)return alert('اكتب اسم المندوب');
-  db.d.push({id:Date.now()+'',n:n,c:+fixNum(document.getElementById('dC').value)||0});
-  document.getElementById('dN').value='';cl('mD');sv();
+  const n=document.getElementById('dN').value.trim();
+  const u=fixNum(document.getElementById('dU').value).toLowerCase();
+  const p=fixNum(document.getElementById('dP').value);
+  if(!n||!u||!p)return alert('أكمل اسم المندوب واسم المستخدم وكلمة المرور');
+  const dup=db.d.some(x=>String(x.u||'').toLowerCase()===u)||db.m.some(x=>String(x.u||'').toLowerCase()===u)||u===String(db.adm.u).toLowerCase();
+  if(dup)return alert('اسم المستخدم مستخدم من قبل، اختر اسماً آخر');
+  db.d.push({id:Date.now()+'',n:n,u:u,p:p,c:+fixNum(document.getElementById('dC').value)||0});
+  document.getElementById('dN').value='';document.getElementById('dU').value='';document.getElementById('dP').value='';cl('mD');sv();
 }
+
 function addM(){
-  const n=document.getElementById('mN').value.trim(),u=fixNum(document.getElementById('mU').value),p=fixNum(document.getElementById('mP').value);
+  const n=document.getElementById('mN').value.trim(),u=fixNum(document.getElementById('mU').value).toLowerCase(),p=fixNum(document.getElementById('mP').value);
   if(!n||!u||!p)return alert('أكمل جميع بيانات المتجر');
+  const dup=db.d.some(x=>String(x.u||'').toLowerCase()===u)||db.m.some(x=>String(x.u||'').toLowerCase()===u)||u===String(db.adm.u).toLowerCase();
+  if(dup)return alert('اسم المستخدم مستخدم من قبل، اختر اسماً آخر');
   db.m.push({id:Date.now()+'',n:n,u:u,p:p});
   document.getElementById('mN').value='';document.getElementById('mU').value='';document.getElementById('mP').value='';cl('mM');sv();
 }
@@ -280,7 +400,7 @@ function addS(){
 
 function asgD(id,did){if(!did)return;const x=db.s.find(i=>i.id==id);x.d=did;x.st='p';sv()}
 function loadFromWh(sid){if(!sid||!activeDrvId)return;asgD(sid,activeDrvId);}
-function upS(id,v){const x=db.s.find(i=>i.id==id);x.st=v;if(v=='w')x.d='';sv()}
+function upS(id,v){const x=db.s.find(i=>i.id==id);if(!x)return;x.st=v;if(v=='w')x.d='';sv()}
 const del=(t,id)=>{if(confirm('تأكيد الحذف؟')){db[t]=db[t].filter(x=>x.id!=id);sv()}};
 const clr=()=>{if(confirm('مسح جميع البيانات؟')){db={adm:db.adm,d:[],m:[],s:[]};sv()}};
 const gn=(arr,id)=>(arr.find(i=>i.id==id)||{}).n||'-';
@@ -334,8 +454,72 @@ function settleDrv(did){
   sv();
 }
 
+function renderDrvGroup(drvId, grpCode, title, badgeCls, orders, actionBtnsHtml){
+  const key = drvId + '_' + grpCode;
+  const isOpen = !!openGroups[key];
+  const rowsHtml = orders.map(x => `<tr>
+    <td><input type="checkbox" class="chk row-chk" value="${x.id}" onclick="event.stopPropagation()"></td>
+    <td>${x.cn}</td>
+    <td><a class="ph-link" href="tel:${x.cp}">${x.cp}</a></td>
+    <td>${x.ca}</td>
+    <td>${gn(db.m, x.m)}</td>
+    <td><b>${x.p + x.f} ج.م</b></td>
+  </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:#64748b">لا توجد أوردرات في هذا البند</td></tr>';
+
+  return `<div class="grp-wrap">
+    <div class="grp-bar" onclick="tglGrp('${key}')">
+      <div class="grp-title">
+        <input type="checkbox" class="chk" title="تحديد الكل" onclick="event.stopPropagation();toggleAllInGrp('${key}',this)">
+        <span>${title}</span>
+        <span class="badge ${badgeCls}">${orders.length}</span>
+      </div>
+      <div class="grp-actions" onclick="event.stopPropagation()">
+        ${actionBtnsHtml}
+        <span style="font-size:12px;color:#475569;font-weight:bold">${isOpen ? '▲ إخفاء' : '▼ عرض'}</span>
+      </div>
+    </div>
+    <div id="grp-${key}" class="grp-body ${isOpen ? 'open' : ''}">
+      <table>
+        <thead><tr><th style="width:36px"></th><th>العميل</th><th>الهاتف</th><th>العنوان</th><th>التاجر</th><th>الإجمالي</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
 function rnd(){
   if(!cur)return;
+
+  if(cur.role==='drv'){
+    const dv=db.d.find(x=>x.id===cur.id);if(!dv)return;
+    const list=db.s.filter(x=>x.d===cur.id && (x.st==='p'||x.st==='d'||x.st==='r'));
+    const pList=list.filter(x=>x.st==='p');
+    const dList=list.filter(x=>x.st==='d');
+    const rList=list.filter(x=>x.st==='r');
+    const cash=dList.reduce((a,b)=>a+b.p+b.f,0);
+    const com=dList.length*dv.c;
+    document.getElementById('ds1').innerText=pList.length;
+    document.getElementById('ds2').innerText=dList.length;
+    document.getElementById('ds3').innerText=rList.length;
+    document.getElementById('ds4').innerText=com+' ج.م';
+    document.getElementById('ds5').innerText=(cash-com)+' ج.م';
+    document.getElementById('bDrvSelfView').innerHTML=list.map(x=>`<tr>
+      <td>${x.cn}</td>
+      <td><a class="ph-link" href="tel:${x.cp}">${x.cp}</a></td>
+      <td>${x.ca}</td>
+      <td>${gn(db.m,x.m)}</td>
+      <td><b>${x.p+x.f} ج.م</b></td>
+      <td>
+        <select onchange="upS('${x.id}',this.value)" style="padding:5px;border-radius:6px;font-weight:bold">
+          <option value="p" ${x.st==='p'?'selected':''}>🚚 قيد التوصيل</option>
+          <option value="d" ${x.st==='d'?'selected':''}>✅ تم التسليم</option>
+          <option value="r" ${x.st==='r'?'selected':''}>↩️ مرتجع</option>
+        </select>
+      </td>
+    </tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:#64748b">لا توجد أوردرات مسندة إليك حالياً</td></tr>';
+    return;
+  }
+
   if(cur.role==='mrc'){
     const list=db.s.filter(x=>x.m===cur.id);
     const w=list.filter(x=>x.st==='w').length;
@@ -355,7 +539,6 @@ function rnd(){
     return;
   }
 
-  // تحديث فلتر المناديب
   const flt=document.getElementById('flt'), prevFlt=flt.value;
   flt.innerHTML='<option value="ALL">جميع المناديب (الإجمالي العام)</option>'+db.d.map(x=>`<option value="${x.id}">${x.n}</option>`).join('');
   if(db.d.some(x=>x.id===prevFlt))flt.value=prevFlt;
@@ -379,7 +562,6 @@ function rnd(){
   document.getElementById('s7').innerText=(totCol-mrcDue)+' ج.م';
   document.getElementById('s8').innerText=drvCom+' ج.م';
 
-  // جدول المخزن (بيك أب)
   const drvOpts='<option value="">-- اختر مندوب --</option>'+db.d.map(x=>`<option value="${x.id}">${x.n}</option>`).join('');
   document.getElementById('bW').innerHTML=db.s.filter(x=>x.st==='w').map(x=>`<tr>
     <td>${x.cn}</td>
@@ -393,7 +575,6 @@ function rnd(){
     <td><button type="button" class="btn b4" style="padding:4px 8px;font-size:11px" onclick="del('s','${x.id}')">حذف</button></td>
   </tr>`).join('')||'<tr><td colspan="9" style="text-align:center;color:#64748b">المخزن فارغ حالياً</td></tr>';
 
-  // جدول المرتجعات
   document.getElementById('bR').innerHTML=db.s.filter(x=>x.st==='r'||x.st==='rw'||x.st==='rm').map(x=>`<tr>
     <td>${x.cn}</td>
     <td><a class="ph-link" href="tel:${x.cp}">${x.cp}</a></td>
@@ -408,24 +589,55 @@ function rnd(){
     </td>
   </tr>`).join('')||'<tr><td colspan="8" style="text-align:center;color:#64748b">لا توجد مرتجعات</td></tr>';
 
-  // جدول المناديب
-  document.getElementById('bD').innerHTML=db.d.map(d=>{
+  // صفحة المناديب: المندوب وأسفله تبويبات مجمعة قابلة للطي مع تحديد وأزرار استلام المخزن والمرتجع
+  document.getElementById('bDList').innerHTML=db.d.map(d=>{
+    const dPending=db.s.filter(x=>x.d===d.id && x.st==='p');
+    const dRet=db.s.filter(x=>x.d===d.id && x.st==='r');
     const dDone=db.s.filter(x=>x.d===d.id && x.st==='d');
-    const dPend=db.s.filter(x=>x.d===d.id && x.st==='p');
     const cash=dDone.reduce((a,b)=>a+b.p+b.f,0);
     const com=dDone.length*d.c;
-    return `<tr>
-      <td><span class="link-name" onclick="opDrvModal('${d.id}')">${d.n}</span></td>
-      <td>${dDone.length}</td>
-      <td>${dPend.length}</td>
-      <td>${cash} ج.م</td>
-      <td>${com} ج.م</td>
-      <td><b>${cash-com} ج.م</b> ${dDone.length?`<button type="button" class="btn b3" style="padding:3px 7px;font-size:11px;margin-right:4px" onclick="settleDrv('${d.id}')">تصفية</button>`:''}</td>
-      <td><button type="button" class="btn b4" style="padding:4px 8px;font-size:11px" onclick="del('d','${d.id}')">حذف</button></td>
-    </tr>`;
-  }).join('')||'<tr><td colspan="7" style="text-align:center;color:#64748b">لا يوجد مناديب مضافين</td></tr>';
 
-  // بطاقات التجار
+    const pendingBtns = `
+      <button type="button" class="mbtn b3" onclick="bulkDrvAction('${d.id}','p','d')">✓ تم التسليم</button>
+      <button type="button" class="mbtn b5" onclick="bulkDrvAction('${d.id}','p','r')">↩️ مرتجع</button>
+      <button type="button" class="mbtn b1" onclick="bulkDrvAction('${d.id}','p','w')">📥 استلام في المخزن</button>
+    `;
+
+    const retBtns = `
+      <button type="button" class="mbtn b5" onclick="bulkDrvAction('${d.id}','r','rw')">↩️ استلام في المرتجع</button>
+      <button type="button" class="mbtn b1" onclick="bulkDrvAction('${d.id}','r','w')">📥 استلام في المخزن</button>
+    `;
+
+    const doneBtns = `
+      <button type="button" class="mbtn b5" onclick="bulkDrvAction('${d.id}','d','r')">↩️ مرتجع</button>
+      <button type="button" class="mbtn b1" onclick="bulkDrvAction('${d.id}','d','w')">📥 استلام في المخزن</button>
+    `;
+
+    return `<div class="drv-box">
+      <div class="drv-head">
+        <div>
+          <span class="link-name" style="font-size:15px" onclick="opDrvModal('${d.id}')">🛵 ${d.n}</span>
+          <span style="font-size:12px;color:#64748b;margin-right:8px">(دخول: <b>${d.u||'-'}</b> / <b>${d.p||'-'}</b>)</span>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          ${dDone.length ? `<button type="button" class="btn b3" style="padding:5px 9px;font-size:11px" onclick="settleDrv('${d.id}')">تصفية (${cash-com} ج.م)</button>` : ''}
+          <button type="button" class="btn b2" style="padding:5px 9px;font-size:11px" onclick="opPass('drv','${d.id}')">🔑 الباسورد</button>
+          <button type="button" class="btn b4" style="padding:5px 9px;font-size:11px" onclick="del('d','${d.id}')">حذف</button>
+        </div>
+      </div>
+      <div class="drv-meta">
+        <span class="badge">قيد التوصيل: ${dPending.length}</span>
+        <span class="badge bg-r">مرتجع: ${dRet.length}</span>
+        <span class="badge bg-g">تم التسليم: ${dDone.length}</span>
+        <span class="badge bg-a">عمولته: ${com} ج.م</span>
+        <span class="badge">المطلوب تسليمه: ${cash-com} ج.م</span>
+      </div>
+      ${renderDrvGroup(d.id, 'p', '🚚 قيد التوصيل', '', dPending, pendingBtns)}
+      ${renderDrvGroup(d.id, 'r', '↩️ مرتجع', 'bg-r', dRet, retBtns)}
+      ${renderDrvGroup(d.id, 'd', '✅ تم التسليم', 'bg-g', dDone, doneBtns)}
+    </div>`;
+  }).join('')||'<div class="card" style="text-align:center;color:#64748b">لا يوجد مناديب مضافين</div>';
+
   document.getElementById('bMList').innerHTML=db.m.map(m=>{
     const ms=db.s.filter(x=>x.m===m.id);
     const mw=ms.filter(x=>x.st==='w').length;

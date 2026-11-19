@@ -278,12 +278,27 @@ function selectTab(tabKey){
 function loginDriver(){
   const u = fixNum(document.getElementById('inUser').value).toLowerCase();
   const p = fixNum(document.getElementById('inPass').value);
-  const drv = db.d.find(x => String(x.u||'').toLowerCase() === u && fixNum(x.p||'') === p);
-  if(!drv){
-    document.getElementById('loginError').classList.remove('hid');
+  const errBox = document.getElementById('loginError');
+
+  if(!Array.isArray(db.d) || db.d.length === 0){
+    errBox.innerText = 'لم يتم تحميل بيانات المناديب من قاعدة البيانات بعد، انتظر ثانية أو راجع صلاحيات Firebase';
+    errBox.classList.remove('hid');
     return;
   }
-  document.getElementById('loginError').classList.add('hid');
+
+  const drv = db.d.find(x => {
+    const du = fixNum(x.u ?? x.user ?? x.username ?? '').toLowerCase();
+    const dp = fixNum(x.p ?? x.pass ?? x.password ?? '');
+    return du === u && dp === p;
+  });
+
+  if(!drv){
+    errBox.innerText = 'اسم المستخدم أو كلمة المرور غير صحيحة';
+    errBox.classList.remove('hid');
+    return;
+  }
+
+  errBox.classList.add('hid');
   currentDriverId = drv.id;
   sessionStorage.setItem('mz_active_driver_id', currentDriverId);
   renderDriverView();

@@ -1,1102 +1,1412 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ميزو للشحن - نظام الإدارة والتحصيل</title>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-  <style>
-    :root {
-      --bg: #f4f6f9;
-      --card: #ffffff;
-      --primary: #0f4c81;
-      --primary-dark: #093256;
-      --accent: #16a34a;
-      --danger: #dc2626;
-      --warn: #d97706;
-      --text: #1e293b;
-      --muted: #64748b;
-      --border: #e2e8f0;
-    }
-    * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
-    body { margin: 0; background: var(--bg); color: var(--text); }
-    header {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: #fff; padding: 14px 20px; display: flex; flex-wrap: wrap;
-      justify-content: space-between; align-items: center; gap: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.12);
-    }
-    .brand { font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-    .badge { background: rgba(255,255,255,.18); padding: 4px 10px; border-radius: 999px; font-size: .82rem; }
-    .container { max-width: 1280px; margin: 20px auto; padding: 0 16px; }
-    .card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-      padding: 18px; margin-bottom: 18px; box-shadow: 0 1px 4px rgba(0,0,0,.04);
-    }
-    .card h3 { margin: 0 0 14px; font-size: 1.05rem; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
-    .kpi {
-      background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
-      padding: 14px; text-align: center;
-    }
-    .kpi .label { font-size: .85rem; color: var(--muted); margin-bottom: 6px; }
-    .kpi .val { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
-    label { display: block; font-size: .86rem; margin-bottom: 4px; font-weight: 600; color: #334155; }
-    input, select, textarea {
-      width: 100%; padding: 9px 11px; border: 1px solid #cbd5e1; border-radius: 8px;
-      font-size: .92rem; background: #fff;
-    }
-    input:focus, select:focus { outline: none; border-color: var(--primary); }
-    button {
-      background: var(--primary); color: #fff; border: none; border-radius: 8px;
-      padding: 9px 15px; font-size: .9rem; font-weight: 600; cursor: pointer;
-      transition: .15s ease;
-    }
-    button:hover { background: var(--primary-dark); }
-    button.green { background: var(--accent); }
-    button.green:hover { background: #15803d; }
-    button.red { background: var(--danger); }
-    button.red:hover { background: #b91c1c; }
-    button.warn { background: var(--warn); }
-    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-    .tab-btn { background: #e2e8f0; color: var(--text); }
-    .tab-btn.active { background: var(--primary); color: #fff; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: .88rem; }
-    th, td { border: 1px solid var(--border); padding: 9px 8px; text-align: right; }
-    th { background: #f1f5f9; color: #0f172a; font-weight: 700; }
-    .table-wrap { overflow-x: auto; }
-    .hidden { display: none !important; }
-    .status-pill {
-      padding: 3px 8px; border-radius: 999px; font-size: .78rem; font-weight: 700;
-      display: inline-block; background: #e2e8f0; color: #0f172a;
-    }
-    .st-d { background: #dcfce7; color: #166534; }
-    .st-ref_pay, .st-ref_nopay, .st-cancel { background: #fee2e2; color: #991b1b; }
-    .st-postpone, .st-w { background: #fef3c7; color: #92400e; }
-    .st-r, .st-rw, .st-rm { background: #e0e7ff; color: #3730a3; }
-    .row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-    .auth-box { max-width: 420px; margin: 40px auto; }
-    .hint { font-size: .8rem; color: var(--muted); margin-top: 6px; }
-    .err-msg { color: var(--danger); font-size: .86rem; font-weight: 600; margin-top: 8px; min-height: 20px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>شركة ميزو للشحن</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
+body{background:#f1f5f9;color:#1e293b;padding-bottom:35px}
+.login-box{max-width:360px;margin:60px auto;background:#fff;padding:24px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.1);text-align:center}
+.nav{background:#0f172a;color:#fff;padding:12px}
+.nav-top{display:flex;justify-content:space-between;align-items:center;max-width:980px;margin:0 auto 10px}
+.nav h1{font-size:17px}
+.set-wrap{position:relative}
+.set-btn{background:#1e293b;color:#fff;border:1px solid #334155;padding:6px 10px;border-radius:7px;font-size:12px;font-weight:bold;cursor:pointer}
+.set-menu{display:none;position:absolute;left:0;top:35px;background:#fff;min-width:175px;border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,.2);z-index:200;overflow:hidden}
+.set-menu.sh{display:block}
+.set-menu button{display:block;width:100%;padding:10px;border:none;background:none;text-align:right;font-size:13px;font-weight:bold;border-bottom:1px solid #f1f5f9;cursor:pointer}
+.links{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+.nbtn{color:#cbd5e1;border:none;font-size:13px;padding:8px 14px;border-radius:8px;background:#1e293b;font-weight:bold;cursor:pointer}
+.nbtn.act{background:#2563eb;color:#fff}
+.box{max-width:980px;margin:15px auto;padding:0 12px}
+.sub-nav{display:flex;gap:8px;margin-bottom:14px}
+.sbtn{flex:1;padding:10px;border:none;border-radius:8px;background:#e2e8f0;font-weight:bold;font-size:13px;cursor:pointer}
+.sbtn.act{background:#0f172a;color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.card{background:#fff;padding:12px;border-radius:10px;border-right:4px solid #2563eb;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.card.g{border-color:#16a34a}.card.r{border-color:#dc2626}.card.a{border-color:#d97706}.card.p{border-color:#7c3aed}.card.t{border-color:#0d9488}
+.ct{font-size:11px;color:#64748b;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center}
+.cv{font-size:17px;font-weight:bold}
+.g .cv{color:#16a34a}.r .cv{color:#dc2626}.a .cv{color:#d97706}.p .cv{color:#7c3aed}.t .cv{color:#0d9488}
+.btn{color:#fff;border:none;padding:9px 12px;border-radius:8px;font-weight:bold;font-size:13px;cursor:pointer}
+.w100{width:100%;margin-top:8px}
+.b1{background:#2563eb}.b2{background:#0f172a}.b3{background:#0d9488}.b4{background:#ef4444}.b5{background:#d97706}.b6{background:#7c3aed}
+.tbox{background:#fff;border-radius:10px;overflow-x:auto;margin-bottom:15px}
+table{width:100%;border-collapse:collapse;text-align:right;min-width:680px}
+th{background:#f8fafc;color:#475569;font-size:12px;padding:10px}
+td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
+.mrc-card{background:#fff;padding:14px;border-radius:10px;margin-bottom:12px;border-right:5px solid #0d9488;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.mrc-stats{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;font-size:12px;font-weight:bold}
+.badge{padding:4px 8px;border-radius:6px;background:#f1f5f9;cursor:pointer;display:inline-block}
+.bg-g{background:#dcfce7;color:#15803d}.bg-r{background:#fee2e2;color:#b91c1c}.bg-a{background:#fef3c7;color:#b45309}.bg-p{background:#ede9fe;color:#6d28d9}
+.mod{display:none;position:fixed;inset:0;background:rgba(15,23,42,.75);justify-content:center;align-items:center;z-index:999;padding:15px}
+.mod.sh{display:flex}
+.mc{background:#fff;padding:18px;border-radius:10px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto}
+.fg{margin-bottom:10px;text-align:right}.fg label{display:block;font-size:12px;font-weight:bold;margin-bottom:3px}
+.fg input,.fg select,.fg textarea{width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-family:inherit}
+.tab,.stab{display:none}.tab.act,.stab.act{display:block}.hid{display:none!important}
+.link-name{color:#2563eb;font-weight:bold;cursor:pointer;text-decoration:underline}
+.ph-link{color:#0284c7;text-decoration:none;font-weight:bold}
+.sync{background:#e0f2fe;padding:8px 12px;border-radius:8px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:bold;color:#0369a1;flex-wrap:wrap;gap:8px}
+.bsync{background:#0284c7;color:#fff;border:none;padding:5px 10px;border-radius:5px;font-size:11px;font-weight:bold;cursor:pointer}
+
+.drv-box{background:#fff;border-radius:12px;padding:14px;margin-bottom:14px;border-right:5px solid #2563eb;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.drv-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding-bottom:10px;border-bottom:1px solid #f1f5f9}
+.drv-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;font-size:12px;font-weight:bold}
+.drv-collapsible{margin-top:8px}
+.drv-collapsible.collapsed{display:none}
+.grp-wrap{margin-top:10px;border:1px solid #e2e8f0;border-radius:9px;overflow:hidden;background:#f8fafc}
+.grp-bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding:9px 12px;background:#f1f5f9;cursor:pointer;user-select:none}
+.grp-title{display:flex;align-items:center;gap:8px;font-weight:bold;font-size:13px}
+.grp-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.grp-body{display:none;background:#fff;overflow-x:auto}
+.grp-body.open{display:block}
+.grp-body table{min-width:620px;margin-bottom:0}
+.chk{width:16px;height:16px;cursor:pointer;accent-color:#2563eb}
+.mbtn{border:none;color:#fff;padding:5px 9px;border-radius:6px;font-size:11px;font-weight:bold;cursor:pointer}
+.eye-btn{background:none;border:none;cursor:pointer;font-size:15px;padding:0 3px}
+.serial-tag{background:#e2e8f0;color:#0f172a;padding:2px 7px;border-radius:5px;font-weight:bold;font-size:12px;font-family:monospace}
+.ord-click{cursor:pointer;color:#0f172a;font-weight:bold}
+.ord-click:hover{color:#2563eb;text-decoration:underline}
+.detail-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f1f5f9;font-size:13px}
+.perm-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px;margin-bottom:12px}
+.perm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:8px}
+.perm-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:bold;background:#fff;padding:7px 9px;border-radius:6px;border:1px solid #e2e8f0}
+</style>
 </head>
 <body>
 
-<header>
-  <div class="brand">
-    <span>ميزو للشحن (Mizo Shipping)</span>
-    <span id="headerRoleBadge" class="badge">غير مسجل</span>
-    <span id="businessDateBadge" class="badge">يوم العمل: --</span>
-  </div>
-  <div id="headerControls" class="row-actions hidden">
-    <span id="activeUserLabel" class="badge"></span>
-    <button class="red" onclick="logoutCurrentSession()">خروج</button>
-  </div>
-</header>
+<div id="loginView" class="login-box">
+  <h2 style="margin-bottom:14px">🔐 تسجيل الدخول - شركة ميزو</h2>
+  <div id="loginErr" style="color:#dc2626;font-size:13px;margin-bottom:10px;display:none">اسم المستخدم أو كلمة المرور غير صحيحة</div>
+  <div class="fg"><label>اسم المستخدم</label><input type="text" id="uIn" autocapitalize="off" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"></div>
+  <div class="fg"><label>كلمة المرور</label><input type="password" id="pIn" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"></div>
+  <button type="button" class="btn b1 w100" id="loginBtn" onclick="doLogin()">دخول للنظام</button>
+</div>
 
-<div class="container">
-  <!-- شاشة دخول واحدة فقط: يوزر أو إيميل + باسورد -->
-  <div id="authSection" class="card auth-box">
-    <h3>تسجيل الدخول</h3>
-    <div class="grid" style="grid-template-columns: 1fr;">
-      <div>
-        <label>اسم المستخدم أو البريد الإلكتروني</label>
-        <input type="text" id="loginUserInput" placeholder="أدخل اسم المستخدم أو البريد الإلكتروني" autocomplete="username" />
+<div id="appView" class="hid">
+  <div class="nav">
+    <div class="nav-top">
+      <h1 id="navTitle">🚀 شركة ميزو للشحن</h1>
+      <div class="set-wrap" id="admSetWrap">
+        <button type="button" class="set-btn" onclick="tglSet()">⚙️ الإعدادات ▾</button>
+        <div class="set-menu" id="setMenu">
+          <button type="button" id="menuChangePassBtn" onclick="opPass('adm')">🔑 تغيير كلمة المرور</button>
+          <button type="button" id="menuSettleBtn" onclick="manualSettleToday()">🧾 تسوية يومية الآن</button>
+          <button type="button" style="color:#dc2626" onclick="doLogout()">🚪 تسجيل الخروج</button>
+        </div>
       </div>
-      <div>
-        <label>كلمة المرور</label>
-        <input type="password" id="loginPassInput" placeholder="أدخل كلمة المرور" autocomplete="current-password" />
-      </div>
-      <button id="loginSubmitBtn" class="green" onclick="handleUnifiedLogin()">تسجيل الدخول</button>
+      <button type="button" class="btn b4 hid" id="roleOutBtn" style="padding:6px 10px;font-size:12px" onclick="doLogout()">🚪 خروج</button>
     </div>
-    <div id="loginErrorMsg" class="err-msg"></div>
+    <div class="links" id="admLinks">
+      <button type="button" class="nbtn act" id="nav-dash" onclick="st('dash',this)">📊 الإدارة</button>
+      <button type="button" class="nbtn" id="nav-shp" onclick="st('shp',this)">📦 الشحنات</button>
+      <button type="button" class="nbtn" id="nav-drv" onclick="st('drv',this)">🛵 المناديب</button>
+      <button type="button" class="nbtn" id="nav-mrc" onclick="st('mrc',this)">🏪 التجار</button>
+      <button type="button" class="nbtn hid" id="nav-staff" onclick="st('staff',this)">👥 الصلاحيات</button>
+    </div>
   </div>
 
-  <!-- التطبيق الرئيسي بعد تسجيل الدخول -->
-  <div id="appSection" class="hidden">
-    <div id="navTabs" class="tabs"></div>
-
-    <!-- 1. لوحة المتابعة والشحنات -->
-    <div id="tab-orders" class="card role-view">
-      <h3>إدارة الشحنات والأوردرات</h3>
-      <div class="grid" style="margin-bottom: 14px;">
-        <div class="kpi"><div class="label">إجمالي الشحنات الظاهرة</div><div class="val" id="kpiTotalOrders">0</div></div>
-        <div class="kpi"><div class="label">تم التسليم</div><div class="val" id="kpiDelivered">0</div></div>
-        <div class="kpi"><div class="label">مؤجل / استلام مخزن</div><div class="val" id="kpiPending">0</div></div>
-        <div class="kpi"><div class="label">مرفوض / ملغي / مرتجع</div><div class="val" id="kpiReturned">0</div></div>
+  <!-- صفحة الإدارة -->
+  <div class="box" id="admArea">
+    <div id="t-dash" class="tab act">
+      <div class="sync" id="dashSyncBar">
+        <span>🔄 النسخ الاحتياطي والبيانات (<span id="bizDateLbl">--</span>):</span>
+        <div id="dashBackupBtns">
+          <button type="button" class="bsync" onclick="exp()">📥 تصدير</button>
+          <button type="button" class="bsync" onclick="document.getElementById('imp').click()">📤 استيراد</button>
+          <button type="button" class="bsync" style="background:#ef4444" onclick="clr()">🗑️ تصفير</button>
+          <input type="file" id="imp" accept=".json" hidden onchange="imp(event)">
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:12px"><select id="flt" onchange="rnd()" style="width:100%;padding:6px;font-weight:bold"><option value="ALL">جميع المناديب (الإجمالي العام)</option></select></div>
+      <div class="grid">
+        <div class="card a" data-stat-card="orders"><div class="ct">بالمخزن (بيك أب)</div><div class="cv" id="s0">0</div></div>
+        <div class="card" data-stat-card="orders"><div class="ct">قيد التوصيل</div><div class="cv" id="s3">0</div></div>
+        <div class="card g" data-stat-card="orders"><div class="ct">تم التسليم</div><div class="cv" id="s2">0</div></div>
+        <div class="card r" data-stat-card="orders"><div class="ct">مرتجعات / ملغي / مؤجل</div><div class="cv" id="s4">0</div></div>
+        <div class="card g" data-stat-card="money"><div class="ct">إجمالي التحصيل</div><div class="cv" id="s5">0 ج.م</div></div>
+        <div class="card" data-stat-card="money"><div class="ct">مستحقات التجار</div><div class="cv" id="s6">0 ج.م</div></div>
+        <div class="card p" data-stat-card="money"><div class="ct">صافي المحصل بعد التجار</div><div class="cv" id="s7">0 ج.م</div></div>
+        <div class="card a" data-stat-card="money"><div class="ct">عمولات المناديب</div><div class="cv" id="s8">0 ج.م</div></div>
+        <div class="card t" id="profitCard" data-stat-card="profit">
+          <div class="ct">
+            <span>الأرباح</span>
+            <button type="button" class="eye-btn" id="profitEyeBtn" title="إظهار / إخفاء الأرباح" onclick="toggleProfitEye()">👁️</button>
+          </div>
+          <div class="cv" id="sProfit">••••</div>
+        </div>
       </div>
 
-      <div id="createOrderBox" class="card" style="background:#f8fafc;">
-        <h3>إضافة شحنة جديدة</h3>
+      <div class="card" style="margin-top:12px" id="settlementsCard">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <strong style="font-size:14px">🧾 أرشيف التسويات اليومية (التصفير التلقائي 12 منتصف الليل)</strong>
+          <button type="button" class="btn b3" id="settleNowBtn" style="padding:6px 10px;font-size:12px" onclick="manualSettleToday()">حفظ تسوية اليوم</button>
+        </div>
+        <div class="tbox" style="margin-bottom:0">
+          <table>
+            <thead><tr><th>اليوم</th><th>وقت التسوية</th><th>النوع</th><th>إجمالي التحصيل</th><th>عدد المحصل</th></tr></thead>
+            <tbody id="bSettlements"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- صفحة الشحنات -->
+    <div id="t-shp" class="tab">
+      <div class="sub-nav">
+        <button type="button" class="sbtn act" onclick="sst('pickup',this)">📥 استلام بيك أب (للمخزن)</button>
+        <button type="button" class="sbtn" onclick="sst('returns',this)">↩️ استلام مرتجعات</button>
+      </div>
+      <div id="st-pickup" class="stab act">
+        <button type="button" class="btn b1" style="margin-bottom:12px" onclick="opS('')">+ استلام أوردر بيك أب جديد للمخزن</button>
+        <div class="tbox"><table><thead><tr><th>السريال</th><th>اسم العميل</th><th>رقم الهاتف</th><th>العنوان</th><th>البيدج / التاجر</th><th>المنتج</th><th>الشحن</th><th>الإجمالي</th><th>تحميل لمندوب</th><th>حذف</th></tr></thead><tbody id="bW"></tbody></table></div>
+      </div>
+      <div id="st-returns" class="stab">
+        <button type="button" class="btn b5" style="margin-bottom:12px" onclick="opDirectReturn()">+ إضافة مرتجع</button>
+        <div class="tbox"><table><thead><tr><th>السريال</th><th>اسم العميل</th><th>رقم الهاتف</th><th>العنوان</th><th>البيدج / التاجر</th><th>آخر مندوب</th><th>المنتج</th><th>الحالة / السبب</th><th>إجراء</th></tr></thead><tbody id="bR"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- صفحة المناديب -->
+    <div id="t-drv" class="tab">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px" id="drvTopActions">
+        <button type="button" class="btn b2" id="addDrvBtn" onclick="op('mD')">+ إضافة مندوب بحساب دخول</button>
+        <button type="button" class="btn b1" id="addOrdDrvTabBtn" onclick="opS('')">+ إضافة أوردر جديد</button>
+      </div>
+      <div id="bDList"></div>
+    </div>
+
+    <!-- صفحة التجار -->
+    <div id="t-mrc" class="tab">
+      <button type="button" class="btn b3" style="margin-bottom:12px" onclick="op('mM')">+ إضافة تاجر / بيدج جديدة</button>
+      <div id="bMList"></div>
+    </div>
+
+    <!-- صفحة إدارة الصلاحيات والحسابات الداخلية (للمدير فقط) -->
+    <div id="t-staff" class="tab">
+      <div class="card" style="margin-bottom:12px">
+        <strong style="display:block;margin-bottom:10px;font-size:14px">👥 إنشاء حساب داخلي وتحديد صلاحياته</strong>
         <div class="grid">
-          <div>
-            <label>التاجر</label>
-            <select id="ordMerchantSelect"></select>
-          </div>
-          <div>
-            <label>اسم العميل</label>
-            <input type="text" id="ordCustomer" placeholder="اسم المستلم" />
-          </div>
-          <div>
-            <label>هاتف العميل</label>
-            <input type="text" id="ordPhone" placeholder="01xxxxxxxxx" />
-          </div>
-          <div>
-            <label>العنوان / المنطقة</label>
-            <input type="text" id="ordAddress" placeholder="الجيزة / ..." />
-          </div>
-          <div>
-            <label>قيمة الأوردر (ج.م)</label>
-            <input type="number" id="ordPrice" min="0" value="0" />
-          </div>
-          <div>
-            <label>مصاريف الشحن (ج.م)</label>
-            <input type="number" id="ordShipping" min="0" value="0" />
-          </div>
-          <div>
-            <label>المندوب المسند</label>
-            <select id="ordDriverSelect"></select>
-          </div>
-          <div style="display:flex; align-items:flex-end;">
-            <button class="green" style="width:100%;" onclick="addNewOrder()">حفظ الشحنة</button>
+          <div class="fg"><label>الاسم الظاهر</label><input id="stName" placeholder="مثال: أحمد محاسب"></div>
+          <div class="fg"><label>اسم المستخدم</label><input id="stUser" autocapitalize="off" autocomplete="off"></div>
+          <div class="fg"><label>كلمة المرور</label><input id="stPass" autocomplete="off"></div>
+          <div class="fg">
+            <label>الدور</label>
+            <select id="stRole" onchange="renderRolePermissionsPreset()">
+              <option value="branch_manager">مدير فرع</option>
+              <option value="accountant">محاسب</option>
+            </select>
           </div>
         </div>
-      </div>
 
-      <div class="grid" style="margin-bottom: 10px;">
-        <div>
-          <label>بحث سريع (كود / عميل / هاتف)</label>
-          <input type="text" id="searchOrderInput" oninput="renderOrders()" placeholder="ابحث..." />
+        <div class="perm-box" id="staffPermBox">
+          <strong style="font-size:13px" id="permBoxTitle">صلاحيات مدير الفرع:</strong>
+          <div class="perm-grid" id="permCheckboxes"></div>
         </div>
-        <div>
-          <label>تصفية بالحالة</label>
-          <select id="filterStatusSelect" onchange="renderOrders()">
-            <option value="all">كل الحالات</option>
-            <option value="w">استلام مخزن (w)</option>
-            <option value="postpone">مؤجل (postpone)</option>
-            <option value="d">تم التسليم (d)</option>
-            <option value="ref_pay">رفض مع دفع شحن (ref_pay)</option>
-            <option value="ref_nopay">رفض بدون دفع (ref_nopay)</option>
-            <option value="cancel">ملغي (cancel)</option>
-            <option value="r">مرتجع (r)</option>
-            <option value="rw">مرتجع مخزن (rw)</option>
-            <option value="rm">مرتجع تاجر (rm)</option>
-          </select>
-        </div>
-      </div>
 
-      <div class="table-wrap">
+        <button type="button" class="btn b1" onclick="addStaffAcc()">+ حفظ الحساب بالصلاحيات</button>
+      </div>
+      <div class="tbox">
         <table>
-          <thead>
-            <tr>
-              <th>كود الأوردر</th>
-              <th>التاجر</th>
-              <th>العميل والهاتف</th>
-              <th>العنوان</th>
-              <th>الأوردر</th>
-              <th>الشحن</th>
-              <th>المندوب</th>
-              <th>الحالة</th>
-              <th>تحديث / إجراءات</th>
-            </tr>
-          </thead>
-          <tbody id="ordersTableBody"></tbody>
+          <thead><tr><th>الاسم</th><th>اسم المستخدم</th><th>كلمة المرور</th><th>الدور</th><th>الصلاحيات</th><th>حذف</th></tr></thead>
+          <tbody id="bStaffList"></tbody>
         </table>
       </div>
     </div>
+  </div>
 
-    <!-- 2. شاشة المحاسب: التحصيل وحسابات المناديب والتسوية اليومية -->
-    <div id="tab-accounting" class="card role-view hidden">
-      <h3>التحصيل اليومي وحسابات المناديب والتسوية المالية</h3>
-      <div class="grid" style="margin-bottom: 14px;">
-        <div class="kpi">
-          <div class="label">توتال التحصيل الفعلي اليوم</div>
-          <div class="val" id="todayCollectionTotal">0.00 ج.م</div>
-        </div>
-        <div class="kpi">
-          <div class="label">عدد الشحنات المحصلة اليوم</div>
-          <div class="val" id="todayCollectedCount">0</div>
-        </div>
-        <div class="kpi">
-          <div class="label">تاريخ يوم العمل الحالي</div>
-          <div class="val" id="accBusinessDate">--</div>
-        </div>
-      </div>
-
-      <div class="row-actions" style="margin-bottom: 14px;">
-        <button class="green" onclick="performDailySettlement(false)">تسوية مالية نهاية اليوم وحفظ اليومية</button>
-        <button class="warn" onclick="checkMidnightRollover(true)">فحص التصفير بعد 12 منتصف الليل الآن</button>
-      </div>
-
-      <h4>حسابات وتحصيل المناديب لليوم الحالي</h4>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>المندوب</th>
-              <th>أوردرات مسلمة (d)</th>
-              <th>رفض بدفع شحن (ref_pay)</th>
-              <th>إجمالي المحصّل المستحق من المندوب</th>
-              <th>المسلّم فعلياً للخزنة</th>
-              <th>المتبقي / العهدة</th>
-              <th>تسجيل توريد نقدي</th>
-            </tr>
-          </thead>
-          <tbody id="driversAccountingBody"></tbody>
-        </table>
-      </div>
-
-      <h4 style="margin-top: 22px;">أرشيف التسويات المالية اليومية المحفوظة</h4>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>تاريخ اليومية</th>
-              <th>وقت التسوية</th>
-              <th>نوع الإغلاق</th>
-              <th>إجمالي التحصيل</th>
-              <th>عدد الأوردرات المحصلة</th>
-              <th>تفاصيل المناديب</th>
-            </tr>
-          </thead>
-          <tbody id="settlementsArchiveBody"></tbody>
-        </table>
-      </div>
+  <!-- لوحة التاجر -->
+  <div class="box hid" id="mrcArea">
+    <div class="grid">
+      <div class="card a"><div class="ct">بيك أب بالمخزن</div><div class="cv" id="ms0">0</div></div>
+      <div class="card"><div class="ct">قيد التوصيل</div><div class="cv" id="ms3">0</div></div>
+      <div class="card g"><div class="ct">تم التسليم</div><div class="cv" id="ms2">0</div></div>
+      <div class="card r"><div class="ct">مرتجعات / ملغي / مؤجل</div><div class="cv" id="ms4">0</div></div>
+      <div class="card g"><div class="ct">حسابك المستحق</div><div class="cv" id="ms5">0 ج.م</div></div>
     </div>
+    <div class="tbox"><table><thead><tr><th>السريال</th><th>اسم العميل</th><th>الهاتف</th><th>العنوان</th><th>سعر المنتج</th><th>الشحن</th><th>حالة الأوردر</th></tr></thead><tbody id="bMrcView"></tbody></table></div>
+  </div>
 
-    <!-- 3. إدارة التجار والمناديب -->
-    <div id="tab-entities" class="card role-view hidden">
-      <h3>إدارة التجار والمناديب</h3>
-      <div class="grid">
-        <div class="card" style="background:#f8fafc; margin:0;">
-          <h4>إضافة تاجر جديد (توليد كود تلقائي)</h4>
-          <label>اسم التاجر / النشاط</label>
-          <input type="text" id="newMrcName" placeholder="مثال: متجر الأناقة" />
-          <label style="margin-top:8px;">بادئة الكود (Prefix)</label>
-          <input type="text" id="newMrcPrefix" value="MIZ" />
-          <label style="margin-top:8px;">سعر شحن افتراضي (ج.م)</label>
-          <input type="number" id="newMrcFee" value="50" min="0" />
-          <button class="green" style="margin-top:10px; width:100%;" onclick="addMerchant()">إضافة التاجر</button>
-        </div>
-
-        <div class="card" style="background:#f8fafc; margin:0;">
-          <h4>إضافة مندوب جديد</h4>
-          <label>اسم المندوب</label>
-          <input type="text" id="newDrvName" placeholder="مثال: كابتن محمود" />
-          <label style="margin-top:8px;">رقم الهاتف</label>
-          <input type="text" id="newDrvPhone" placeholder="01xxxxxxxxx" />
-          <button style="margin-top:10px; width:100%;" onclick="addDriver()">إضافة المندوب</button>
-        </div>
-      </div>
-
-      <div class="grid" style="margin-top:14px;">
-        <div>
-          <h4>قائمة التجار</h4>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>الكود</th><th>الاسم</th><th>شحن افتراضي</th></tr></thead>
-              <tbody id="merchantsListBody"></tbody>
-            </table>
-          </div>
-        </div>
-        <div>
-          <h4>قائمة المناديب</h4>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>المعرف</th><th>الاسم</th><th>الهاتف</th></tr></thead>
-              <tbody id="driversListBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+  <!-- لوحة المندوب -->
+  <div class="box hid" id="drvArea">
+    <div class="grid">
+      <div class="card"><div class="ct">قيد التوصيل</div><div class="cv" id="ds1">0</div></div>
+      <div class="card g"><div class="ct">تم التسليم</div><div class="cv" id="ds2">0</div></div>
+      <div class="card r"><div class="ct">مرتجعات / ملغي / مؤجل</div><div class="cv" id="ds3">0</div></div>
+      <div class="card a"><div class="ct">عمولتي (أسبوعية)</div><div class="cv" id="ds4">0 ج.م</div></div>
+      <div class="card p"><div class="ct">عهدة التحصيل المطلوبة</div><div class="cv" id="ds5">0 ج.م</div></div>
     </div>
-
-    <!-- 4. الأرباح والتحليلات (للمالك فقط) -->
-    <div id="tab-profits" class="card role-view hidden">
-      <h3>الأرباح والتحليلات المالية (خاص بالمالك فقط)</h3>
-      <div class="grid">
-        <div class="kpi"><div class="label">إجمالي مصاريف الشحن (المسلمة + رفض بدفع)</div><div class="val" id="kpiGrossShipping">0.00 ج.م</div></div>
-        <div class="kpi"><div class="label">إجمالي قيمة الأوردرات المسلمة</div><div class="val" id="kpiDeliveredGoods">0.00 ج.م</div></div>
-        <div class="kpi"><div class="label">صافي ربح الشركة التقديري</div><div class="val" id="kpiNetProfit">0.00 ج.م</div></div>
-      </div>
-    </div>
-
-    <!-- 5. إدارة الحسابات والصلاحيات من داخل الصفحة (للمالك فقط) -->
-    <div id="tab-users" class="card role-view hidden">
-      <h3>إدارة الحسابات والصلاحيات (ظاهر للمالك فقط)</h3>
-      <p class="hint">أنشئ حسابات داخلية لمدير الفرع أو المحاسب أو المندوب أو التاجر دون الحاجة لفتح Firebase في كل مرة.</p>
-      <div class="grid">
-        <div>
-          <label>اسم المستخدم للدخول</label>
-          <input type="text" id="accUsername" placeholder="مثال: acc_ahmed أو drv_ali" />
-        </div>
-        <div>
-          <label>كلمة المرور</label>
-          <input type="password" id="accPassword" placeholder="كلمة سر الحساب" />
-        </div>
-        <div>
-          <label>الاسم الظاهر</label>
-          <input type="text" id="accDisplayName" placeholder="مثال: أ/ أحمد محاسب" />
-        </div>
-        <div>
-          <label>الدور / الصلاحية</label>
-          <select id="accRole" onchange="toggleRoleLinkInputs()">
-            <option value="accountant">محاسب (تحصيل وحسابات مناديب وتسوية يومية)</option>
-            <option value="branch_manager">مدير فرع (تشغيل وشحنات وتجار ومناديب)</option>
-            <option value="drv">مندوب (أوردراته وتحديث حالاتها فقط)</option>
-            <option value="mrc">تاجر (شحناته ومستحقاته فقط)</option>
-          </select>
-        </div>
-        <div id="linkDriverBox" class="hidden">
-          <label>ربط بحساب مندوب</label>
-          <select id="accDriverId"></select>
-        </div>
-        <div id="linkMerchantBox" class="hidden">
-          <label>ربط بحساب تاجر</label>
-          <select id="accMerchantId"></select>
-        </div>
-        <div style="display:flex; align-items:flex-end;">
-          <button class="green" style="width:100%;" onclick="createInternalAccount()">إنشاء الحساب الداخلي</button>
-        </div>
-      </div>
-
-      <div class="table-wrap" style="margin-top:16px;">
-        <table>
-          <thead>
-            <tr>
-              <th>اسم المستخدم</th>
-              <th>الاسم الظاهر</th>
-              <th>الدور</th>
-              <th>الربط</th>
-              <th>إجراء</th>
-            </tr>
-          </thead>
-          <tbody id="internalUsersBody"></tbody>
-        </table>
-      </div>
-    </div>
+    <div class="tbox"><table><thead><tr><th>السريال</th><th>اسم العميل</th><th>الهاتف</th><th>العنوان</th><th>التاجر</th><th>الإجمالي</th><th>تحديث الحالة</th></tr></thead><tbody id="bDrvSelfView"></tbody></table></div>
   </div>
 </div>
 
+<!-- مودال كلمة المرور (تغيير أو تأكيد باسورد المدير للأرباح) -->
+<div id="mPass" class="mod"><div class="mc">
+  <h3 id="passModalTitle">🔑 تغيير كلمة المرور</h3>
+  <input type="hidden" id="passTgt"><input type="hidden" id="passId">
+  <div class="fg"><label id="passInputLbl">كلمة المرور الجديدة</label><input type="password" id="newPassIn" autocomplete="off" onkeydown="if(event.key==='Enter')svPass()"></div>
+  <button type="button" class="btn b1 w100" id="passSaveBtn" onclick="svPass()">حفظ</button>
+  <button type="button" class="btn b4 w100" onclick="cl('mPass')">إغلاق</button>
+</div></div>
+
+<!-- مودال إضافة مندوب -->
+<div id="mD" class="mod"><div class="mc"><h3>🛵 إضافة مندوب جديد</h3>
+  <div class="fg"><label>اسم المندوب</label><input id="dN"></div>
+  <div class="fg"><label>اسم المستخدم للمندوب (Username)</label><input id="dU" autocapitalize="off" autocomplete="off"></div>
+  <div class="fg"><label>كلمة مرور المندوب (Password)</label><input id="dP" autocomplete="off"></div>
+  <div class="fg"><label>عمولة الأوردر المسلم (ج.م - قبض أسبوعي)</label><input type="number" id="dC" value="30"></div>
+  <button type="button" class="btn b1 w100" onclick="addD()">حفظ المندوب</button><button type="button" class="btn b4 w100" onclick="cl('mD')">إغلاق</button>
+</div></div>
+
+<!-- مودال إضافة تاجر / بيدج -->
+<div id="mM" class="mod"><div class="mc"><h3>🏪 إنشاء حساب تاجر / بيدج</h3>
+  <div class="fg"><label>اسم المتجر / البيدج</label><input id="mN"></div>
+  <div class="fg"><label>كود السريال الخاص بالبيدج (مثال: MIZ)</label><input id="mCode" placeholder="يُنشأ تلقائياً إن تُرك فارغاً" autocapitalize="characters" autocomplete="off"></div>
+  <div class="fg"><label>اسم المستخدم (Username)</label><input id="mU" autocapitalize="off" autocomplete="off"></div>
+  <div class="fg"><label>كلمة المرور (Password)</label><input id="mP" autocomplete="off"></div>
+  <button type="button" class="btn b1 w100" onclick="addM()">حفظ وإنشاء الحساب</button><button type="button" class="btn b4 w100" onclick="cl('mM')">إغلاق</button>
+</div></div>
+
+<!-- مودال تعديل كود السريال وتسلسل التاجر -->
+<div id="mSerialCfg" class="mod"><div class="mc">
+  <h3 id="serCfgTitle">🔢 ضبط سريال وتسلسل البيدج</h3>
+  <input type="hidden" id="serMrcId">
+  <div class="fg"><label>كود البيدج (Prefix)</label><input id="serPrefixIn" autocapitalize="characters"></div>
+  <div class="fg"><label>رقم التسلسل التالي للأوردرات</label><input type="number" id="serNextIn" min="1"></div>
+  <button type="button" class="btn b1 w100" onclick="svSerialCfg()">حفظ الإعدادات</button>
+  <button type="button" class="btn b4 w100" onclick="cl('mSerialCfg')">إغلاق</button>
+</div></div>
+
+<!-- مودال إضافة شحنة -->
+<div id="mS" class="mod"><div class="mc"><h3 id="shpModalTitle">📦 بيانات الشحنة</h3>
+  <input type="hidden" id="sDrvTarget">
+  <div class="fg"><label>اسم العميل</label><input id="sName" placeholder="الاسم ثلاثي أو ثنائي"></div>
+  <div class="fg"><label>رقم هاتف العميل</label><input type="tel" id="sPhone" placeholder="01xxxxxxxxx"></div>
+  <div class="fg"><label>العنوان بالتفصيل</label><input id="sAddr" placeholder="المحافظة - المنطقة - الشارع"></div>
+  <div class="fg"><label>البيدج / التاجر</label><select id="sM"></select></div>
+  <div class="fg"><label>سعر المنتج (ج.م)</label><input type="number" id="sP" value="0"></div>
+  <div class="fg"><label>مصاريف الشحن (ج.م)</label><input type="number" id="sF" value="50"></div>
+  <button type="button" class="btn b1 w100" onclick="addS()">حفظ الشحنة</button><button type="button" class="btn b4 w100" onclick="cl('mS')">إغلاق</button>
+</div></div>
+
+<!-- مودال إضافة مرتجع مباشر من صفحة الشحنات -->
+<div id="mDirectRet" class="mod"><div class="mc">
+  <h3>↩️ إضافة مرتجع مباشر</h3>
+  <div class="fg"><label>اسم العميل</label><input id="rName" placeholder="اسم العميل"></div>
+  <div class="fg"><label>رقم هاتف العميل</label><input type="tel" id="rPhone" placeholder="01xxxxxxxxx"></div>
+  <div class="fg"><label>العنوان</label><input id="rAddr" placeholder="العنوان"></div>
+  <div class="fg"><label>البيدج / التاجر</label><select id="rM"></select></div>
+  <div class="fg"><label>سعر المنتج (ج.م)</label><input type="number" id="rP" value="0"></div>
+  <div class="fg"><label>سبب المرتجع / ملاحظات (مطلوب للإضافة المباشرة)</label><textarea id="rNote" rows="3" placeholder="اكتب سبب المرتجع بالتفصيل..."></textarea></div>
+  <button type="button" class="btn b5 w100" onclick="addDirectReturn()">حفظ المرتجع</button>
+  <button type="button" class="btn b4 w100" onclick="cl('mDirectRet')">إغلاق</button>
+</div></div>
+
+<!-- مودال اختيار الحالة وتفاصيلها -->
+<div id="mStatusReason" class="mod"><div class="mc">
+  <h3>📋 تحديد حالة الأوردر وتفاصيلها</h3>
+  <input type="hidden" id="srOrderId">
+  <div class="fg">
+    <label>الحالة</label>
+    <select id="srMainSt" onchange="onSrMainChange()">
+      <option value="d">تم التسليم</option>
+      <option value="ref_pay">رفض الاستلام ودفع الشحن</option>
+      <option value="ref_nopay">رفض الاستلام والدفع</option>
+      <option value="cancel">إلغاء</option>
+      <option value="postpone">مؤجل</option>
+      <option value="p">قيد التوصيل</option>
+    </select>
+  </div>
+  <div class="fg hid" id="srShipAmtWrap">
+    <label>مبلغ الشحن المدفوع (ج.م)</label>
+    <input type="number" id="srShipAmt" value="0" min="0">
+  </div>
+  <div class="fg hid" id="srSubOptWrap">
+    <label id="srSubOptLbl">التفصيل</label>
+    <select id="srSubOpt"></select>
+  </div>
+  <div class="fg">
+    <label>ملاحظات إضافية (اختياري)</label>
+    <input id="srNote" placeholder="ملاحظات...">
+  </div>
+  <button type="button" class="btn b1 w100" onclick="saveStatusReason()">تأكيد الحالة</button>
+  <button type="button" class="btn b4 w100" onclick="cl('mStatusReason')">إغلاق</button>
+</div></div>
+
+<!-- مودال عرض أوردرات التاجر حسب البند -->
+<div id="mMrcOrders" class="mod"><div class="mc" style="max-width:650px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <h3 id="mrcOrdModalTitle">📦 أوردرات التاجر</h3>
+    <button type="button" class="btn b4" style="padding:5px 10px" onclick="cl('mMrcOrders')">✕</button>
+  </div>
+  <div class="tbox"><table><thead><tr><th>السريال</th><th>العميل</th><th>الهاتف</th><th>العنوان</th><th>سعر المنتج</th><th>الحالة</th></tr></thead><tbody id="bMrcFilteredOrders"></tbody></table></div>
+</div></div>
+
+<!-- مودال تفاصيل الأوردر عند الضغط عليه -->
+<div id="mOrdDetail" class="mod"><div class="mc">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <h3 id="odTitle">📄 تفاصيل الأوردر</h3>
+    <button type="button" class="btn b4" style="padding:4px 9px" onclick="cl('mOrdDetail')">✕</button>
+  </div>
+  <div id="odBody"></div>
+  <button type="button" class="btn b2 w100" onclick="cl('mOrdDetail')">إغلاق</button>
+</div></div>
+
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDtp6WvkiOgNGi4Q7KWXSyPXFw5MDECD3Y",
-    authDomain: "speed-shipping-c5438.firebaseapp.com",
-    databaseURL: "https://speed-shipping-c5438-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "speed-shipping-c5438",
-    storageBucket: "speed-shipping-c5438.firebasestorage.app",
-    messagingSenderId: "189462819551",
-    appId: "1:189462819551:web:4516fd59884d9d8fcb2f6a",
-    measurementId: "G-85ZTZX3KWH"
+const firebaseConfig = {
+  apiKey: "AIzaSyDtp6WvkiOgNGi4Q7KWXSyPXFw5MDECD3Y",
+  authDomain: "speed-shipping-c5438.firebaseapp.com",
+  databaseURL: "https://speed-shipping-c5438-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "speed-shipping-c5438",
+  storageBucket: "speed-shipping-c5438.firebasestorage.app",
+  messagingSenderId: "189462819551",
+  appId: "1:189462819551:web:4516fd59884d9d8fcb2f6a",
+  measurementId: "G-85ZTZX3KWH"
+};
+
+firebase.initializeApp(firebaseConfig);
+const fbAuth = firebase.auth();
+const fbDb = firebase.database();
+const FB_PATH = "mz_cloud_db/v3";
+
+const PERMISSION_DEFS = {
+  branch_manager: [
+    { key: "dash", label: "لوحة الإدارة والإحصائيات" },
+    { key: "shp", label: "إدارة الشحنات والمخزن والمرتجعات" },
+    { key: "drv", label: "إدارة المناديب وتحصيل العهد" },
+    { key: "mrc", label: "إدارة التجار والسريالات" },
+    { key: "profits", label: "الاطلاع على الأرباح" },
+    { key: "settle", label: "إجراء التسوية اليومية" }
+  ],
+  accountant: [
+    { key: "collection", label: "التحصيل وحسابات العهد" },
+    { key: "drv", label: "استلام عهد المناديب" },
+    { key: "settle", label: "التسوية اليومية وتقفيل اليوم" },
+    { key: "profits", label: "الاطلاع على الأرباح" }
+  ]
+};
+
+const getTodayStr = ()=>{
+  const n = new Date();
+  return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+};
+
+let rawDb={};
+try{rawDb=JSON.parse(localStorage.getItem('mz_db_v3'))||JSON.parse(localStorage.getItem('mz_db_v2'))||{};}catch(e){rawDb={};}
+let db={
+  adm:(rawDb.adm&&rawDb.adm.u&&rawDb.adm.p)?rawDb.adm:{u:'admin',p:'1234'},
+  d:Array.isArray(rawDb.d)?rawDb.d:[],
+  m:Array.isArray(rawDb.m)?rawDb.m:[],
+  s:Array.isArray(rawDb.s)?rawDb.s:[],
+  staff:Array.isArray(rawDb.staff)?rawDb.staff:[],
+  settlements:Array.isArray(rawDb.settlements)?rawDb.settlements:[],
+  bizDate:rawDb.bizDate||getTodayStr()
+};
+
+let cur=null;
+try{cur=JSON.parse(sessionStorage.getItem('mz_cur_v3'));}catch(e){cur=null;}
+
+let openGroups={};
+let collapsedDrvs={};
+let profitUnlocked=false;
+let passActionMode='change';
+let fbSyncAttached=false;
+let isApplyingCloud=false;
+
+const fixNum=str=>String(str||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
+
+function normalizeDbShape(src){
+  const j=src||{};
+  return {
+    adm:(j.adm&&j.adm.u&&j.adm.p)?j.adm:db.adm,
+    d:Array.isArray(j.d)?j.d:Object.values(j.d||{}),
+    m:Array.isArray(j.m)?j.m:Object.values(j.m||{}),
+    s:Array.isArray(j.s)?j.s:Object.values(j.s||{}),
+    staff:Array.isArray(j.staff)?j.staff:Object.values(j.staff||{}),
+    settlements:Array.isArray(j.settlements)?j.settlements:Object.values(j.settlements||{}),
+    bizDate:j.bizDate||getTodayStr()
   };
+}
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.database();
-  const DB_ROOT = "mizo_shipping_system/v4";
+function attachFirebaseSync(){
+  if(fbSyncAttached)return;
+  fbSyncAttached=true;
+  fbDb.ref(FB_PATH).on('value',snap=>{
+    const val=snap.val();
+    if(!val)return;
+    isApplyingCloud=true;
+    db=normalizeDbShape(val);
+    ensureSerials();
+    localStorage.setItem('mz_db_v3',JSON.stringify(db));
+    isApplyingCloud=false;
+    if(cur)rnd();
+  },err=>console.warn('Cloud sync warning:',err));
+}
 
-  const STATUS_LABELS = {
-    d: "تم التسليم",
-    ref_pay: "رفض مع دفع شحن",
-    ref_nopay: "رفض بدون دفع",
-    cancel: "ملغي",
-    postpone: "مؤجل",
-    w: "استلام مخزن",
-    r: "مرتجع",
-    rw: "مرتجع مخزن",
-    rm: "مرتجع تاجر"
-  };
+const sv=()=>{
+  ensureSerials();
+  localStorage.setItem('mz_db_v3',JSON.stringify(db));
+  if(!isApplyingCloud && fbAuth.currentUser){
+    fbDb.ref(FB_PATH).set(db).catch(err=>console.warn('Cloud save warning:',err));
+  }
+  rnd();
+};
 
-  let state = {
-    orders: [],
-    merchants: [],
-    drivers: [],
-    internalUsers: [],
-    dailySettlements: [],
-    driverHandovers: {},
-    meta: {
-      merchantSeq: 0,
-      currentBusinessDate: getTodayDateStr(),
-      lastAutoResetDate: getTodayDateStr()
+const op=id=>document.getElementById(id).classList.add('sh');
+const cl=id=>document.getElementById(id).classList.remove('sh');
+const tglSet=()=>document.getElementById('setMenu').classList.toggle('sh');
+
+function st(id,b){
+  document.querySelectorAll('.tab').forEach(e=>e.classList.remove('act'));
+  document.querySelectorAll('.nbtn').forEach(e=>e.classList.remove('act'));
+  const target=document.getElementById('t-'+id);
+  if(target)target.classList.add('act');
+  if(b)b.classList.add('act');
+  if(id==='staff')renderRolePermissionsPreset();
+}
+
+const sst=(id,b)=>{
+  document.querySelectorAll('.stab').forEach(e=>e.classList.remove('act'));
+  document.querySelectorAll('.sbtn').forEach(e=>e.classList.remove('act'));
+  document.getElementById('st-'+id).classList.add('act');
+  b.classList.add('act');
+};
+
+const gn=(arr,id)=>(arr.find(i=>i.id==id)||{}).n||'-';
+
+function hasPerm(permKey){
+  if(!cur)return false;
+  if(cur.role==='adm')return true;
+  if(cur.role==='branch_manager' || cur.role==='accountant'){
+    const perms=Array.isArray(cur.perms)?cur.perms:[];
+    return perms.includes(permKey);
+  }
+  return false;
+}
+
+function renderRolePermissionsPreset(){
+  const role=document.getElementById('stRole')?.value||'branch_manager';
+  const defs=PERMISSION_DEFS[role]||PERMISSION_DEFS.branch_manager;
+  document.getElementById('permBoxTitle').innerText=role==='accountant'?'صلاحيات المحاسب عند إنشاء الحساب:':'صلاحيات مدير الفرع عند إنشاء الحساب:';
+  document.getElementById('permCheckboxes').innerHTML=defs.map(d=>`
+    <label class="perm-item">
+      <input type="checkbox" class="chk stf-perm-chk" value="${d.key}" checked>
+      <span>${d.label}</span>
+    </label>
+  `).join('');
+}
+
+function getOrderCollectedAmount(o){
+  if(o.st==='d')return (Number(o.p)||0)+(Number(o.f)||0);
+  if(o.st==='ref_pay')return Number(o.paidShip)||0;
+  return 0;
+}
+
+function getOrderProfit(o){
+  if(o.st==='d')return Number(o.f)||0;
+  if(o.st==='ref_pay')return Number(o.paidShip)||0;
+  return 0;
+}
+
+function recordSettlement(typeLabel){
+  const activeDate=db.bizDate||getTodayStr();
+  const list=db.s||[];
+  const dList=list.filter(x=>x.st==='d');
+  const totCol=list.reduce((a,b)=>a+getOrderCollectedAmount(b),0);
+  const colCount=list.filter(x=>x.st==='d'||x.st==='ref_pay').length;
+  db.settlements.unshift({
+    id:'SET-'+Date.now(),
+    date:activeDate,
+    time:new Date().toLocaleTimeString('ar-EG'),
+    type:typeLabel,
+    totalCollected:totCol,
+    collectedCount:colCount,
+    deliveredCount:dList.length
+  });
+}
+
+function checkMidnightReset(){
+  const today=getTodayStr();
+  if(!db.bizDate){db.bizDate=today;return;}
+  if(today!==db.bizDate){
+    const hasActivity=db.s.some(x=>x.st==='d'||x.st==='ref_pay'||x.st==='p'||x.st==='r'||x.st==='rw');
+    if(hasActivity){
+      recordSettlement('تصفير تلقائي 12 منتصف الليل');
+      db.s=db.s.filter(x=>x.st==='w'||x.st==='postpone');
     }
-  };
-
-  let currentSession = null;
-  let activeTab = "orders";
-  let dbListenerAttached = false;
-
-  function getTodayDateStr() {
-    const now = new Date();
-    const y = now.getFullYear();
-    const m = String(now.getMonth() + 1).padStart(2, "0");
-    const d = String(now.getDate()).padStart(2, "0");
-    return `${y}-${m}-${d}`;
+    db.bizDate=today;
+    sv();
   }
+}
 
-  function formatMoney(n) {
-    return `${Number(n || 0).toFixed(2)} ج.م`;
-  }
+function manualSettleToday(){
+  document.getElementById('setMenu').classList.remove('sh');
+  if(!hasPerm('settle'))return alert('لا تملك صلاحية التسوية اليومية');
+  if(!confirm('تسوية وحفظ يومية ('+(db.bizDate||getTodayStr())+') وتصفير الأوردرات المنتهية؟'))return;
+  recordSettlement('تسوية يومية');
+  db.s=db.s.filter(x=>x.st==='w'||x.st==='postpone');
+  db.bizDate=getTodayStr();
+  sv();
+  alert('تم حفظ التسوية اليومية وتصفير اليوم بنجاح');
+}
 
-  function setLoginError(msg) {
-    document.getElementById("loginErrorMsg").textContent = msg || "";
-  }
-
-  function attachDatabaseListenerOnce() {
-    if (dbListenerAttached) return;
-    dbListenerAttached = true;
-
-    db.ref(DB_ROOT).on(
-      "value",
-      (snap) => {
-        const val = snap.val() || {};
-        state.orders = Array.isArray(val.orders) ? val.orders : Object.values(val.orders || {});
-        state.merchants = Array.isArray(val.merchants) ? val.merchants : Object.values(val.merchants || {});
-        state.drivers = Array.isArray(val.drivers) ? val.drivers : Object.values(val.drivers || {});
-        state.internalUsers = Array.isArray(val.internalUsers) ? val.internalUsers : Object.values(val.internalUsers || {});
-        state.dailySettlements = Array.isArray(val.dailySettlements) ? val.dailySettlements : Object.values(val.dailySettlements || {});
-        state.driverHandovers = val.driverHandovers || {};
-        state.meta = {
-          merchantSeq: val.meta?.merchantSeq || state.merchants.length || 0,
-          currentBusinessDate: val.meta?.currentBusinessDate || getTodayDateStr(),
-          lastAutoResetDate: val.meta?.lastAutoResetDate || getTodayDateStr()
-        };
-
-        if (currentSession) {
-          checkMidnightRollover(false);
-          renderAll();
-        }
-      },
-      (err) => {
-        console.error("DB Read Error:", err);
-      }
-    );
-  }
-
-  async function fetchInternalUsersOnce() {
-    attachDatabaseListenerOnce();
-    const snap = await db.ref(`${DB_ROOT}/internalUsers`).once("value");
-    const raw = snap.val() || [];
-    state.internalUsers = Array.isArray(raw) ? raw : Object.values(raw || {});
-  }
-
-  async function handleUnifiedLogin() {
-    setLoginError("");
-    const identifier = document.getElementById("loginUserInput").value.trim();
-    const password = document.getElementById("loginPassInput").value;
-    const btn = document.getElementById("loginSubmitBtn");
-
-    if (!identifier || !password) {
-      setLoginError("من فضلك أدخل اسم المستخدم أو البريد الإلكتروني وكلمة المرور.");
-      return;
+function ensureSerials(){
+  const usedCodes=new Set();
+  db.m.forEach((m,idx)=>{
+    let code=String(m.code||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4);
+    if(!code){
+      const cleanName=String(m.n||'').replace(/[^A-Za-z]/g,'').toUpperCase().slice(0,3);
+      code=cleanName || ('MRC'+(idx+1));
     }
-
-    btn.disabled = true;
-    btn.textContent = "جاري الدخول...";
-
-    try {
-      const isEmail = identifier.includes("@");
-
-      if (isEmail) {
-        try {
-          const cred = await auth.signInWithEmailAndPassword(identifier, password);
-          attachDatabaseListenerOnce();
-          currentSession = {
-            mode: "owner",
-            role: "adm",
-            username: cred.user.email,
-            name: "المالك"
-          };
-          onSessionReady();
-          return;
-        } catch (authErr) {
-          if (auth.currentUser) {
-            await fetchInternalUsersOnce();
-            const internalMatch = state.internalUsers.find(
-              (u) => u.username.toLowerCase() === identifier.toLowerCase() && u.password === password
-            );
-            if (internalMatch) {
-              currentSession = {
-                mode: "internal",
-                role: internalMatch.role,
-                username: internalMatch.username,
-                name: internalMatch.displayName || internalMatch.username,
-                mrcId: internalMatch.mrcId || null,
-                drvId: internalMatch.drvId || null
-              };
-              onSessionReady();
-              return;
-            }
-          }
-          setLoginError("تعذر تسجيل الدخول: تأكد من البريد الإلكتروني وكلمة المرور.");
-          return;
-        }
-      }
-
-      if (!auth.currentUser) {
-        setLoginError("تعذر تسجيل الدخول بهذا الاسم حالياً. يجب فتح الجلسة أولاً بالبريد الإلكتروني وكلمة المرور.");
-        return;
-      }
-
-      await fetchInternalUsersOnce();
-      const found = state.internalUsers.find(
-        (u) => u.username.toLowerCase() === identifier.toLowerCase() && u.password === password
-      );
-
-      if (!found) {
-        setLoginError("اسم المستخدم أو كلمة المرور غير صحيحة.");
-        return;
-      }
-
-      currentSession = {
-        mode: "internal",
-        role: found.role,
-        username: found.username,
-        name: found.displayName || found.username,
-        mrcId: found.mrcId || null,
-        drvId: found.drvId || null
-      };
-      onSessionReady();
-    } catch (err) {
-      setLoginError("تعذر تسجيل الدخول: " + (err.message || "يرجى المحاولة مرة أخرى"));
-    } finally {
-      btn.disabled = false;
-      btn.textContent = "تسجيل الدخول";
-    }
-  }
-
-  function logoutCurrentSession() {
-    currentSession = null;
-    document.getElementById("loginPassInput").value = "";
-    setLoginError("");
-    document.getElementById("appSection").classList.add("hidden");
-    document.getElementById("headerControls").classList.add("hidden");
-    document.getElementById("authSection").classList.remove("hidden");
-    document.getElementById("headerRoleBadge").textContent = "غير مسجل";
-  }
-
-  function onSessionReady() {
-    document.getElementById("authSection").classList.add("hidden");
-    document.getElementById("appSection").classList.remove("hidden");
-    document.getElementById("headerControls").classList.remove("hidden");
-
-    const roleNames = {
-      adm: "مالك النظام",
-      branch_manager: "مدير فرع",
-      accountant: "محاسب",
-      drv: "مندوب",
-      mrc: "تاجر"
-    };
-
-    document.getElementById("headerRoleBadge").textContent = roleNames[currentSession.role] || currentSession.role;
-    document.getElementById("activeUserLabel").textContent = currentSession.name;
-
-    buildNavTabs();
-    renderAll();
-  }
-
-  function buildNavTabs() {
-    const role = currentSession.role;
-    const tabs = [];
-
-    if (["adm", "branch_manager", "drv", "mrc"].includes(role)) {
-      tabs.push({ id: "orders", label: "الشحنات والأوردرات" });
-    }
-    if (["adm", "accountant", "branch_manager"].includes(role)) {
-      tabs.push({ id: "accounting", label: "التحصيل والتسوية اليومية" });
-    }
-    if (["adm", "branch_manager"].includes(role)) {
-      tabs.push({ id: "entities", label: "التجار والمناديب" });
-    }
-    if (role === "adm") {
-      tabs.push({ id: "profits", label: "الأرباح" });
-      tabs.push({ id: "users", label: "الصلاحيات والحسابات" });
-    }
-
-    if (!tabs.some((t) => t.id === activeTab) && tabs.length > 0) {
-      activeTab = tabs[0].id;
-    }
-
-    const navEl = document.getElementById("navTabs");
-    navEl.innerHTML = tabs
-      .map(
-        (t) =>
-          `<button class="tab-btn ${t.id === activeTab ? "active" : ""}" onclick="switchTab('${t.id}')">${t.label}</button>`
-      )
-      .join("");
-
-    document.querySelectorAll(".role-view").forEach((el) => el.classList.add("hidden"));
-    const target = document.getElementById("tab-" + activeTab);
-    if (target) target.classList.remove("hidden");
-  }
-
-  function switchTab(tabId) {
-    activeTab = tabId;
-    buildNavTabs();
-    renderAll();
-  }
-
-  function checkMidnightRollover(manualTrigger) {
-    const todayStr = getTodayDateStr();
-    const activeBizDate = state.meta.currentBusinessDate || todayStr;
-
-    if (todayStr !== activeBizDate || manualTrigger) {
-      const hasAnyActivity = state.orders.some(
-        (o) => (o.businessDate || todayStr) === activeBizDate && ["d", "ref_pay"].includes(o.status)
-      );
-      const alreadySettled = state.dailySettlements.some((s) => s.businessDate === activeBizDate);
-
-      if (hasAnyActivity && !alreadySettled) {
-        saveSettlementSnapshot(activeBizDate, manualTrigger ? "تسوية يدوية فورية" : "إغلاق تلقائي بعد 12 منتصف الليل");
-      }
-
-      if (todayStr !== activeBizDate) {
-        state.meta.currentBusinessDate = todayStr;
-        state.meta.lastAutoResetDate = todayStr;
-        db.ref(`${DB_ROOT}/meta`).update({
-          currentBusinessDate: todayStr,
-          lastAutoResetDate: todayStr
-        });
-      }
-    }
-  }
-
-  function calculateDayCollection(bizDate) {
-    const dayOrders = state.orders.filter((o) => (o.businessDate || getTodayDateStr()) === bizDate);
-    let totalCollected = 0;
-    let count = 0;
-    const byDriver = {};
-
-    state.drivers.forEach((d) => {
-      byDriver[d.id] = {
-        driverId: d.id,
-        driverName: d.name,
-        deliveredCount: 0,
-        refPayCount: 0,
-        dueAmount: 0,
-        handedOver: Number(state.driverHandovers?.[bizDate]?.[d.id] || 0)
-      };
-    });
-
-    dayOrders.forEach((o) => {
-      const price = Number(o.price || 0);
-      const shipping = Number(o.shipping || 0);
-      const drvId = o.driverId || "unassigned";
-      if (!byDriver[drvId]) {
-        byDriver[drvId] = {
-          driverId: drvId,
-          driverName: "غير محدد",
-          deliveredCount: 0,
-          refPayCount: 0,
-          dueAmount: 0,
-          handedOver: Number(state.driverHandovers?.[bizDate]?.[drvId] || 0)
-        };
-      }
-
-      if (o.status === "d") {
-        const amt = price + shipping;
-        totalCollected += amt;
-        count += 1;
-        byDriver[drvId].deliveredCount += 1;
-        byDriver[drvId].dueAmount += amt;
-      } else if (o.status === "ref_pay") {
-        totalCollected += shipping;
-        count += 1;
-        byDriver[drvId].refPayCount += 1;
-        byDriver[drvId].dueAmount += shipping;
-      }
-    });
-
-    return { totalCollected, count, byDriver: Object.values(byDriver) };
-  }
-
-  function saveSettlementSnapshot(bizDate, closeType) {
-    const calc = calculateDayCollection(bizDate);
-    const snapshot = {
-      id: "SET-" + bizDate + "-" + Date.now(),
-      businessDate: bizDate,
-      settledAt: new Date().toLocaleTimeString("ar-EG"),
-      closeType,
-      totalCollected: calc.totalCollected,
-      collectedCount: calc.count,
-      driversSummary: calc.byDriver.map((d) => ({
-        driverName: d.driverName,
-        dueAmount: d.dueAmount,
-        handedOver: d.handedOver
-      }))
-    };
-
-    const existingIdx = state.dailySettlements.findIndex((s) => s.businessDate === bizDate);
-    if (existingIdx >= 0) {
-      state.dailySettlements[existingIdx] = snapshot;
-    } else {
-      state.dailySettlements.unshift(snapshot);
-    }
-
-    db.ref(`${DB_ROOT}/dailySettlements`).set(state.dailySettlements);
-  }
-
-  function performDailySettlement(isAuto) {
-    if (!["adm", "accountant", "branch_manager"].includes(currentSession.role)) {
-      return alert("ليس لديك صلاحية إجراء التسوية المالية.");
-    }
-    const bizDate = state.meta.currentBusinessDate || getTodayDateStr();
-    if (!isAuto && !confirm(`تأكيد تسوية وحفظ يومية (${bizDate})؟`)) return;
-
-    saveSettlementSnapshot(bizDate, "تسوية نهاية اليوم");
-
-    const nextDate = getTodayDateStr();
-    const parts = bizDate.split("-").map(Number);
-    const dt = new Date(parts[0], parts[1] - 1, parts[2] + 1);
-    const rolledDate = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
-    const newBizDate = rolledDate > nextDate ? rolledDate : nextDate;
-
-    state.meta.currentBusinessDate = newBizDate;
-    db.ref(`${DB_ROOT}/meta/currentBusinessDate`).set(newBizDate);
-    alert("تم حفظ التسوية اليومية بنجاح وبدء يوم حسابي جديد.");
-  }
-
-  function recordDriverHandover(driverId) {
-    const input = document.getElementById(`handoverInput_${driverId}`);
-    const val = Number(input?.value || 0);
-    if (val <= 0) return alert("أدخل مبلغاً أكبر من صفر.");
-    const bizDate = state.meta.currentBusinessDate || getTodayDateStr();
-    const prev = Number(state.driverHandovers?.[bizDate]?.[driverId] || 0);
-    const updated = prev + val;
-
-    db.ref(`${DB_ROOT}/driverHandovers/${bizDate}/${driverId}`).set(updated);
-    input.value = "";
-  }
-
-  function addMerchant() {
-    if (!["adm", "branch_manager"].includes(currentSession.role)) return alert("غير مصرح.");
-    const name = document.getElementById("newMrcName").value.trim();
-    const prefix = (document.getElementById("newMrcPrefix").value.trim() || "MIZ").toUpperCase();
-    const fee = Number(document.getElementById("newMrcFee").value || 0);
-    if (!name) return alert("أدخل اسم التاجر.");
-
-    const nextSeq = (state.meta.merchantSeq || 0) + 1;
-    const code = `${prefix}-${String(nextSeq).padStart(3, "0")}`;
-    const merchant = { id: code, code, name, defaultShipping: fee };
-
-    state.merchants.push(merchant);
-    state.meta.merchantSeq = nextSeq;
-    db.ref(`${DB_ROOT}/merchants`).set(state.merchants);
-    db.ref(`${DB_ROOT}/meta/merchantSeq`).set(nextSeq);
-    document.getElementById("newMrcName").value = "";
-  }
-
-  function addDriver() {
-    if (!["adm", "branch_manager"].includes(currentSession.role)) return alert("غير مصرح.");
-    const name = document.getElementById("newDrvName").value.trim();
-    const phone = document.getElementById("newDrvPhone").value.trim();
-    if (!name) return alert("أدخل اسم المندوب.");
-    const driver = { id: "DRV-" + (state.drivers.length + 1), name, phone };
-    state.drivers.push(driver);
-    db.ref(`${DB_ROOT}/drivers`).set(state.drivers);
-    document.getElementById("newDrvName").value = "";
-    document.getElementById("newDrvPhone").value = "";
-  }
-
-  function addNewOrder() {
-    if (!["adm", "branch_manager"].includes(currentSession.role)) return alert("غير مصرح بإضافة شحنات.");
-    const merchantId = document.getElementById("ordMerchantSelect").value;
-    const customer = document.getElementById("ordCustomer").value.trim();
-    const phone = document.getElementById("ordPhone").value.trim();
-    const address = document.getElementById("ordAddress").value.trim();
-    const price = Number(document.getElementById("ordPrice").value || 0);
-    const shipping = Number(document.getElementById("ordShipping").value || 0);
-    const driverId = document.getElementById("ordDriverSelect").value;
-
-    if (!merchantId || !customer) return alert("اختر التاجر وأدخل اسم العميل.");
-
-    const order = {
-      id: "ORD-" + Date.now().toString().slice(-6),
-      merchantId,
-      customer,
-      phone,
-      address,
-      price,
-      shipping,
-      driverId,
-      status: "w",
-      businessDate: state.meta.currentBusinessDate || getTodayDateStr(),
-      createdAt: new Date().toISOString()
-    };
-
-    state.orders.unshift(order);
-    db.ref(`${DB_ROOT}/orders`).set(state.orders);
-    document.getElementById("ordCustomer").value = "";
-    document.getElementById("ordPhone").value = "";
-    document.getElementById("ordAddress").value = "";
-  }
-
-  function updateOrderStatus(orderId, newStatus) {
-    if (!["adm", "branch_manager", "drv"].includes(currentSession.role)) {
-      return alert("ليس لديك صلاحية تغيير حالة الأوردر.");
-    }
-    const idx = state.orders.findIndex((o) => o.id === orderId);
-    if (idx < 0) return;
-    if (currentSession.role === "drv" && state.orders[idx].driverId !== currentSession.drvId) {
-      return alert("يمكنك تحديث الأوردرات المسندة إليك فقط.");
-    }
-
-    state.orders[idx].status = newStatus;
-    state.orders[idx].businessDate = state.meta.currentBusinessDate || getTodayDateStr();
-    db.ref(`${DB_ROOT}/orders`).set(state.orders);
-  }
-
-  function deleteOrder(orderId) {
-    if (currentSession.role !== "adm") return alert("الحذف متاح للمالك فقط.");
-    state.orders = state.orders.filter((o) => o.id !== orderId);
-    db.ref(`${DB_ROOT}/orders`).set(state.orders);
-  }
-
-  function toggleRoleLinkInputs() {
-    const role = document.getElementById("accRole").value;
-    document.getElementById("linkDriverBox").classList.toggle("hidden", role !== "drv");
-    document.getElementById("linkMerchantBox").classList.toggle("hidden", role !== "mrc");
-  }
-
-  function createInternalAccount() {
-    if (currentSession.role !== "adm") return alert("إدارة الصلاحيات متاحة للمالك فقط.");
-    const username = document.getElementById("accUsername").value.trim();
-    const password = document.getElementById("accPassword").value;
-    const displayName = document.getElementById("accDisplayName").value.trim();
-    const role = document.getElementById("accRole").value;
-    const drvId = role === "drv" ? document.getElementById("accDriverId").value : null;
-    const mrcId = role === "mrc" ? document.getElementById("accMerchantId").value : null;
-
-    if (!username || !password) return alert("أدخل اسم المستخدم وكلمة المرور.");
-    if (state.internalUsers.some((u) => u.username.toLowerCase() === username.toLowerCase())) {
-      return alert("اسم المستخدم موجود بالفعل.");
-    }
-
-    state.internalUsers.push({ username, password, displayName: displayName || username, role, drvId, mrcId });
-    db.ref(`${DB_ROOT}/internalUsers`).set(state.internalUsers);
-    document.getElementById("accUsername").value = "";
-    document.getElementById("accPassword").value = "";
-    document.getElementById("accDisplayName").value = "";
-    alert("تم إنشاء الحساب الداخلي بنجاح.");
-  }
-
-  function deleteInternalAccount(username) {
-    if (currentSession.role !== "adm") return alert("غير مصرح.");
-    state.internalUsers = state.internalUsers.filter((u) => u.username !== username);
-    db.ref(`${DB_ROOT}/internalUsers`).set(state.internalUsers);
-  }
-
-  function getVisibleOrdersForRole() {
-    const role = currentSession.role;
-    if (role === "mrc") {
-      return state.orders.filter((o) => o.merchantId === currentSession.mrcId);
-    }
-    if (role === "drv") {
-      return state.orders.filter((o) => o.driverId === currentSession.drvId);
-    }
-    return state.orders;
-  }
-
-  function renderAll() {
-    const bizDate = state.meta.currentBusinessDate || getTodayDateStr();
-    document.getElementById("businessDateBadge").textContent = `يوم العمل: ${bizDate}`;
-    document.getElementById("accBusinessDate").textContent = bizDate;
-
-    document.getElementById("ordMerchantSelect").innerHTML = state.merchants
-      .map((m) => `<option value="${m.id}">${m.code} - ${m.name}</option>`)
-      .join("");
-    document.getElementById("ordDriverSelect").innerHTML = state.drivers
-      .map((d) => `<option value="${d.id}">${d.name}</option>`)
-      .join("");
-    document.getElementById("accDriverId").innerHTML = state.drivers
-      .map((d) => `<option value="${d.id}">${d.name}</option>`)
-      .join("");
-    document.getElementById("accMerchantId").innerHTML = state.merchants
-      .map((m) => `<option value="${m.id}">${m.code} - ${m.name}</option>`)
-      .join("");
-
-    document.getElementById("createOrderBox").classList.toggle(
-      "hidden",
-      !["adm", "branch_manager"].includes(currentSession.role)
-    );
-
-    renderOrders();
-    renderAccounting(bizDate);
-    renderEntities();
-    renderProfits();
-    renderInternalUsers();
-  }
-
-  function renderOrders() {
-    const q = (document.getElementById("searchOrderInput")?.value || "").trim().toLowerCase();
-    const stFilter = document.getElementById("filterStatusSelect")?.value || "all";
-    const baseOrders = getVisibleOrdersForRole();
-
-    document.getElementById("kpiTotalOrders").textContent = baseOrders.length;
-    document.getElementById("kpiDelivered").textContent = baseOrders.filter((o) => o.status === "d").length;
-    document.getElementById("kpiPending").textContent = baseOrders.filter((o) => ["w", "postpone"].includes(o.status)).length;
-    document.getElementById("kpiReturned").textContent = baseOrders.filter((o) =>
-      ["ref_pay", "ref_nopay", "cancel", "r", "rw", "rm"].includes(o.status)
-    ).length;
-
-    const filtered = baseOrders.filter((o) => {
-      const matchStatus = stFilter === "all" || o.status === stFilter;
-      const mName = state.merchants.find((m) => m.id === o.merchantId)?.name || "";
-      const matchQ =
-        !q ||
-        o.id.toLowerCase().includes(q) ||
-        (o.customer || "").toLowerCase().includes(q) ||
-        (o.phone || "").toLowerCase().includes(q) ||
-        mName.toLowerCase().includes(q);
-      return matchStatus && matchQ;
-    });
-
-    const canUpdateStatus = ["adm", "branch_manager", "drv"].includes(currentSession.role);
-    const canDelete = currentSession.role === "adm";
-
-    document.getElementById("ordersTableBody").innerHTML = filtered
-      .map((o) => {
-        const mrc = state.merchants.find((m) => m.id === o.merchantId);
-        const drv = state.drivers.find((d) => d.id === o.driverId);
-        const statusSelect = canUpdateStatus
-          ? `<select onchange="updateOrderStatus('${o.id}', this.value)">
-              ${Object.entries(STATUS_LABELS)
-                .map(([k, v]) => `<option value="${k}" ${o.status === k ? "selected" : ""}>${v}</option>`)
-                .join("")}
-            </select>`
-          : `<span class="status-pill st-${o.status}">${STATUS_LABELS[o.status] || o.status}</span>`;
-
-        return `
-          <tr>
-            <td><strong>${o.id}</strong></td>
-            <td>${mrc ? `${mrc.code} - ${mrc.name}` : o.merchantId}</td>
-            <td>${o.customer || "-"}<br/><span class="hint">${o.phone || ""}</span></td>
-            <td>${o.address || "-"}</td>
-            <td>${formatMoney(o.price)}</td>
-            <td>${formatMoney(o.shipping)}</td>
-            <td>${drv ? drv.name : "غير محدد"}</td>
-            <td><span class="status-pill st-${o.status}">${STATUS_LABELS[o.status] || o.status}</span></td>
-            <td>
-              <div class="row-actions">
-                ${statusSelect}
-                ${canDelete ? `<button class="red" onclick="deleteOrder('${o.id}')">حذف</button>` : ""}
-              </div>
-            </td>
-          </tr>
-        `;
-      })
-      .join("");
-  }
-
-  function renderAccounting(bizDate) {
-    const calc = calculateDayCollection(bizDate);
-    document.getElementById("todayCollectionTotal").textContent = formatMoney(calc.totalCollected);
-    document.getElementById("todayCollectedCount").textContent = calc.count;
-
-    document.getElementById("driversAccountingBody").innerHTML = calc.byDriver
-      .map((d) => {
-        const rem = d.dueAmount - d.handedOver;
-        return `
-          <tr>
-            <td><strong>${d.driverName}</strong></td>
-            <td>${d.deliveredCount}</td>
-            <td>${d.refPayCount}</td>
-            <td>${formatMoney(d.dueAmount)}</td>
-            <td>${formatMoney(d.handedOver)}</td>
-            <td><strong>${formatMoney(rem)}</strong></td>
-            <td>
-              <div class="row-actions">
-                <input id="handoverInput_${d.driverId}" type="number" min="0" placeholder="مبلغ التوريد" style="width:110px;" />
-                <button class="green" onclick="recordDriverHandover('${d.driverId}')">توريد</button>
-              </div>
-            </td>
-          </tr>
-        `;
-      })
-      .join("");
-
-    document.getElementById("settlementsArchiveBody").innerHTML = state.dailySettlements
-      .map((s) => {
-        const details = (s.driversSummary || [])
-          .map((ds) => `${ds.driverName}: مستحق ${Number(ds.dueAmount || 0).toFixed(0)} / مسلّم ${Number(ds.handedOver || 0).toFixed(0)}`)
-          .join(" | ");
-        return `
-          <tr>
-            <td><strong>${s.businessDate}</strong></td>
-            <td>${s.settledAt || "-"}</td>
-            <td>${s.closeType || "-"}</td>
-            <td><strong>${formatMoney(s.totalCollected)}</strong></td>
-            <td>${s.collectedCount || 0}</td>
-            <td>${details || "-"}</td>
-          </tr>
-        `;
-      })
-      .join("");
-  }
-
-  function renderEntities() {
-    document.getElementById("merchantsListBody").innerHTML = state.merchants
-      .map((m) => `<tr><td>${m.code}</td><td>${m.name}</td><td>${formatMoney(m.defaultShipping)}</td></tr>`)
-      .join("");
-    document.getElementById("driversListBody").innerHTML = state.drivers
-      .map((d) => `<tr><td>${d.id}</td><td>${d.name}</td><td>${d.phone || "-"}</td></tr>`)
-      .join("");
-  }
-
-  function renderProfits() {
-    if (currentSession.role !== "adm") return;
-    let grossShipping = 0;
-    let deliveredGoods = 0;
-    state.orders.forEach((o) => {
-      if (o.status === "d") {
-        deliveredGoods += Number(o.price || 0);
-        grossShipping += Number(o.shipping || 0);
-      } else if (o.status === "ref_pay") {
-        grossShipping += Number(o.shipping || 0);
-      }
-    });
-    document.getElementById("kpiGrossShipping").textContent = formatMoney(grossShipping);
-    document.getElementById("kpiDeliveredGoods").textContent = formatMoney(deliveredGoods);
-    document.getElementById("kpiNetProfit").textContent = formatMoney(grossShipping);
-  }
-
-  function renderInternalUsers() {
-    if (currentSession.role !== "adm") return;
-    const roleMap = {
-      accountant: "محاسب",
-      branch_manager: "مدير فرع",
-      drv: "مندوب",
-      mrc: "تاجر"
-    };
-    document.getElementById("internalUsersBody").innerHTML = state.internalUsers
-      .map((u) => {
-        const linkInfo = u.mrcId ? `تاجر: ${u.mrcId}` : u.drvId ? `مندوب: ${u.drvId}` : "عام";
-        return `
-          <tr>
-            <td><strong>${u.username}</strong></td>
-            <td>${u.displayName || "-"}</td>
-            <td>${roleMap[u.role] || u.role}</td>
-            <td>${linkInfo}</td>
-            <td><button class="red" onclick="deleteInternalAccount('${u.username}')">حذف</button></td>
-          </tr>
-        `;
-      })
-      .join("");
-  }
-
-  auth.onAuthStateChanged((user) => {
-    if (user) {
-      attachDatabaseListenerOnce();
-    }
+    let finalCode=code, c=1;
+    while(usedCodes.has(finalCode)){finalCode=code+(c++); }
+    usedCodes.add(finalCode);
+    m.code=finalCode;
+    if(!m.nextSeq || m.nextSeq<1)m.nextSeq=1;
   });
 
-  setInterval(() => {
-    if (currentSession) {
-      checkMidnightRollover(false);
-      renderAccounting(state.meta.currentBusinessDate || getTodayDateStr());
+  db.s.forEach(x=>{
+    if(!x.serial){
+      const mc=db.m.find(m=>m.id===x.m);
+      const prefix=mc?mc.code:'ORD';
+      const seq=mc?(mc.nextSeq++):1;
+      x.serial=`${prefix}-${String(seq).padStart(3,'0')}`;
     }
-  }, 60000);
+  });
+}
+
+function nextSerialForMrc(mrcId){
+  const mc=db.m.find(m=>m.id===mrcId);
+  if(!mc)return 'ORD-'+Date.now().toString().slice(-4);
+  const prefix=mc.code||'MRC';
+  const seq=mc.nextSeq||1;
+  mc.nextSeq=seq+1;
+  return `${prefix}-${String(seq).padStart(3,'0')}`;
+}
+
+function opSerialCfg(mrcId){
+  const mc=db.m.find(m=>m.id===mrcId);if(!mc)return;
+  document.getElementById('serMrcId').value=mrcId;
+  document.getElementById('serCfgTitle').innerText='🔢 سريال وتسلسل: '+mc.n;
+  document.getElementById('serPrefixIn').value=mc.code||'MRC';
+  document.getElementById('serNextIn').value=mc.nextSeq||1;
+  op('mSerialCfg');
+}
+
+function svSerialCfg(){
+  const mrcId=document.getElementById('serMrcId').value;
+  const mc=db.m.find(m=>m.id===mrcId);if(!mc)return;
+  const code=fixNum(document.getElementById('serPrefixIn').value).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);
+  const nextSeq=Math.max(1,parseInt(fixNum(document.getElementById('serNextIn').value),10)||1);
+  if(!code)return alert('اكتب كود حروف للبيدج مثل MIZ');
+  mc.code=code;
+  mc.nextSeq=nextSeq;
+  cl('mSerialCfg');
+  sv();
+}
+
+function toggleProfitEye(){
+  if(!hasPerm('profits'))return alert('لا تملك صلاحية عرض الأرباح');
+  if(profitUnlocked){
+    profitUnlocked=false;
+    rnd();
+    return;
+  }
+  passActionMode='unlock_profit';
+  document.getElementById('passModalTitle').innerText='🔒 عرض الأرباح - باسورد المدير';
+  document.getElementById('passInputLbl').innerText='أدخل كلمة المرور لإظهار الأرباح';
+  document.getElementById('passSaveBtn').innerText='إظهار الأرباح';
+  document.getElementById('newPassIn').value='';
+  op('mPass');
+}
+
+function opPass(tgt,id=''){
+  passActionMode='change';
+  document.getElementById('setMenu').classList.remove('sh');
+  document.getElementById('passModalTitle').innerText='🔑 تغيير كلمة المرور';
+  document.getElementById('passInputLbl').innerText='كلمة المرور الجديدة';
+  document.getElementById('passSaveBtn').innerText='حفظ';
+  document.getElementById('passTgt').value=tgt;
+  document.getElementById('passId').value=id;
+  document.getElementById('newPassIn').value='';
+  op('mPass');
+}
+
+function svPass(){
+  const val=fixNum(document.getElementById('newPassIn').value);
+  if(!val)return alert('اكتب كلمة المرور');
+
+  if(passActionMode==='unlock_profit'){
+    const validAdm = val===String(db.adm.p);
+    const validStaff = cur && (cur.role==='branch_manager' || cur.role==='accountant') && val===String(cur.pass||'');
+    if(validAdm || validStaff){
+      profitUnlocked=true;
+      cl('mPass');
+      rnd();
+    }else{
+      alert('كلمة المرور غير صحيحة');
+    }
+    return;
+  }
+
+  const tgt=document.getElementById('passTgt').value, id=document.getElementById('passId').value;
+  if(tgt==='adm')db.adm.p=val;
+  else if(tgt==='drv'){const dv=db.d.find(x=>x.id===id);if(dv)dv.p=val;}
+  else{const mc=db.m.find(x=>x.id===id);if(mc)mc.p=val;}
+  cl('mPass');sv();alert('تم تحديث كلمة المرور وحفظها');
+}
+
+function toggleDrvCollapse(drvId){
+  collapsedDrvs[drvId]=!collapsedDrvs[drvId];
+  const el=document.getElementById('drv-col-'+drvId);
+  if(el)el.classList.toggle('collapsed',!!collapsedDrvs[drvId]);
+}
+
+function tglGrp(key){
+  openGroups[key]=!openGroups[key];
+  const body=document.getElementById('grp-'+key);
+  if(body)body.classList.toggle('open',!!openGroups[key]);
+}
+
+function toggleAllInGrp(key,masterChk){
+  const body=document.getElementById('grp-'+key);
+  if(!body)return;
+  body.querySelectorAll('input.row-chk').forEach(c=>c.checked=masterChk.checked);
+}
+
+function getCheckedIds(key){
+  const body=document.getElementById('grp-'+key);
+  if(!body)return[];
+  return Array.from(body.querySelectorAll('input.row-chk:checked')).map(c=>c.value);
+}
+
+function bulkDrvAction(drvId,grpCode,newSt){
+  const key=drvId+'_'+grpCode;
+  const ids=getCheckedIds(key);
+  if(!ids.length)return alert('اختر أوردر واحداً على الأقل أولاً');
+
+  const labels={w:'استلام في المخزن',rw:'استلام في المرتجع'};
+  if(!confirm(`تأكيد (${labels[newSt]||newSt}) لعدد (${ids.length}) أوردر؟`))return;
+
+  db.s.forEach(x=>{
+    if(ids.includes(String(x.id))){
+      x.st=newSt;
+      if(newSt==='w')x.d='';
+    }
+  });
+  sv();
+}
+
+function collectDrvCustody(drvId){
+  if(!hasPerm('drv') && !hasPerm('collection'))return alert('لا تملك صلاحية استلام العهد');
+  const dv=db.d.find(x=>x.id===drvId);if(!dv)return;
+  const dueOrders=db.s.filter(x=>x.d===drvId && (x.st==='d' || x.st==='ref_pay') && !x.custodyCollected);
+  if(!dueOrders.length)return alert('لا توجد عهدة تحصيل مستحقة حالياً لهذا المندوب');
+
+  const totalCustody=dueOrders.reduce((sum,o)=>sum+getOrderCollectedAmount(o),0);
+  if(!confirm(`تأكيد استلام عهدة التحصيل من المندوب (${dv.n}) بقيمة (${totalCustody} ج.م)؟\nملاحظة: لا يتم خصم العمولة من العهدة لأن القبض أسبوعي.`))return;
+
+  dueOrders.forEach(o=>{o.custodyCollected=true;});
+  sv();
+  alert('تم استلام عهدة التحصيل وتسجيلها بنجاح');
+}
+
+function statusBadgeHtml(o){
+  const map={
+    w:'<span class="badge bg-a">بالمخزن (بيك أب)</span>',
+    p:'<span class="badge">قيد التوصيل</span>',
+    d:'<span class="badge bg-g">تم التسليم</span>',
+    ref_pay:`<span class="badge bg-a">رفض ودفع شحن (${o.paidShip||0} ج.م)</span>`,
+    ref_nopay:`<span class="badge bg-r">رفض ودفع (${o.reasonSub||''})</span>`,
+    cancel:`<span class="badge bg-r">إلغاء (${o.reasonSub||''})</span>`,
+    postpone:`<span class="badge bg-p">مؤجل (${o.reasonSub||''})</span>`,
+    r:`<span class="badge bg-r">مرتجع${o.reasonNote?' - '+o.reasonNote:''}</span>`,
+    rw:`<span class="badge bg-a">مرتجع بالمخزن${o.reasonNote?' - '+o.reasonNote:''}</span>`,
+    rm:`<span class="badge bg-g">مرتجع سُلّم للتاجر${o.reasonNote?' - '+o.reasonNote:''}</span>`
+  };
+  return map[o.st]||o.st;
+}
+
+async function doLogin(){
+  const rawU=fixNum(document.getElementById('uIn').value);
+  const u=rawU.toLowerCase();
+  const p=fixNum(document.getElementById('pIn').value);
+  const errEl=document.getElementById('loginErr');
+  const btn=document.getElementById('loginBtn');
+  errEl.style.display='none';
+
+  if(rawU.includes('@')){
+    btn.disabled=true;
+    try{
+      await fbAuth.signInWithEmailAndPassword(rawU,p);
+      attachFirebaseSync();
+      const snap=await fbDb.ref(FB_PATH).once('value');
+      if(snap.exists()){
+        isApplyingCloud=true;
+        db=normalizeDbShape(snap.val());
+        ensureSerials();
+        localStorage.setItem('mz_db_v3',JSON.stringify(db));
+        isApplyingCloud=false;
+      }else{
+        await fbDb.ref(FB_PATH).set(db);
+      }
+      cur={role:'adm',email:rawU};
+      sessionStorage.setItem('mz_cur_v3',JSON.stringify(cur));
+      init();
+      return;
+    }catch(e){
+      errEl.style.display='block';
+      return;
+    }finally{
+      btn.disabled=false;
+    }
+  }
+
+  if(u===String(db.adm.u).toLowerCase()&&p===String(db.adm.p)){
+    cur={role:'adm'};sessionStorage.setItem('mz_cur_v3',JSON.stringify(cur));init();return;
+  }
+  const stf=db.staff.find(x=>String(x.u||'').toLowerCase()===u&&fixNum(x.p||'')===p);
+  if(stf){
+    const defs=(PERMISSION_DEFS[stf.role]||[]).map(x=>x.key);
+    cur={
+      role:stf.role,
+      id:stf.id,
+      name:stf.n,
+      pass:stf.p,
+      perms:Array.isArray(stf.perms)?stf.perms:defs
+    };
+    sessionStorage.setItem('mz_cur_v3',JSON.stringify(cur));init();return;
+  }
+  const drv=db.d.find(x=>String(x.u||'').toLowerCase()===u&&fixNum(x.p||'')===p);
+  if(drv){
+    cur={role:'drv',id:drv.id};sessionStorage.setItem('mz_cur_v3',JSON.stringify(cur));init();return;
+  }
+  const mc=db.m.find(x=>String(x.u||'').toLowerCase()===u&&fixNum(x.p||'')===p);
+  if(mc){
+    cur={role:'mrc',id:mc.id};sessionStorage.setItem('mz_cur_v3',JSON.stringify(cur));init();return;
+  }
+  errEl.style.display='block';
+}
+
+function doLogout(){
+  sessionStorage.removeItem('mz_cur_v3');
+  cur=null;
+  profitUnlocked=false;
+  document.getElementById('uIn').value='';
+  document.getElementById('pIn').value='';
+  document.getElementById('loginErr').style.display='none';
+  init();
+}
+
+function applyRoleVisibility(){
+  const role=cur.role;
+  const isOwner=(role==='adm');
+  const isStaff=(role==='branch_manager' || role==='accountant');
+
+  const canDash = isOwner || hasPerm('dash') || hasPerm('collection') || hasPerm('settle');
+  const canShp  = isOwner || hasPerm('shp');
+  const canDrv  = isOwner || hasPerm('drv');
+  const canMrc  = isOwner || hasPerm('mrc');
+
+  document.getElementById('admSetWrap').classList.toggle('hid',!(isOwner||isStaff));
+  document.getElementById('roleOutBtn').classList.toggle('hid',isOwner||isStaff);
+  document.getElementById('menuChangePassBtn').classList.toggle('hid',!isOwner);
+  document.getElementById('menuSettleBtn').classList.toggle('hid',!hasPerm('settle'));
+  document.getElementById('dashBackupBtns').classList.toggle('hid',!isOwner);
+  document.getElementById('settleNowBtn').classList.toggle('hid',!hasPerm('settle'));
+  document.getElementById('settlementsCard').classList.toggle('hid',!(hasPerm('settle')||hasPerm('collection')||isOwner));
+  document.getElementById('profitCard').classList.toggle('hid',!hasPerm('profits'));
+  document.getElementById('addDrvBtn').classList.toggle('hid',!isOwner && role!=='branch_manager');
+  document.getElementById('addOrdDrvTabBtn').classList.toggle('hid',!isOwner && role!=='branch_manager');
+
+  const showMoneyStats = isOwner || hasPerm('collection') || hasPerm('settle');
+  const showOrderStats = isOwner || hasPerm('dash');
+  document.querySelectorAll('[data-stat-card="orders"]').forEach(el=>el.classList.toggle('hid',!showOrderStats));
+  document.querySelectorAll('[data-stat-card="money"]').forEach(el=>el.classList.toggle('hid',!showMoneyStats));
+
+  document.getElementById('admLinks').classList.remove('hid');
+  document.getElementById('admArea').classList.remove('hid');
+  document.getElementById('mrcArea').classList.add('hid');
+  document.getElementById('drvArea').classList.add('hid');
+
+  document.getElementById('nav-dash').classList.toggle('hid',!canDash);
+  document.getElementById('nav-shp').classList.toggle('hid',!canShp);
+  document.getElementById('nav-drv').classList.toggle('hid',!canDrv);
+  document.getElementById('nav-mrc').classList.toggle('hid',!canMrc);
+  document.getElementById('nav-staff').classList.toggle('hid',!isOwner);
+
+  const allowed=[];
+  if(canDash)allowed.push('dash');
+  if(canShp)allowed.push('shp');
+  if(canDrv)allowed.push('drv');
+  if(canMrc)allowed.push('mrc');
+  if(isOwner)allowed.push('staff');
+
+  const activeTabEl=document.querySelector('.tab.act');
+  const activeId=activeTabEl?activeTabEl.id.replace('t-',''):'dash';
+  if(!allowed.includes(activeId) && allowed.length){
+    st(allowed[0],document.getElementById('nav-'+allowed[0]));
+  }
+}
+
+function init(){
+  ensureSerials();
+  checkMidnightReset();
+  if(!cur){
+    document.getElementById('uIn').value='';
+    document.getElementById('pIn').value='';
+    document.getElementById('loginView').classList.remove('hid');
+    document.getElementById('appView').classList.add('hid');
+    return;
+  }
+  document.getElementById('loginView').classList.add('hid');
+  document.getElementById('appView').classList.remove('hid');
+
+  if(cur.role==='adm'){
+    document.getElementById('navTitle').innerText='🚀 شركة ميزو للشحن (المدير)';
+    applyRoleVisibility();
+  }else if(cur.role==='branch_manager'){
+    document.getElementById('navTitle').innerText='🚀 شركة ميزو للشحن (مدير فرع: '+(cur.name||'')+')';
+    applyRoleVisibility();
+  }else if(cur.role==='accountant'){
+    document.getElementById('navTitle').innerText='🚀 شركة ميزو للشحن (محاسب: '+(cur.name||'')+')';
+    applyRoleVisibility();
+  }else if(cur.role==='drv'){
+    const dv=db.d.find(x=>x.id===cur.id);if(!dv){doLogout();return;}
+    document.getElementById('navTitle').innerText='🛵 المندوب: '+dv.n;
+    document.getElementById('admSetWrap').classList.add('hid');
+    document.getElementById('roleOutBtn').classList.remove('hid');
+    document.getElementById('admLinks').classList.add('hid');
+    document.getElementById('admArea').classList.add('hid');
+    document.getElementById('mrcArea').classList.add('hid');
+    document.getElementById('drvArea').classList.remove('hid');
+  }else{
+    const mc=db.m.find(x=>x.id===cur.id);if(!mc){doLogout();return;}
+    document.getElementById('navTitle').innerText='🏪 '+mc.n;
+    document.getElementById('admSetWrap').classList.add('hid');
+    document.getElementById('roleOutBtn').classList.remove('hid');
+    document.getElementById('admLinks').classList.add('hid');
+    document.getElementById('admArea').classList.add('hid');
+    document.getElementById('mrcArea').classList.remove('hid');
+    document.getElementById('drvArea').classList.add('hid');
+  }
+  rnd();
+}
+
+function addStaffAcc(){
+  if(cur.role!=='adm')return alert('غير مصرح');
+  const n=document.getElementById('stName').value.trim();
+  const u=fixNum(document.getElementById('stUser').value).toLowerCase();
+  const p=fixNum(document.getElementById('stPass').value);
+  const role=document.getElementById('stRole').value;
+  if(!n||!u||!p)return alert('أكمل الاسم واسم المستخدم وكلمة المرور');
+  const dup=db.staff.some(x=>String(x.u||'').toLowerCase()===u)||db.d.some(x=>String(x.u||'').toLowerCase()===u)||db.m.some(x=>String(x.u||'').toLowerCase()===u)||u===String(db.adm.u).toLowerCase();
+  if(dup)return alert('اسم المستخدم مستخدم من قبل');
+
+  const perms=Array.from(document.querySelectorAll('.stf-perm-chk:checked')).map(c=>c.value);
+  db.staff.push({id:Date.now()+'',n,u,p,role,perms});
+  document.getElementById('stName').value='';document.getElementById('stUser').value='';document.getElementById('stPass').value='';
+  sv();
+  alert('تم إنشاء الحساب وتحديد صلاحياته بنجاح');
+}
+
+function addD(){
+  const n=document.getElementById('dN').value.trim();
+  const u=fixNum(document.getElementById('dU').value).toLowerCase();
+  const p=fixNum(document.getElementById('dP').value);
+  if(!n||!u||!p)return alert('أكمل اسم المندوب واسم المستخدم وكلمة المرور');
+  const dup=db.staff.some(x=>String(x.u||'').toLowerCase()===u)||db.d.some(x=>String(x.u||'').toLowerCase()===u)||db.m.some(x=>String(x.u||'').toLowerCase()===u)||u===String(db.adm.u).toLowerCase();
+  if(dup)return alert('اسم المستخدم مستخدم من قبل، اختر اسماً آخر');
+  db.d.push({id:Date.now()+'',n:n,u:u,p:p,c:+fixNum(document.getElementById('dC').value)||0});
+  document.getElementById('dN').value='';document.getElementById('dU').value='';document.getElementById('dP').value='';cl('mD');sv();
+}
+
+function addM(){
+  const n=document.getElementById('mN').value.trim();
+  const u=fixNum(document.getElementById('mU').value).toLowerCase();
+  const p=fixNum(document.getElementById('mP').value);
+  const rawCode=fixNum(document.getElementById('mCode').value).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);
+  if(!n||!u||!p)return alert('أكمل جميع بيانات المتجر');
+  const dup=db.staff.some(x=>String(x.u||'').toLowerCase()===u)||db.d.some(x=>String(x.u||'').toLowerCase()===u)||db.m.some(x=>String(x.u||'').toLowerCase()===u)||u===String(db.adm.u).toLowerCase();
+  if(dup)return alert('اسم المستخدم مستخدم من قبل، اختر اسماً آخر');
+  db.m.push({id:Date.now()+'',n:n,u:u,p:p,code:rawCode,nextSeq:1});
+  document.getElementById('mN').value='';document.getElementById('mU').value='';document.getElementById('mP').value='';document.getElementById('mCode').value='';
+  cl('mM');sv();
+}
+
+function opS(drvId=''){
+  if(!db.m.length)return alert('أضف تاجر / بيدج أولاً من قسم التجار!');
+  document.getElementById('sDrvTarget').value=drvId;
+  document.getElementById('shpModalTitle').innerText=drvId?'🛵 إضافة أوردر للمندوب: '+gn(db.d,drvId):'📥 استلام أوردر بيك أب للمخزن';
+  document.getElementById('sM').innerHTML=db.m.map(x=>`<option value="${x.id}">${x.n} (${x.code})</option>`).join('');
+  op('mS');
+}
+
+function addS(){
+  const cn=document.getElementById('sName').value.trim(),cp=fixNum(document.getElementById('sPhone').value),ca=document.getElementById('sAddr').value.trim();
+  if(!cn||!cp||!ca)return alert('أكمل اسم العميل والهاتف والعنوان');
+  const mrcId=document.getElementById('sM').value;
+  const drvId=document.getElementById('sDrvTarget').value;
+  const serial=nextSerialForMrc(mrcId);
+  db.s.unshift({
+    id:Date.now()+'',
+    serial:serial,
+    cn:cn,cp:cp,ca:ca,
+    m:mrcId,d:drvId,
+    p:+fixNum(document.getElementById('sP').value)||0,
+    f:+fixNum(document.getElementById('sF').value)||0,
+    st:drvId?'p':'w',
+    paidShip:0,reasonSub:'',reasonNote:'',custodyCollected:false,directRet:false
+  });
+  document.getElementById('sName').value='';document.getElementById('sPhone').value='';document.getElementById('sAddr').value='';
+  cl('mS');sv();
+}
+
+function opDirectReturn(){
+  if(!db.m.length)return alert('أضف تاجر / بيدج أولاً من قسم التجار!');
+  document.getElementById('rM').innerHTML=db.m.map(x=>`<option value="${x.id}">${x.n} (${x.code})</option>`).join('');
+  document.getElementById('rName').value='';
+  document.getElementById('rPhone').value='';
+  document.getElementById('rAddr').value='';
+  document.getElementById('rP').value='0';
+  document.getElementById('rNote').value='';
+  op('mDirectRet');
+}
+
+function addDirectReturn(){
+  const cn=document.getElementById('rName').value.trim();
+  const cp=fixNum(document.getElementById('rPhone').value);
+  const ca=document.getElementById('rAddr').value.trim();
+  const note=document.getElementById('rNote').value.trim();
+  if(!cn||!cp||!ca)return alert('أكمل اسم العميل والهاتف والعنوان');
+  if(!note)return alert('يرجى كتابة سبب المرتجع / الملاحظات عند الإضافة المباشرة');
+
+  const mrcId=document.getElementById('rM').value;
+  const serial=nextSerialForMrc(mrcId);
+  db.s.unshift({
+    id:Date.now()+'',
+    serial:serial,
+    cn:cn,cp:cp,ca:ca,
+    m:mrcId,d:'',
+    p:+fixNum(document.getElementById('rP').value)||0,
+    f:0,
+    st:'rw',
+    paidShip:0,reasonSub:'مرتجع مباشر',reasonNote:note,custodyCollected:false,directRet:true
+  });
+  cl('mDirectRet');
+  sv();
+}
+
+function openStatusModal(orderId,presetSt=''){
+  const o=db.s.find(x=>x.id===orderId);if(!o)return;
+  document.getElementById('srOrderId').value=orderId;
+  const sel=document.getElementById('srMainSt');
+  sel.value=presetSt || o.st || 'd';
+  document.getElementById('srShipAmt').value=o.paidShip || o.f || 0;
+  document.getElementById('srNote').value=o.reasonNote || '';
+  onSrMainChange(o.reasonSub || '');
+  op('mStatusReason');
+}
+
+function onSrMainChange(selectedSub=''){
+  const mainSt=document.getElementById('srMainSt').value;
+  const shipWrap=document.getElementById('srShipAmtWrap');
+  const subWrap=document.getElementById('srSubOptWrap');
+  const subLbl=document.getElementById('srSubOptLbl');
+  const subSel=document.getElementById('srSubOpt');
+
+  shipWrap.classList.add('hid');
+  subWrap.classList.add('hid');
+
+  if(mainSt==='ref_pay'){
+    shipWrap.classList.remove('hid');
+  }else if(mainSt==='ref_nopay'){
+    subWrap.classList.remove('hid');
+    subLbl.innerText='سبب رفض الاستلام والدفع';
+    subSel.innerHTML='<option value="عميل متهرب">عميل متهرب</option><option value="بعد المعاينة">بعد المعاينة</option>';
+  }else if(mainSt==='cancel'){
+    subWrap.classList.remove('hid');
+    subLbl.innerText='سبب الإلغاء';
+    subSel.innerHTML='<option value="منتج خطأ">منتج خطأ</option><option value="ملغي من العميل">ملغي من العميل</option>';
+  }else if(mainSt==='postpone'){
+    subWrap.classList.remove('hid');
+    subLbl.innerText='سبب التأجيل';
+    subSel.innerHTML='<option value="من العميل">من العميل</option><option value="رقم خطأ">رقم خطأ</option><option value="عنوان خطأ">عنوان خطأ</option>';
+  }
+
+  if(selectedSub && Array.from(subSel.options).some(opt=>opt.value===selectedSub)){
+    subSel.value=selectedSub;
+  }
+}
+
+function saveStatusReason(){
+  const id=document.getElementById('srOrderId').value;
+  const o=db.s.find(x=>x.id===id);if(!o)return;
+  const mainSt=document.getElementById('srMainSt').value;
+  o.st=mainSt;
+  o.reasonNote=document.getElementById('srNote').value.trim();
+
+  if(mainSt==='ref_pay'){
+    o.paidShip=Math.max(0,+fixNum(document.getElementById('srShipAmt').value)||0);
+    o.reasonSub='دفع شحن';
+  }else if(mainSt==='ref_nopay' || mainSt==='cancel' || mainSt==='postpone'){
+    o.reasonSub=document.getElementById('srSubOpt').value;
+    o.paidShip=0;
+  }else{
+    o.reasonSub='';
+    o.paidShip=0;
+  }
+
+  cl('mStatusReason');
+  sv();
+}
+
+function asgD(id,did){if(!did)return;const x=db.s.find(i=>i.id==id);x.d=did;x.st='p';sv()}
+function upS(id,v){const x=db.s.find(i=>i.id==id);if(!x)return;x.st=v;if(v=='w')x.d='';sv()}
+const del=(t,id)=>{if(confirm('تأكيد الحذف؟')){db[t]=db[t].filter(x=>x.id!=id);sv()}};
+const clr=()=>{if(confirm('مسح جميع البيانات؟')){db={adm:db.adm,d:[],m:[],s:[],staff:db.staff,settlements:[],bizDate:getTodayStr()};sv()}};
+
+function opMrcOrdersByCat(mrcId,cat){
+  const mc=db.m.find(x=>x.id===mrcId);if(!mc)return;
+  const titles={d:'✅ الأوردرات المسلمة - '+mc.n,postpone:'⏳ الأوردرات المؤجلة - '+mc.n,cancel:'❌ الأوردرات الملغاة - '+mc.n};
+  document.getElementById('mrcOrdModalTitle').innerText=titles[cat]||'أوردرات التاجر';
+  const rows=db.s.filter(x=>x.m===mrcId && x.st===cat);
+  document.getElementById('bMrcFilteredOrders').innerHTML=rows.map(x=>`<tr>
+    <td><span class="serial-tag">${x.serial||'-'}</span></td>
+    <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${x.cn}</span></td>
+    <td><a class="ph-link" href="tel:${x.cp}">${x.cp}</a></td>
+    <td>${x.ca}</td>
+    <td>${x.p} ج.م</td>
+    <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${statusBadgeHtml(x)}</span></td>
+  </tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:#64748b">لا توجد أوردرات في هذا البند</td></tr>';
+  op('mMrcOrders');
+}
+
+function opOrdDetail(orderId){
+  const o=db.s.find(x=>x.id===orderId);if(!o)return;
+  document.getElementById('odTitle').innerText='📄 أوردر: '+(o.serial||o.id);
+  document.getElementById('odBody').innerHTML=`
+    <div class="detail-row"><span>السريال:</span><span class="serial-tag">${o.serial||'-'}</span></div>
+    <div class="detail-row"><span>اسم العميل:</span><b>${o.cn}</b></div>
+    <div class="detail-row"><span>رقم الهاتف:</span><a class="ph-link" href="tel:${o.cp}">${o.cp}</a></div>
+    <div class="detail-row"><span>العنوان:</span><span>${o.ca}</span></div>
+    <div class="detail-row"><span>التاجر / البيدج:</span><b>${gn(db.m,o.m)}</b></div>
+    <div class="detail-row"><span>المندوب:</span><b>${gn(db.d,o.d)}</b></div>
+    <div class="detail-row"><span>سعر المنتج:</span><b>${o.p} ج.م</b></div>
+    <div class="detail-row"><span>مصاريف الشحن:</span><b>${o.f} ج.م</b></div>
+    <div class="detail-row"><span>الحالة:</span><span>${statusBadgeHtml(o)}</span></div>
+    ${o.st==='ref_pay'?`<div class="detail-row"><span>الشحن المدفوع:</span><b>${o.paidShip||0} ج.م</b></div>`:''}
+    ${o.reasonSub?`<div class="detail-row"><span>التفصيل / السبب:</span><b>${o.reasonSub}</b></div>`:''}
+    ${o.reasonNote?`<div class="detail-row"><span>ملاحظات / سبب المرتجع:</span><span>${o.reasonNote}</span></div>`:''}
+  `;
+  op('mOrdDetail');
+}
+
+function renderDrvGroup(drvId,grpCode,title,badgeCls,orders,actionBtnsHtml){
+  const key=drvId+'_'+grpCode;
+  const isOpen=!!openGroups[key];
+  const rowsHtml=orders.map(x=>`<tr>
+    <td><input type="checkbox" class="chk row-chk" value="${x.id}" onclick="event.stopPropagation()"></td>
+    <td><span class="serial-tag">${x.serial||'-'}</span></td>
+    <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${x.cn}</span></td>
+    <td><a class="ph-link" href="tel:${x.cp}">${x.cp}</a></td>
+    <td>${x.ca}</td>
+    <td>${gn(db.m,x.m)}</td>
+    <td><b>${x.p+x.f} ج.م</b></td>
+    <td>${statusBadgeHtml(x)}</td>
+  </tr>`).join('')||'<tr><td colspan="8" style="text-align:center;color:#64748b">لا توجد أوردرات في هذا البند</td></tr>';
+
+  return `<div class="grp-wrap">
+    <div class="grp-bar" onclick="tglGrp('${key}')">
+      <div class="grp-title">
+        <input type="checkbox" class="chk" title="تحديد الكل" onclick="event.stopPropagation();toggleAllInGrp('${key}',this)">
+        <span>${title}</span>
+        <span class="badge ${badgeCls}">${orders.length}</span>
+      </div>
+      <div class="grp-actions" onclick="event.stopPropagation()">
+        ${actionBtnsHtml}
+        <span style="font-size:12px;color:#475569;font-weight:bold">${isOpen?'▲ إخفاء':'▼ عرض'}</span>
+      </div>
+    </div>
+    <div id="grp-${key}" class="grp-body ${isOpen?'open':''}">
+      <table>
+        <thead><tr><th style="width:36px"></th><th>السريال</th><th>العميل</th><th>الهاتف</th><th>العنوان</th><th>التاجر</th><th>الإجمالي</th><th>الحالة</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function rnd(){
+  if(!cur)return;
+
+  if(cur.role==='drv'){
+    const dv=db.d.find(x=>x.id===cur.id);if(!dv)return;
+    const list=db.s.filter(x=>x.d===cur.id && x.st!=='w' && x.st!=='rw' && x.st!=='rm');
+    const pList=list.filter(x=>x.st==='p');
+    const dList=list.filter(x=>x.st==='d');
+    const rList=list.filter(x=>x.st!=='p' && x.st!=='d');
+    const com=dList.length*dv.c;
+    const custodyDue=db.s.filter(x=>x.d===cur.id && (x.st==='d'||x.st==='ref_pay') && !x.custodyCollected)
+      .reduce((sum,o)=>sum+getOrderCollectedAmount(o),0);
+
+    document.getElementById('ds1').innerText=pList.length;
+    document.getElementById('ds2').innerText=dList.length;
+    document.getElementById('ds3').innerText=rList.length;
+    document.getElementById('ds4').innerText=com+' ج.م';
+    document.getElementById('ds5').innerText=custodyDue+' ج.م';
+
+    document.getElementById('bDrvSelfView').innerHTML=list.map(x=>`<tr>
+      <td><span class="serial-tag">${x.serial||'-'}</span></td>
+      <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${x.cn}</span></td>
+      <td><a class="ph-link" href="tel:${x.cp}">${x.cp}</a></td>
+      <td>${x.ca}</td>
+      <td>${gn(db.m,x.m)}</td>
+      <td><b>${x.p+x.f} ج.م</b></td>
+      <td>
+        <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
+          ${statusBadgeHtml(x)}
+          <button type="button" class="mbtn b1" onclick="openStatusModal('${x.id}')">تغيير الحالة</button>
+        </div>
+      </td>
+    </tr>`).join('')||'<tr><td colspan="7" style="text-align:center;color:#64748b">لا توجد أوردرات مسندة إليك حالياً</td></tr>';
+    return;
+  }
+
+  if(cur.role==='mrc'){
+    const list=db.s.filter(x=>x.m===cur.id);
+    const w=list.filter(x=>x.st==='w').length;
+    const p=list.filter(x=>x.st==='p').length;
+    const dList=list.filter(x=>x.st==='d');
+    const r=list.filter(x=>x.st!=='w' && x.st!=='p' && x.st!=='d').length;
+    const due=dList.reduce((a,b)=>a+(Number(b.p)||0),0);
+
+    document.getElementById('ms0').innerText=w;
+    document.getElementById('ms3').innerText=p;
+    document.getElementById('ms2').innerText=dList.length;
+    document.getElementById('ms4').innerText=r;
+    document.getElementById('ms5').innerText=due+' ج.م';
+
+    document.getElementById('bMrcView').innerHTML=list.map(x=>`<tr>
+      <td><span class="serial-tag">${x.serial||'-'}</span></td>
+      <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${x.cn}</span></td>
+      <td>${x.cp}</td>
+      <td>${x.ca}</td>
+      <td>${x.p} ج.م</td>
+      <td>${x.f} ج.م</td>
+      <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${statusBadgeHtml(x)}</span></td>
+    </tr>`).join('')||'<tr><td colspan="7" style="text-align:center;color:#64748b">لا توجد شحنات مسجلة حتى الآن</td></tr>';
+    return;
+  }
+
+  document.getElementById('bizDateLbl').innerText=db.bizDate||getTodayStr();
+
+  const flt=document.getElementById('flt'), prevFlt=flt.value;
+  flt.innerHTML='<option value="ALL">جميع المناديب (الإجمالي العام)</option>'+db.d.map(x=>`<option value="${x.id}">${x.n}</option>`).join('');
+  if(db.d.some(x=>x.id===prevFlt))flt.value=prevFlt;
+  const selD=flt.value;
+
+  const list=selD==='ALL'?db.s:db.s.filter(x=>x.d===selD);
+  const wCnt=db.s.filter(x=>x.st==='w').length;
+  const pCnt=list.filter(x=>x.st==='p').length;
+  const dList=list.filter(x=>x.st==='d');
+  const rCnt=list.filter(x=>x.st!=='w' && x.st!=='p' && x.st!=='d').length;
+
+  const totCol=list.reduce((a,b)=>a+getOrderCollectedAmount(b),0);
+  const mrcDue=dList.reduce((a,b)=>a+(Number(b.p)||0),0);
+  const drvCom=dList.reduce((a,b)=>{const dv=db.d.find(i=>i.id===b.d);return a+(dv?dv.c:0);},0);
+  const profitVal=list.reduce((a,b)=>a+getOrderProfit(b),0);
+
+  document.getElementById('s0').innerText=wCnt;
+  document.getElementById('s3').innerText=pCnt;
+  document.getElementById('s2').innerText=dList.length;
+  document.getElementById('s4').innerText=rCnt;
+  document.getElementById('s5').innerText=totCol+' ج.م';
+  document.getElementById('s6').innerText=mrcDue+' ج.م';
+  document.getElementById('s7').innerText=(totCol-mrcDue)+' ج.م';
+  document.getElementById('s8').innerText=drvCom+' ج.م';
+  document.getElementById('sProfit').innerText=(hasPerm('profits') && profitUnlocked) ? (profitVal+' ج.م') : '••••';
+  document.getElementById('profitEyeBtn').innerText=profitUnlocked ? '🙈' : '👁️';
+
+  document.getElementById('bSettlements').innerHTML=(db.settlements||[]).map(s=>`<tr>
+    <td><b>${s.date}</b></td>
+    <td>${s.time||'-'}</td>
+    <td>${s.type||'-'}</td>
+    <td><b>${s.totalCollected||0} ج.م</b></td>
+    <td>${s.collectedCount||0}</td>
+  </tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:#64748b">لا توجد تسويات محفوظة بعد</td></tr>';
+
+  const drvOpts='<option value="">-- اختر مندوب --</option>'+db.d.map(x=>`<option value="${x.id}">${x.n}</option>`).join('');
+  document.getElementById('bW').innerHTML=db.s.filter(x=>x.st==='w').map(x=>`<tr>
+    <td><span class="serial-tag">${x.serial||'-'}</span></td>
+    <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${x.cn}</span></td>
+    <td><a class="ph-link" href="tel:${x.cp}">${x.cp}</a></td>
+    <td>${x.ca}</td>
+    <td>${gn(db.m,x.m)}</td>
+    <td>${x.p} ج.م</td>
+    <td>${x.f} ج.م</td>
+    <td><b>${x.p+x.f} ج.م</b></td>
+    <td><select onchange="asgD('${x.id}',this.value)" style="padding:5px;border-radius:6px">${drvOpts}</select></td>
+    <td><button type="button" class="btn b4" style="padding:4px 8px;font-size:11px" onclick="del('s','${x.id}')">حذف</button></td>
+  </tr>`).join('')||'<tr><td colspan="10" style="text-align:center;color:#64748b">المخزن فارغ حالياً</td></tr>';
+
+  const retRows=db.s.filter(x=>x.st==='r' || x.st==='rw' || x.st==='rm' || x.st==='ref_nopay' || x.st==='cancel' || x.st==='postpone');
+  document.getElementById('bR').innerHTML=retRows.map(x=>`<tr>
+    <td><span class="serial-tag">${x.serial||'-'}</span></td>
+    <td><span class="ord-click" onclick="opOrdDetail('${x.id}')">${x.cn}</span></td>
+    <td><a class="ph-link" href="tel:${x.cp}">${x.cp}</a></td>
+    <td>${x.ca}</td>
+    <td>${gn(db.m,x.m)}</td>
+    <td>${gn(db.d,x.d)}</td>
+    <td>${x.p} ج.م</td>
+    <td>${statusBadgeHtml(x)}</td>
+    <td>
+      ${(x.st==='r'||x.st==='ref_nopay'||x.st==='cancel'||x.st==='postpone')?`<button type="button" class="btn b5" style="padding:4px 8px;font-size:11px" onclick="upS('${x.id}','rw')">استلام للمخزن</button>`:
+        x.st==='rw'?`<button type="button" class="btn b3" style="padding:4px 8px;font-size:11px" onclick="upS('${x.id}','rm')">تسليم للتاجر</button>`:'-'}
+    </td>
+  </tr>`).join('')||'<tr><td colspan="9" style="text-align:center;color:#64748b">لا توجد مرتجعات</td></tr>';
+
+  const canManageDrv = cur.role==='adm' || cur.role==='branch_manager';
+  document.getElementById('bDList').innerHTML=db.d.map(d=>{
+    const dPending=db.s.filter(x=>x.d===d.id && x.st==='p');
+    const dRet=db.s.filter(x=>x.d===d.id && (x.st==='r' || x.st==='ref_nopay' || x.st==='cancel' || x.st==='postpone'));
+    const dDone=db.s.filter(x=>x.d===d.id && x.st==='d');
+    const com=dDone.length*d.c;
+    const custodyDue=db.s.filter(x=>x.d===d.id && (x.st==='d'||x.st==='ref_pay') && !x.custodyCollected)
+      .reduce((sum,o)=>sum+getOrderCollectedAmount(o),0);
+    const isCollapsed=!!collapsedDrvs[d.id];
+
+    const pendingBtns=canManageDrv?`
+      <button type="button" class="mbtn b1" onclick="bulkDrvAction('${d.id}','p','w')">📥 استلام في المخزن</button>
+      <button type="button" class="mbtn b5" onclick="bulkDrvAction('${d.id}','p','rw')">↩️ استلام في المرتجع</button>
+    `:'';
+
+    const retBtns=canManageDrv?`
+      <button type="button" class="mbtn b5" onclick="bulkDrvAction('${d.id}','r','rw')">↩️ استلام في المرتجع</button>
+      <button type="button" class="mbtn b1" onclick="bulkDrvAction('${d.id}','r','w')">📥 استلام في المخزن</button>
+    `:'';
+
+    const doneBtns=canManageDrv?`
+      <button type="button" class="mbtn b1" onclick="bulkDrvAction('${d.id}','d','w')">📥 استلام في المخزن</button>
+      <button type="button" class="mbtn b5" onclick="bulkDrvAction('${d.id}','d','rw')">↩️ استلام في المرتجع</button>
+    `:'';
+
+    return `<div class="drv-box">
+      <div class="drv-head">
+        <div>
+          <span class="link-name" style="font-size:15px" onclick="toggleDrvCollapse('${d.id}')">🛵 ${d.n}</span>
+          ${canManageDrv?`<span style="font-size:12px;color:#64748b;margin-right:8px">(دخول: <b>${d.u||'-'}</b> / <b>${d.p||'-'}</b>)</span>`:''}
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <button type="button" class="btn b6" style="padding:5px 9px;font-size:11px" onclick="collectDrvCustody('${d.id}')">💰 استلام عهدة التحصيل (${custodyDue} ج.م)</button>
+          ${canManageDrv?`
+            <button type="button" class="btn b2" style="padding:5px 9px;font-size:11px" onclick="opPass('drv','${d.id}')">🔑 الباسورد</button>
+            <button type="button" class="btn b4" style="padding:5px 9px;font-size:11px" onclick="del('d','${d.id}')">حذف</button>
+          `:''}
+        </div>
+      </div>
+      <div class="drv-meta">
+        <span class="badge">قيد التوصيل: ${dPending.length}</span>
+        <span class="badge bg-r">مرتجع / حالات: ${dRet.length}</span>
+        <span class="badge bg-g">تم التسليم: ${dDone.length}</span>
+        <span class="badge bg-a">عمولته (أسبوعية): ${com} ج.م</span>
+        <span class="badge bg-p">عهدة التحصيل المستحقة: ${custodyDue} ج.م</span>
+      </div>
+      <div id="drv-col-${d.id}" class="drv-collapsible ${isCollapsed?'collapsed':''}">
+        ${renderDrvGroup(d.id,'p','🚚 قيد التوصيل','',dPending,pendingBtns)}
+        ${renderDrvGroup(d.id,'r','↩️ مرتجع','bg-r',dRet,retBtns)}
+        ${renderDrvGroup(d.id,'d','✅ تم التسليم','bg-g',dDone,doneBtns)}
+      </div>
+    </div>`;
+  }).join('')||'<div class="card" style="text-align:center;color:#64748b">لا يوجد مناديب مضافين</div>';
+
+  document.getElementById('bMList').innerHTML=db.m.map(m=>{
+    const ms=db.s.filter(x=>x.m===m.id);
+    const md=ms.filter(x=>x.st==='d');
+    const mPostpone=ms.filter(x=>x.st==='postpone');
+    const mCancel=ms.filter(x=>x.st==='cancel');
+    const due=md.reduce((a,b)=>a+(Number(b.p)||0),0);
+
+    return `<div class="mrc-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+        <div>
+          <strong style="font-size:15px">🏪 ${m.n}</strong>
+          <span class="serial-tag" style="margin-right:6px">كود: ${m.code} | التالي: ${m.nextSeq||1}</span>
+          <span style="font-size:12px;color:#64748b;margin-right:6px">(دخول: <b>${m.u}</b> / <b>${m.p}</b>)</span>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <button type="button" class="btn b1" style="padding:5px 9px;font-size:11px" onclick="opSerialCfg('${m.id}')">🔢 السريال والتسلسل</button>
+          <button type="button" class="btn b2" style="padding:5px 9px;font-size:11px" onclick="opPass('mrc','${m.id}')">🔑 الباسورد</button>
+          <button type="button" class="btn b4" style="padding:5px 9px;font-size:11px" onclick="del('m','${m.id}')">حذف</button>
+        </div>
+      </div>
+      <div class="mrc-stats">
+        <span class="badge bg-g" onclick="opMrcOrdersByCat('${m.id}','d')">✅ مسلم (${md.length})</span>
+        <span class="badge bg-p" onclick="opMrcOrdersByCat('${m.id}','postpone')">⏳ مؤجل (${mPostpone.length})</span>
+        <span class="badge bg-r" onclick="opMrcOrdersByCat('${m.id}','cancel')">❌ ملغي (${mCancel.length})</span>
+        <span class="badge bg-a">مستحقات التاجر: ${due} ج.م</span>
+      </div>
+    </div>`;
+  }).join('')||'<div class="card" style="text-align:center;color:#64748b">لا يوجد تجار مضافين بعد</div>';
+
+  const roleLabels={branch_manager:'مدير فرع',accountant:'محاسب'};
+  const permNameMap={
+    dash:'الإدارة',
+    shp:'الشحنات',
+    drv:'المناديب/العهد',
+    mrc:'التجار',
+    profits:'الأرباح',
+    settle:'التسوية اليومية',
+    collection:'التحصيل'
+  };
+  document.getElementById('bStaffList').innerHTML=(db.staff||[]).map(s=>{
+    const pText=(s.perms||[]).map(k=>permNameMap[k]||k).join(' - ')||'-';
+    return `<tr>
+      <td><b>${s.n}</b></td>
+      <td>${s.u}</td>
+      <td>${s.p}</td>
+      <td>${roleLabels[s.role]||s.role}</td>
+      <td>${pText}</td>
+      <td><button type="button" class="btn b4" style="padding:4px 8px;font-size:11px" onclick="del('staff','${s.id}')">حذف</button></td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="6" style="text-align:center;color:#64748b">لا توجد حسابات داخلية مضافة</td></tr>';
+}
+
+function exp(){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:'application/json'}));
+  a.download='mizo_backup_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+}
+
+function imp(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const j=JSON.parse(ev.target.result);
+      if(j&&j.adm){db=normalizeDbShape(j);ensureSerials();sv();alert('تم استيراد البيانات بنجاح');}
+      else alert('ملف غير صالح');
+    }catch(err){alert('خطأ في قراءة الملف');}
+  };
+  r.readAsText(f);
+}
+
+fbAuth.onAuthStateChanged(user=>{
+  if(user){attachFirebaseSync();}
+});
+
+setInterval(()=>{
+  if(cur)checkMidnightReset();
+},60000);
+
+renderRolePermissionsPreset();
+init();
 </script>
 </body>
 </html>

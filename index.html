@@ -51,14 +51,12 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
 </style>
 </head>
 <body>
-
 <div id="loginView" class="login-box">
   <h2 style="margin-bottom:14px">🔐 تسجيل الدخول - شركة ميزو</h2>
   <div id="loginErr" style="color:#dc2626;font-size:13px;margin-bottom:10px;display:none">اسم المستخدم أو كلمة المرور غير صحيحة</div>
-  <div class="fg"><label>اسم المستخدم</label><input type="text" id="uIn" placeholder="admin" autocapitalize="off"></div>
-  <div class="fg"><label>كلمة المرور</label><input type="password" id="pIn" placeholder="1234"></div>
+  <div class="fg"><label>اسم المستخدم</label><input type="text" id="uIn" autocapitalize="off" autocomplete="off"></div>
+  <div class="fg"><label>كلمة المرور</label><input type="password" id="pIn" autocomplete="off"></div>
   <button type="button" class="btn b1 w100" onclick="doLogin()">دخول للنظام</button>
-  <button type="button" style="background:none;border:none;color:#64748b;font-size:11px;margin-top:14px;text-decoration:underline;cursor:pointer" onclick="resetAuth()">🔄 استعادة باسورد المدير الافتراضي (admin / 1234)</button>
 </div>
 
 <div id="appView" class="hid">
@@ -136,3 +134,157 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
       <div class="card r"><div class="ct">مرتجعات</div><div class="cv" id="ms4">0</div></div>
       <div class="card g"><div class="ct">حسابك المستحق</div><div class="cv" id="ms5">0 ج.م</div></div>
     </div>
+    <div class="tbox"><table><thead><tr><th>اسم العميل</th><th>الهاتف</th><th>العنوان</th><th>سعر المنتج</th><th>الشحن</th><th>حالة الأوردر</th></tr></thead><tbody id="bMrcView"></tbody></table></div>
+  </div>
+</div>
+<div id="mDrvView" class="mod"><div class="mc" style="max-width:650px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <h3 id="drvModalTitle">🛵 أوردرات المندوب</h3>
+    <button type="button" class="btn b4" style="padding:5px 10px" onclick="cl('mDrvView')">✕</button>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+    <button type="button" class="btn b1" onclick="opS(activeDrvId)">+ إدخال أوردر جديد للمندوب</button>
+    <select id="whPickSel" onchange="loadFromWh(this.value)" style="padding:8px;border-radius:8px;border:1px solid #cbd5e1;font-weight:bold"><option value="">-- سحب أوردر من المخزن --</option></select>
+  </div>
+  <div class="tbox"><table><thead><tr><th>العميل</th><th>الهاتف</th><th>العنوان</th><th>التاجر</th><th>الإجمالي</th><th>الحالة</th></tr></thead><tbody id="bDrvOrders"></tbody></table></div>
+</div></div>
+
+<div id="mMrcRet" class="mod"><div class="mc" style="max-width:600px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <h3 id="mrcRetTitle">📤 تسليم مرتجعات البيدج</h3>
+    <button type="button" class="btn b4" style="padding:5px 10px" onclick="cl('mMrcRet')">✕</button>
+  </div>
+  <div class="tbox"><table><thead><tr><th>العميل</th><th>الهاتف</th><th>العنوان</th><th>سعر المنتج</th><th>الحالة / تسليم للتاجر</th></tr></thead><tbody id="bMrcRetList"></tbody></table></div>
+</div></div>
+
+<div id="mPass" class="mod"><div class="mc"><h3>🔑 تغيير كلمة المرور</h3>
+  <input type="hidden" id="passTgt"><input type="hidden" id="passId">
+  <div class="fg"><label>كلمة المرور الجديدة</label><input id="newPassIn"></div>
+  <button type="button" class="btn b1 w100" onclick="svPass()">حفظ</button><button type="button" class="btn b4 w100" onclick="cl('mPass')">إغلاق</button>
+</div></div>
+
+<div id="mD" class="mod"><div class="mc"><h3>🛵 إضافة مندوب جديد</h3>
+  <div class="fg"><label>اسم المندوب</label><input id="dN"></div>
+  <div class="fg"><label>عمولة الأوردر المسلم (ج.م)</label><input type="number" id="dC" value="30"></div>
+  <button type="button" class="btn b1 w100" onclick="addD()">حفظ المندوب</button><button type="button" class="btn b4 w100" onclick="cl('mD')">إغلاق</button>
+</div></div>
+
+<div id="mM" class="mod"><div class="mc"><h3>🏪 إنشاء حساب تاجر / بيدج</h3>
+  <div class="fg"><label>اسم المتجر / البيدج</label><input id="mN"></div>
+  <div class="fg"><label>اسم المستخدم (Username)</label><input id="mU" autocapitalize="off"></div>
+  <div class="fg"><label>كلمة المرور (Password)</label><input id="mP"></div>
+  <button type="button" class="btn b1 w100" onclick="addM()">حفظ وإنشاء الحساب</button><button type="button" class="btn b4 w100" onclick="cl('mM')">إغلاق</button>
+</div></div>
+
+<div id="mS" class="mod"><div class="mc"><h3 id="shpModalTitle">📦 بيانات الشحنة</h3>
+  <input type="hidden" id="sDrvTarget">
+  <div class="fg"><label>اسم العميل</label><input id="sName" placeholder="الاسم ثلاثي أو ثنائي"></div>
+  <div class="fg"><label>رقم هاتف العميل</label><input type="tel" id="sPhone" placeholder="01xxxxxxxxx"></div>
+  <div class="fg"><label>العنوان بالتفصيل</label><input id="sAddr" placeholder="المحافظة - المنطقة - الشارع"></div>
+  <div class="fg"><label>البيدج / التاجر</label><select id="sM"></select></div>
+  <div class="fg"><label>سعر المنتج (ج.م)</label><input type="number" id="sP" value="0"></div>
+  <div class="fg"><label>مصاريف الشحن (ج.م)</label><input type="number" id="sF" value="50"></div>
+  <button type="button" class="btn b1 w100" onclick="addS()">حفظ الشحنة</button><button type="button" class="btn b4 w100" onclick="cl('mS')">إغلاق</button>
+</div></div>
+
+<script>
+let rawDb={};
+try{rawDb=JSON.parse(localStorage.getItem('mz_db_v2'))||{};}catch(e){rawDb={};}
+let db={
+  adm:(rawDb.adm&&rawDb.adm.u&&rawDb.adm.p)?rawDb.adm:{u:'admin',p:'1234'},
+  d:Array.isArray(rawDb.d)?rawDb.d:[],
+  m:Array.isArray(rawDb.m)?rawDb.m:[],
+  s:Array.isArray(rawDb.s)?rawDb.s:[]
+};
+let cur=null;
+try{cur=JSON.parse(sessionStorage.getItem('mz_cur_v2'));}catch(e){cur=null;}
+let activeDrvId='', activeMrcRetId='';
+
+const fixNum=str=>String(str).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
+const sv=()=>{localStorage.setItem('mz_db_v2',JSON.stringify(db));rnd();if(activeDrvId)opDrvModal(activeDrvId);if(activeMrcRetId)opMrcRet(activeMrcRetId);};
+const op=id=>document.getElementById(id).classList.add('sh'), cl=id=>{document.getElementById(id).classList.remove('sh');if(id==='mDrvView')activeDrvId='';if(id==='mMrcRet')activeMrcRetId='';};
+const tglSet=()=>document.getElementById('setMenu').classList.toggle('sh');
+const st=(id,b)=>{document.querySelectorAll('.tab').forEach(e=>e.classList.remove('act'));document.querySelectorAll('.nbtn').forEach(e=>e.classList.remove('act'));document.getElementById('t-'+id).classList.add('act');b.classList.add('act')};
+const sst=(id,b)=>{document.querySelectorAll('.stab').forEach(e=>e.classList.remove('act'));document.querySelectorAll('.sbtn').forEach(e=>e.classList.remove('act'));document.getElementById('st-'+id).classList.add('act');b.classList.add('act')};
+
+function doLogin(){
+  const u=fixNum(document.getElementById('uIn').value).toLowerCase();
+  const p=fixNum(document.getElementById('pIn').value);
+  if(u===String(db.adm.u).toLowerCase()&&p===String(db.adm.p)){
+    cur={role:'adm'};sessionStorage.setItem('mz_cur_v2',JSON.stringify(cur));init();return;
+  }
+  const mc=db.m.find(x=>String(x.u||'').toLowerCase()===u&&fixNum(x.p||'')===p);
+  if(mc){
+    cur={role:'mrc',id:mc.id};sessionStorage.setItem('mz_cur_v2',JSON.stringify(cur));init();return;
+  }
+  document.getElementById('loginErr').style.display='block';
+}
+function doLogout(){sessionStorage.removeItem('mz_cur_v2');cur=null;location.reload();}
+
+function init(){
+  if(!cur){document.getElementById('loginView').classList.remove('hid');document.getElementById('appView').classList.add('hid');return;}
+  document.getElementById('loginView').classList.add('hid');document.getElementById('appView').classList.remove('hid');
+  if(cur.role==='adm'){
+    document.getElementById('navTitle').innerText='🚀 شركة ميزو للشحن (المدير)';
+    document.getElementById('admSetWrap').classList.remove('hid');document.getElementById('mrcOutBtn').classList.add('hid');
+    document.getElementById('admLinks').classList.remove('hid');document.getElementById('admArea').classList.remove('hid');document.getElementById('mrcArea').classList.add('hid');
+  }else{
+    const mc=db.m.find(x=>x.id===cur.id);if(!mc){doLogout();return;}
+    document.getElementById('navTitle').innerText='🏪 '+mc.n;
+    document.getElementById('admSetWrap').classList.add('hid');document.getElementById('mrcOutBtn').classList.remove('hid');
+    document.getElementById('admLinks').classList.add('hid');document.getElementById('admArea').classList.add('hid');document.getElementById('mrcArea').classList.remove('hid');
+  }
+  rnd();
+}
+
+function opPass(tgt,id=''){document.getElementById('setMenu').classList.remove('sh');document.getElementById('passTgt').value=tgt;document.getElementById('passId').value=id;document.getElementById('newPassIn').value='';op('mPass');}
+function svPass(){
+  const np=fixNum(document.getElementById('newPassIn').value);if(!np)return alert('اكتب كلمة المرور');
+  if(document.getElementById('passTgt').value==='adm')db.adm.p=np;else{const mc=db.m.find(x=>x.id===document.getElementById('passId').value);if(mc)mc.p=np;}
+  cl('mPass');sv();alert('تم تحديث كلمة المرور وحفظها');
+}
+
+function addD(){
+  const n=document.getElementById('dN').value.trim();if(!n)return alert('اكتب اسم المندوب');
+  db.d.push({id:Date.now()+'',n:n,c:+fixNum(document.getElementById('dC').value)||0});
+  document.getElementById('dN').value='';cl('mD');sv();
+}
+function addM(){
+  const n=document.getElementById('mN').value.trim(),u=fixNum(document.getElementById('mU').value),p=fixNum(document.getElementById('mP').value);
+  if(!n||!u||!p)return alert('أكمل جميع بيانات المتجر');
+  db.m.push({id:Date.now()+'',n:n,u:u,p:p});
+  document.getElementById('mN').value='';document.getElementById('mU').value='';document.getElementById('mP').value='';cl('mM');sv();
+}
+
+function opS(drvId=''){
+  if(!db.m.length)return alert('أضف تاجر / بيدج أولاً من قسم التجار!');
+  document.getElementById('sDrvTarget').value=drvId;
+  document.getElementById('shpModalTitle').innerText=drvId?'🛵 إضافة أوردر للمندوب: '+gn(db.d,drvId):'📥 استلام أوردر بيك أب للمخزن';
+  document.getElementById('sM').innerHTML=db.m.map(x=>`<option value="${x.id}">${x.n}</option>`).join('');
+  op('mS');
+}
+
+function addS(){
+  const cn=document.getElementById('sName').value.trim(),cp=fixNum(document.getElementById('sPhone').value),ca=document.getElementById('sAddr').value.trim();
+  if(!cn||!cp||!ca)return alert('أكمل اسم العميل والهاتف والعنوان');
+  const drvId=document.getElementById('sDrvTarget').value;
+  db.s.unshift({
+    id:Date.now()+'',cn:cn,cp:cp,ca:ca,
+    m:document.getElementById('sM').value,d:drvId,
+    p:+fixNum(document.getElementById('sP').value)||0,f:+fixNum(document.getElementById('sF').value)||0,
+    st:drvId?'p':'w'
+  });
+  document.getElementById('sName').value='';document.getElementById('sPhone').value='';document.getElementById('sAddr').value='';cl('mS');sv();
+}
+
+function asgD(id,did){if(!did)return;const x=db.s.find(i=>i.id==id);x.d=did;x.st='p';sv()}
+function loadFromWh(sid){if(!sid||!activeDrvId)return;asgD(sid,activeDrvId);}
+function upS(id,v){const x=db.s.find(i=>i.id==id);x.st=v;if(v=='w')x.d='';sv()}
+const del=(t,id)=>{if(confirm('تأكيد الحذف؟')){db[t]=db[t].filter(x=>x.id!=id);sv()}};
+const clr=()=>{if(confirm('مسح جميع البيانات؟')){db={adm:db.adm,d:[],m:[],s:[]};sv()}};
+const gn=(arr,id)=>(arr.find(i=>i.id==id)||{}).n||'-';
+
+function opDrvModal(did){
+  activeDrvId=did;
+  document.getElementById('drvModalTitle').innerText='🛵 أوردرات المندوب: '+gn(db.d,did);
+  const wh=db.s.filter(x=>x.st==='w');

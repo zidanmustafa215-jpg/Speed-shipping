@@ -54,8 +54,8 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
 <div id="loginView" class="login-box">
   <h2 style="margin-bottom:14px">🔐 تسجيل الدخول - شركة ميزو</h2>
   <div id="loginErr" style="color:#dc2626;font-size:13px;margin-bottom:10px;display:none">اسم المستخدم أو كلمة المرور غير صحيحة</div>
-  <div class="fg"><label>اسم المستخدم</label><input type="text" id="uIn" autocapitalize="off" autocomplete="off"></div>
-  <div class="fg"><label>كلمة المرور</label><input type="password" id="pIn" autocomplete="off"></div>
+  <div class="fg"><label>اسم المستخدم</label><input type="text" id="uIn" placeholder="admin" autocapitalize="off" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"></div>
+  <div class="fg"><label>كلمة المرور</label><input type="password" id="pIn" placeholder="1234" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"></div>
   <button type="button" class="btn b1 w100" onclick="doLogin()">دخول للنظام</button>
 </div>
 
@@ -137,6 +137,7 @@ td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
     <div class="tbox"><table><thead><tr><th>اسم العميل</th><th>الهاتف</th><th>العنوان</th><th>سعر المنتج</th><th>الشحن</th><th>حالة الأوردر</th></tr></thead><tbody id="bMrcView"></tbody></table></div>
   </div>
 </div>
+
 <div id="mDrvView" class="mod"><div class="mc" style="max-width:650px">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
     <h3 id="drvModalTitle">🛵 أوردرات المندوب</h3>
@@ -288,3 +289,190 @@ function opDrvModal(did){
   activeDrvId=did;
   document.getElementById('drvModalTitle').innerText='🛵 أوردرات المندوب: '+gn(db.d,did);
   const wh=db.s.filter(x=>x.st==='w');
+  document.getElementById('whPickSel').innerHTML='<option value="">-- سحب أوردر من المخزن ('+wh.length+') --</option>'+
+    wh.map(x=>`<option value="${x.id}">${x.cn} - ${x.ca} (${x.p+x.f} ج.م)</option>`).join('');
+  const list=db.s.filter(x=>x.d===did && (x.st==='p'||x.st==='d'||x.st==='r'));
+  document.getElementById('bDrvOrders').innerHTML=list.map(x=>`<tr>
+    <td>${x.cn}</td>
+    <td><a class="ph-link" href="tel:${x.cp}">${x.cp}</a></td>
+    <td>${x.ca}</td>
+    <td>${gn(db.m,x.m)}</td>
+    <td><b>${x.p+x.f} ج.م</b></td>
+    <td>
+      <select onchange="upS('${x.id}',this.value)" style="padding:5px;border-radius:6px;font-weight:bold">
+        <option value="p" ${x.st==='p'?'selected':''}>🚚 قيد التوصيل</option>
+        <option value="d" ${x.st==='d'?'selected':''}>✅ تم التسليم</option>
+        <option value="r" ${x.st==='r'?'selected':''}>↩️ مرتجع</option>
+        <option value="w">📥 إرجاع للمخزن</option>
+      </select>
+    </td>
+  </tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:#64748b">لا توجد أوردرات مع المندوب</td></tr>';
+  op('mDrvView');
+}
+
+function opMrcRet(mid){
+  activeMrcRetId=mid;
+  document.getElementById('mrcRetTitle').innerText='📤 مرتجعات: '+gn(db.m,mid);
+  const list=db.s.filter(x=>x.m===mid && (x.st==='r'||x.st==='rw'||x.st==='rm'));
+  document.getElementById('bMrcRetList').innerHTML=list.map(x=>`<tr>
+    <td>${x.cn}</td>
+    <td><a class="ph-link" href="tel:${x.cp}">${x.cp}</a></td>
+    <td>${x.ca}</td>
+    <td>${x.p} ج.م</td>
+    <td>
+      ${x.st==='r'?'<span class="badge bg-r">مع المندوب</span>':
+        x.st==='rw'?`<button type="button" class="btn b3" style="padding:5px 8px;font-size:11px" onclick="upS('${x.id}','rm')">تسليم للتاجر ✓</button>`:
+        '<span class="badge bg-g">تم التسليم للتاجر</span>'}
+    </td>
+  </tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:#64748b">لا توجد مرتجعات لهذا التاجر</td></tr>';
+  op('mMrcRet');
+}
+
+function settleDrv(did){
+  if(!confirm('تأكيد تصفية حساب المندوب وأرشفة أوردراته المسلمة؟'))return;
+  db.s.forEach(x=>{if(x.d===did && x.st==='d')x.st='archived';});
+  sv();
+}
+
+function rnd(){
+  if(!cur)return;
+  if(cur.role==='mrc'){
+    const list=db.s.filter(x=>x.m===cur.id);
+    const w=list.filter(x=>x.st==='w').length;
+    const p=list.filter(x=>x.st==='p').length;
+    const dList=list.filter(x=>x.st==='d'||x.st==='archived');
+    const r=list.filter(x=>x.st==='r'||x.st==='rw'||x.st==='rm').length;
+    const due=dList.reduce((a,b)=>a+b.p,0);
+    document.getElementById('ms0').innerText=w;
+    document.getElementById('ms3').innerText=p;
+    document.getElementById('ms2').innerText=dList.length;
+    document.getElementById('ms4').innerText=r;
+    document.getElementById('ms5').innerText=due+' ج.م';
+    const stLbl={w:'<span class="badge bg-a">بالمخزن</span>',p:'<span class="badge">قيد التوصيل</span>',d:'<span class="badge bg-g">تم التسليم</span>',archived:'<span class="badge bg-g">تم التسليم</span>',r:'<span class="badge bg-r">مرتجع</span>',rw:'<span class="badge bg-r">مرتجع بالمخزن</span>',rm:'<span class="badge">مرتجع مستلم</span>'};
+    document.getElementById('bMrcView').innerHTML=list.map(x=>`<tr>
+      <td>${x.cn}</td><td>${x.cp}</td><td>${x.ca}</td><td>${x.p} ج.م</td><td>${x.f} ج.م</td><td>${stLbl[x.st]||x.st}</td>
+    </tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:#64748b">لا توجد شحنات مسجلة حتى الآن</td></tr>';
+    return;
+  }
+
+  // تحديث فلتر المناديب
+  const flt=document.getElementById('flt'), prevFlt=flt.value;
+  flt.innerHTML='<option value="ALL">جميع المناديب (الإجمالي العام)</option>'+db.d.map(x=>`<option value="${x.id}">${x.n}</option>`).join('');
+  if(db.d.some(x=>x.id===prevFlt))flt.value=prevFlt;
+  const selD=flt.value;
+
+  const list=selD==='ALL'?db.s:db.s.filter(x=>x.d===selD);
+  const wCnt=db.s.filter(x=>x.st==='w').length;
+  const pCnt=list.filter(x=>x.st==='p').length;
+  const dList=list.filter(x=>x.st==='d'||x.st==='archived');
+  const rCnt=list.filter(x=>x.st==='r'||x.st==='rw'||x.st==='rm').length;
+  const totCol=dList.reduce((a,b)=>a+b.p+b.f,0);
+  const mrcDue=dList.reduce((a,b)=>a+b.p,0);
+  const drvCom=dList.reduce((a,b)=>{const dv=db.d.find(i=>i.id===b.d);return a+(dv?dv.c:0);},0);
+
+  document.getElementById('s0').innerText=wCnt;
+  document.getElementById('s3').innerText=pCnt;
+  document.getElementById('s2').innerText=dList.length;
+  document.getElementById('s4').innerText=rCnt;
+  document.getElementById('s5').innerText=totCol+' ج.م';
+  document.getElementById('s6').innerText=mrcDue+' ج.م';
+  document.getElementById('s7').innerText=(totCol-mrcDue)+' ج.م';
+  document.getElementById('s8').innerText=drvCom+' ج.م';
+
+  // جدول المخزن (بيك أب)
+  const drvOpts='<option value="">-- اختر مندوب --</option>'+db.d.map(x=>`<option value="${x.id}">${x.n}</option>`).join('');
+  document.getElementById('bW').innerHTML=db.s.filter(x=>x.st==='w').map(x=>`<tr>
+    <td>${x.cn}</td>
+    <td><a class="ph-link" href="tel:${x.cp}">${x.cp}</a></td>
+    <td>${x.ca}</td>
+    <td>${gn(db.m,x.m)}</td>
+    <td>${x.p} ج.م</td>
+    <td>${x.f} ج.م</td>
+    <td><b>${x.p+x.f} ج.م</b></td>
+    <td><select onchange="asgD('${x.id}',this.value)" style="padding:5px;border-radius:6px">${drvOpts}</select></td>
+    <td><button type="button" class="btn b4" style="padding:4px 8px;font-size:11px" onclick="del('s','${x.id}')">حذف</button></td>
+  </tr>`).join('')||'<tr><td colspan="9" style="text-align:center;color:#64748b">المخزن فارغ حالياً</td></tr>';
+
+  // جدول المرتجعات
+  document.getElementById('bR').innerHTML=db.s.filter(x=>x.st==='r'||x.st==='rw'||x.st==='rm').map(x=>`<tr>
+    <td>${x.cn}</td>
+    <td><a class="ph-link" href="tel:${x.cp}">${x.cp}</a></td>
+    <td>${x.ca}</td>
+    <td>${gn(db.m,x.m)}</td>
+    <td>${gn(db.d,x.d)}</td>
+    <td>${x.p} ج.م</td>
+    <td>${x.st==='r'?'<span class="badge bg-r">مع المندوب</span>':x.st==='rw'?'<span class="badge bg-a">بالمخزن</span>':'<span class="badge bg-g">سُلّم للتاجر</span>'}</td>
+    <td>
+      ${x.st==='r'?`<button type="button" class="btn b5" style="padding:4px 8px;font-size:11px" onclick="upS('${x.id}','rw')">استلام للمخزن</button>`:
+        x.st==='rw'?`<button type="button" class="btn b3" style="padding:4px 8px;font-size:11px" onclick="upS('${x.id}','rm')">تسليم للتاجر</button>`:'-'}
+    </td>
+  </tr>`).join('')||'<tr><td colspan="8" style="text-align:center;color:#64748b">لا توجد مرتجعات</td></tr>';
+
+  // جدول المناديب
+  document.getElementById('bD').innerHTML=db.d.map(d=>{
+    const dDone=db.s.filter(x=>x.d===d.id && x.st==='d');
+    const dPend=db.s.filter(x=>x.d===d.id && x.st==='p');
+    const cash=dDone.reduce((a,b)=>a+b.p+b.f,0);
+    const com=dDone.length*d.c;
+    return `<tr>
+      <td><span class="link-name" onclick="opDrvModal('${d.id}')">${d.n}</span></td>
+      <td>${dDone.length}</td>
+      <td>${dPend.length}</td>
+      <td>${cash} ج.م</td>
+      <td>${com} ج.م</td>
+      <td><b>${cash-com} ج.م</b> ${dDone.length?`<button type="button" class="btn b3" style="padding:3px 7px;font-size:11px;margin-right:4px" onclick="settleDrv('${d.id}')">تصفية</button>`:''}</td>
+      <td><button type="button" class="btn b4" style="padding:4px 8px;font-size:11px" onclick="del('d','${d.id}')">حذف</button></td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="7" style="text-align:center;color:#64748b">لا يوجد مناديب مضافين</td></tr>';
+
+  // بطاقات التجار
+  document.getElementById('bMList').innerHTML=db.m.map(m=>{
+    const ms=db.s.filter(x=>x.m===m.id);
+    const mw=ms.filter(x=>x.st==='w').length;
+    const mp=ms.filter(x=>x.st==='p').length;
+    const md=ms.filter(x=>x.st==='d'||x.st==='archived');
+    const mr=ms.filter(x=>x.st==='r'||x.st==='rw'||x.st==='rm').length;
+    const due=md.reduce((a,b)=>a+b.p,0);
+    return `<div class="mrc-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+        <div><strong style="font-size:15px">🏪 ${m.n}</strong> <span style="font-size:12px;color:#64748b">(دخول: <b>${m.u}</b> / <b>${m.p}</b>)</span></div>
+        <div style="display:flex;gap:5px">
+          <button type="button" class="btn b5" style="padding:5px 9px;font-size:11px" onclick="opMrcRet('${m.id}')">↩️ المرتجعات (${mr})</button>
+          <button type="button" class="btn b2" style="padding:5px 9px;font-size:11px" onclick="opPass('mrc','${m.id}')">🔑 الباسورد</button>
+          <button type="button" class="btn b4" style="padding:5px 9px;font-size:11px" onclick="del('m','${m.id}')">حذف</button>
+        </div>
+      </div>
+      <div class="mrc-stats">
+        <span class="badge bg-a">بالمخزن: ${mw}</span>
+        <span class="badge">قيد التوصيل: ${mp}</span>
+        <span class="badge bg-g">مسلم: ${md.length}</span>
+        <span class="badge bg-r">مرتجع: ${mr}</span>
+        <span class="badge bg-g">مستحقات التاجر: ${due} ج.م</span>
+      </div>
+    </div>`;
+  }).join('')||'<div class="card" style="text-align:center;color:#64748b">لا يوجد تجار مضافين بعد</div>';
+}
+
+function exp(){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:'application/json'}));
+  a.download='mizo_backup_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+}
+function imp(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const j=JSON.parse(ev.target.result);
+      if(j&&j.adm){db=j;sv();alert('تم استيراد البيانات بنجاح');}
+      else alert('ملف غير صالح');
+    }catch(err){alert('خطأ في قراءة الملف');}
+  };
+  r.readAsText(f);
+}
+
+init();
+</script>
+</body>
+</html>

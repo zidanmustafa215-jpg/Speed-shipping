@@ -1,84 +1,236 @@
-١١.١٩ ١٢:٥٧ ص
-<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>سيستم ميزو الجامد</title><style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}body{background:#f1f5f9;color:#1e293b;padding-bottom:30px}
-.nav{background:#0f172a;color:#fff;padding:14px;text-align:center}.nav h1{font-size:19px;margin-bottom:10px}
-.links{display:flex;justify-content:center;gap:5px;flex-wrap:wrap}.nbtn{color:#cbd5e1;border:none;font-size:12px;padding:7px 10px;border-radius:7px;background:#1e293b;font-weight:bold}
-.nbtn.act{background:#2563eb;color:#fff}.box{max-width:950px;margin:15px auto;padding:0 12px}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>شركة ميزو للشحن - نظام الإدارة</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
+body{background:#f1f5f9;color:#1e293b;padding-bottom:30px}
+.login-box{max-width:360px;margin:80px auto;background:#fff;padding:24px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.1);text-align:center}
+.login-box h2{margin-bottom:16px;color:#0f172a}
+.login-err{color:#dc2626;font-size:13px;margin-bottom:10px;display:none}
+.nav{background:#0f172a;color:#fff;padding:12px 14px;text-align:center}
+.nav-top{display:flex;justify-content:space-between;align-items:center;max-width:980px;margin:0 auto 10px}
+.nav h1{font-size:17px}
+.set-wrap{position:relative}
+.set-btn{background:#1e293b;color:#fff;border:1px solid #334155;padding:6px 12px;border-radius:7px;font-size:12px;font-weight:bold;cursor:pointer}
+.out-btn{background:#ef4444;color:#fff;border:none;padding:6px 12px;border-radius:7px;font-size:12px;font-weight:bold;cursor:pointer}
+.set-menu{display:none;position:absolute;left:0;top:36px;background:#fff;color:#1e293b;min-width:175px;border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,.2);z-index:200;overflow:hidden;text-align:right}
+.set-menu.sh{display:block}
+.set-menu button{display:block;width:100%;padding:10px 14px;border:none;background:none;text-align:right;font-size:13px;font-weight:bold;color:#1e293b;border-bottom:1px solid #f1f5f9;cursor:pointer}
+.set-menu button.out{color:#dc2626}
+.links{display:flex;justify-content:center;gap:5px;flex-wrap:wrap}
+.nbtn{color:#cbd5e1;border:none;font-size:12px;padding:7px 9px;border-radius:7px;background:#1e293b;font-weight:bold;cursor:pointer}
+.nbtn.act{background:#2563eb;color:#fff}
+.box{max-width:980px;margin:15px auto;padding:0 12px}
 .sync{background:#e0f2fe;padding:8px 12px;border-radius:8px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:bold;color:#0369a1}
-.bsync{background:#0284c7;color:#fff;border:none;padding:5px 10px;border-radius:5px;font-size:11px;font-weight:bold}
+.bsync{background:#0284c7;color:#fff;border:none;padding:5px 10px;border-radius:5px;font-size:11px;font-weight:bold;cursor:pointer}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-bottom:18px}
-.card{background:#fff;padding:12px;border-radius:10px;border-right:4px solid #2563eb}.card.g{border-color:#16a34a}.card.r{border-color:#dc2626}.card.a{border-color:#d97706}.card.p{border-color:#7c3aed}
-.ct{font-size:11px;color:#64748b;margin-bottom:4px}.cv{font-size:17px;font-weight:bold}.g .cv{color:#16a34a}.r .cv{color:#dc2626}.a .cv{color:#d97706}.p .cv{color:#7c3aed}
-.btn{color:#fff;border:none;padding:10px;border-radius:8px;font-weight:bold;font-size:13px;width:100%;margin-top:8px}.b1{background:#2563eb}.b2{background:#0f172a}.b3{background:#0d9488}.b4{background:#ef4444}
-.tbox{background:#fff;border-radius:10px;overflow-x:auto;margin-bottom:15px}table{width:100%;border-collapse:collapse;text-align:right;min-width:580px}
-th{background:#f8fafc;color:#475569;font-size:12px;padding:10px}td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
-.mod{display:none;position:fixed;inset:0;background:rgba(15,23,42,.75);justify-content:center;align-items:center;z-index:99;padding:15px}.mod.sh{display:flex}
-.mc{background:#fff;padding:18px;border-radius:10px;width:100%;max-width:380px}.fg{margin-bottom:10px}.fg label{display:block;font-size:12px;font-weight:bold;margin-bottom:3px}
-.fg input,.fg select{width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px}.tab{display:none}.tab.act{display:block}
-</style></head><body>
-<div class="nav"><h1> سيستم ميزو الجامد</h1><div class="links">
-<button class="nbtn act" onclick="st('dash',this)"> لوحة المعلومات</button>
-<button class="nbtn" onclick="st('mng',this)">➕ إدارة الشحنات</button>
-<button class="nbtn" onclick="st('shp',this)"> الشحنات</button>
-<button class="nbtn" onclick="st('drv',this)">🛵 المناديب</button>
-<button class="nbtn" onclick="st('mrc',this)"> التجار</button></div></div>
-<div class="box"><div class="sync"><span> النسخ الاحتياطي:</span><div>
-<button class="bsync" onclick="exp()"> تصدير</button>
-<button class="bsync" onclick="document.getElementById('imp').click()"> استيراد</button>
-<input type="file" id="imp" accept=".json" hidden onchange="imp(event)"></div></div>
-<div id="t-dash" class="tab act"><div class="card" style="margin-bottom:12px"><select id="flt" onchange="rnd()" style="width:100%;padding:6px;font-weight:bold"><option value="ALL">جميع المناديب</option></select></div>
-<div class="grid">
-<div class="card"><div class="ct">إجمالي الشحنات</div><div class="cv" id="s1">0</div></div>
-<div class="card g"><div class="ct">تم التسليم</div><div class="cv" id="s2">0</div></div>
-<div class="card a"><div class="ct">قيد التوصيل</div><div class="cv" id="s3">0</div></div>
-<div class="card r"><div class="ct">مرتجع</div><div class="cv" id="s4">0</div></div>
-<div class="card g"><div class="ct">إجمالي التحصيل</div><div class="cv" id="s5">0 ج.م</div></div>
-<div class="card"><div class="ct">مستحقات التجار</div><div class="cv" id="s6">0 ج.م</div></div>
-<div class="card p"><div class="ct">صافي المحصل بعد التجار</div><div class="cv" id="s7">0 ج.م</div></div>
-<div class="card a"><div class="ct">عمولات المناديب</div><div class="cv" id="s8">0 ج.م</div></div></div></div>
-<div id="t-mng" class="tab"><div class="grid">
-<div class="card"><h3> شحنة جديدة</h3><button class="btn b1" onclick="opS()">+ إضافة شحنة</button></div>
-<div class="card"><h3>🛵 مندوب جديد</h3><button class="btn b2" onclick="op('mD')">+ إضافة مندوب</button></div>
-<div class="card"><h3> تاجر جديد</h3><button class="btn b3" onclick="op('mM')">+ إضافة تاجر</button></div>
-<div class="card"><h3>️ تصفير</h3><button class="btn b4" onclick="clr()">مسح الكل</button></div></div></div>
-<div id="t-shp" class="tab"><div class="tbox"><table><thead><tr><th>العميل</th><th>التاجر</th><th>المندوب</th><th>المنتج</th><th>الشحن</th><th>الإجمالي</th><th>الحالة</th><th>حذف</th></tr></thead><tbody id="bS"></tbody></table></div></div>
-<div id="t-drv" class="tab"><div class="tbox"><table><thead><tr><th>المندوب</th><th>تم تسليمه</th><th>سيتم تحصيله</th><th>العهدة</th><th>عمولته</th><th>التسليم</th><th>حذف</th></tr></thead><tbody id="bD"></tbody></table></div></div>
-<div id="t-mrc" class="tab"><div class="tbox"><table><thead><tr><th>التاجر</th><th>مسلمة</th><th>قيد التوصيل</th><th>المستحق للتاجر</th><th>حذف</th></tr></thead><tbody id="bM"></tbody></table></div></div></div>
+.card{background:#fff;padding:12px;border-radius:10px;border-right:4px solid #2563eb}
+.card.g{border-color:#16a34a}.card.r{border-color:#dc2626}.card.a{border-color:#d97706}.card.p{border-color:#7c3aed}
+.ct{font-size:11px;color:#64748b;margin-bottom:4px}.cv{font-size:17px;font-weight:bold}
+.g .cv{color:#16a34a}.r .cv{color:#dc2626}.a .cv{color:#d97706}.p .cv{color:#7c3aed}
+.btn{color:#fff;border:none;padding:10px;border-radius:8px;font-weight:bold;font-size:13px;width:100%;margin-top:8px;cursor:pointer}
+.b1{background:#2563eb}.b2{background:#0f172a}.b3{background:#0d9488}.b4{background:#ef4444}
+.tbox{background:#fff;border-radius:10px;overflow-x:auto;margin-bottom:15px}
+table{width:100%;border-collapse:collapse;text-align:right;min-width:600px}
+th{background:#f8fafc;color:#475569;font-size:12px;padding:10px}
+td{padding:10px;border-bottom:1px solid #f1f5f9;font-size:13px}
+.mod{display:none;position:fixed;inset:0;background:rgba(15,23,42,.75);justify-content:center;align-items:center;z-index:999;padding:15px}
+.mod.sh{display:flex}
+.mc{background:#fff;padding:18px;border-radius:10px;width:100%;max-width:380px}
+.fg{margin-bottom:10px;text-align:right}.fg label{display:block;font-size:12px;font-weight:bold;margin-bottom:3px}
+.fg input,.fg select{width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px}
+.tab{display:none}.tab.act{display:block}.hid{display:none!important}
+</style>
+</head>
+<body>
+ <div id="loginView" class="login-box">
+  <h2>🔐 تسجيل الدخول</h2>
+  <div id="loginErr" class="login-err">اسم المستخدم أو كلمة المرور غير صحيحة</div>
+  <form onsubmit="doLogin(event)">
+    <div class="fg"><label>اسم المستخدم</label><input id="uIn" required></div>
+    <div class="fg"><label>كلمة المرور</label><input type="password" id="pIn" required></div>
+    <button class="btn b1">دخول للنظام</button>
+  </form>
+</div>
+
+<div id="appView" class="hid">
+  <div class="nav">
+    <div class="nav-top">
+      <h1 id="navTitle">🚀 شركة ميزو للشحن</h1>
+      <div class="set-wrap" id="admSetWrap">
+        <button class="set-btn" onclick="tglSet()">⚙️ الإعدادات ▾</button>
+        <div class="set-menu" id="setMenu">
+          <button onclick="opPass('adm')">🔑 تغيير كلمة المرور</button>
+          <button class="out" onclick="doLogout()">🚪 تسجيل الخروج</button>
+        </div>
+      </div>
+      <button class="out-btn hid" id="mrcOutBtn" onclick="doLogout()">🚪 تسجيل الخروج</button>
+    </div>
+    <div class="links" id="admLinks">
+      <button class="nbtn act" onclick="st('dash',this)">📊 الرئيسية</button>
+      <button class="nbtn" onclick="st('mng',this)">➕ الإدارة</button>
+      <button class="nbtn" onclick="st('wh',this)">🏭 استلام المخزن</button>
+      <button class="nbtn" onclick="st('shp',this)">📦 الشحنات</button>
+      <button class="nbtn" onclick="st('ret',this)">↩️ مرتجعات المخزن</button>
+      <button class="nbtn" onclick="st('drv',this)">🛵 المناديب</button>
+      <button class="nbtn" onclick="st('mrc',this)">🏪 التجار</button>
+    </div>
+  </div>
+
+  <div class="box" id="admArea">
+    <div class="sync"><span>🔄 النسخ الاحتياطي:</span><div>
+      <button class="bsync" onclick="exp()">📥 تصدير</button>
+      <button class="bsync" onclick="document.getElementById('imp').click()">📤 استيراد</button>
+      <input type="file" id="imp" accept=".json" hidden onchange="imp(event)">
+    </div></div>
+
+    <div id="t-dash" class="tab act">
+      <div class="card" style="margin-bottom:12px"><select id="flt" onchange="rnd()" style="width:100%;padding:6px;font-weight:bold"><option value="ALL">جميع المناديب</option></select></div>
+      <div class="grid">
+        <div class="card a"><div class="ct">بالمخزن</div><div class="cv" id="s0">0</div></div>
+        <div class="card"><div class="ct">قيد التوصيل</div><div class="cv" id="s3">0</div></div>
+        <div class="card g"><div class="ct">تم التسليم</div><div class="cv" id="s2">0</div></div>
+        <div class="card r"><div class="ct">مرتجعات المخزن</div><div class="cv" id="s4">0</div></div>
+        <div class="card g"><div class="ct">إجمالي التحصيل</div><div class="cv" id="s5">0 ج.م</div></div>
+        <div class="card"><div class="ct">مستحقات التجار</div><div class="cv" id="s6">0 ج.م</div></div>
+        <div class="card p"><div class="ct">صافي المحصل بعد التجار</div><div class="cv" id="s7">0 ج.م</div></div>
+        <div class="card a"><div class="ct">عمولات المناديب</div><div class="cv" id="s8">0 ج.م</div></div>
+      </div>
+    </div>
+
+    <div id="t-mng" class="tab"><div class="grid">
+      <div class="card"><h3>📦 استلام بيك أب</h3><button class="btn b1" onclick="opS()">+ أوردر للمخزن</button></div>
+      <div class="card"><h3>🛵 مندوب جديد</h3><button class="btn b2" onclick="op('mD')">+ إضافة مندوب</button></div>
+      <div class="card"><h3>🏪 حساب تاجر جديد</h3><button class="btn b3" onclick="op('mM')">+ إنشاء حساب تاجر</button></div>
+      <div class="card"><h3>🗑️ تصفير</h3><button class="btn b4" onclick="clr()">مسح البيانات</button></div>
+    </div></div>
+
+    <div id="t-wh" class="tab"><div class="tbox"><table><thead><tr><th>العميل</th><th>التاجر</th><th>المنتج</th><th>الشحن</th><th>الإجمالي</th><th>تحميل لمندوب</th><th>حذف</th></tr></thead><tbody id="bW"></tbody></table></div></div>
+    <div id="t-shp" class="tab"><div class="tbox"><table><thead><tr><th>العميل</th><th>التاجر</th><th>المندوب</th><th>المنتج</th><th>الشحن</th><th>الإجمالي</th><th>الحالة</th><th>حذف</th></tr></thead><tbody id="bS"></tbody></table></div></div>
+    <div id="t-ret" class="tab"><div class="tbox"><table><thead><tr><th>العميل</th><th>التاجر</th><th>المندوب</th><th>المنتج</th><th>إجراء</th><th>حذف</th></tr></thead><tbody id="bR"></tbody></table></div></div>
+    <div id="t-drv" class="tab"><div class="tbox"><table><thead><tr><th>المندوب</th><th>مسلم</th><th>سيحصل</th><th>العهدة</th><th>عمولته</th><th>التسليم</th><th>حذف</th></tr></thead><tbody id="bD"></tbody></table></div></div>
+    <div id="t-mrc" class="tab"><div class="tbox"><table><thead><tr><th>المتجر</th><th>اليوزر</th><th>الباسورد</th><th>مسلم</th><th>بالمخزن/التوصيل</th><th>مرتجع</th><th>المستحق</th><th>تحكم</th></tr></thead><tbody id="bM"></tbody></table></div></div>
+  </div>
+
+  <div class="box hid" id="mrcArea">
+    <div class="grid">
+      <div class="card"><div class="ct">إجمالي شحناتك</div><div class="cv" id="ms1">0</div></div>
+      <div class="card g"><div class="ct">تم التسليم</div><div class="cv" id="ms2">0</div></div>
+      <div class="card a"><div class="ct">قيد التوصيل / بالمخزن</div><div class="cv" id="ms3">0</div></div>
+      <div class="card r"><div class="ct">مرتجعات</div><div class="cv" id="ms4">0</div></div>
+      <div class="card g"><div class="ct">مستحقاتك المالية</div><div class="cv" id="ms5">0 ج.م</div></div>
+    </div>
+    <div class="tbox"><table><thead><tr><th>العميل والعنوان</th><th>سعر المنتج</th><th>مصاريف الشحن</th><th>حالة الأوردر</th></tr></thead><tbody id="bMrcView"></tbody></table></div>
+  </div>
+</div>
+<div id="mPass" class="mod"><div class="mc"><h3>🔑 تغيير كلمة المرور</h3><form onsubmit="svPass(event)">
+  <input type="hidden" id="passTgt"><input type="hidden" id="passId">
+  <div class="fg"><label>كلمة المرور الجديدة</label><input id="newPassIn" required></div>
+  <button class="btn b1">حفظ التعديل</button><button type="button" class="btn b4" onclick="cl('mPass')">إغلاق</button>
+</form></div></div>
+
 <div id="mD" class="mod"><div class="mc"><h3>إضافة مندوب</h3><form onsubmit="addD(event)">
-<div class="fg"><label>الاسم</label><input id="dN" required></div>
-<div class="fg"><label>عمولة الأوردر (ج.م)</label><input type="number" id="dC" value="30" required></div>
-<button class="btn b1">حفظ</button><button type="button" class="btn b4" onclick="cl('mD')">إغلاق</button></form></div></div>
-<div id="mM" class="mod"><div class="mc"><h3>إضافة تاجر</h3><form onsubmit="addM(event)">
-<div class="fg"><label>اسم التاجر</label><input id="mN" required></div>
-<button class="btn b1">حفظ</button><button type="button" class="btn b4" onclick="cl('mM')">إغلاق</button></form></div></div>
-<div id="mS" class="mod"><div class="mc"><h3>إضافة شحنة</h3><form onsubmit="addS(event)">
-<div class="fg"><label>العميل والعنوان</label><input id="sC" required></div>
-<div class="fg"><label>التاجر</label><select id="sM"></select></div>
-<div class="fg"><label>المندوب</label><select id="sD"></select></div>
-<div class="fg"><label>سعر المنتج</label><input type="number" id="sP" value="0" required></div>
-<div class="fg"><label>مصاريف الشحن</label><input type="number" id="sF" value="50" required></div>
-<button class="btn b1">حفظ</button><button type="button" class="btn b4" onclick="cl('mS')">إغلاق</button></form></div></div>
+  <div class="fg"><label>الاسم</label><input id="dN" required></div>
+  <div class="fg"><label>عمولة الأوردر (ج.م)</label><input type="number" id="dC" value="30" required></div>
+  <button class="btn b1">حفظ</button><button type="button" class="btn b4" onclick="cl('mD')">إغلاق</button>
+</form></div></div>
+
+<div id="mM" class="mod"><div class="mc"><h3>إنشاء حساب تاجر</h3><form onsubmit="addM(event)">
+  <div class="fg"><label>اسم المتجر / البيدج</label><input id="mN" required></div>
+  <div class="fg"><label>اسم المستخدم للدخول (Username)</label><input id="mU" required></div>
+  <div class="fg"><label>كلمة المرور (Password)</label><input id="mP" required></div>
+  <button class="btn b1">إنشاء الحساب</button><button type="button" class="btn b4" onclick="cl('mM')">إغلاق</button>
+</form></div></div>
+
+<div id="mS" class="mod"><div class="mc"><h3>استلام أوردر للمخزن</h3><form onsubmit="addS(event)">
+  <div class="fg"><label>العميل والعنوان</label><input id="sC" required></div>
+  <div class="fg"><label>المتجر / التاجر</label><select id="sM"></select></div>
+  <div class="fg"><label>سعر المنتج</label><input type="number" id="sP" value="0" required></div>
+  <div class="fg"><label>مصاريف الشحن</label><input type="number" id="sF" value="50" required></div>
+  <button class="btn b1">إضافة لاستلام المخزن</button><button type="button" class="btn b4" onclick="cl('mS')">إغلاق</button>
+</form></div></div>
+
 <script>
-let db=JSON.parse(localStorage.getItem('mz_db'))||{d:[],m:[],s:[]};
+let db=JSON.parse(localStorage.getItem('mz_db'))||{adm:{u:'admin',p:'1234'},d:[],m:[],s:[]};
+if(!db.adm)db.adm={u:'admin',p:'1234'};
+let cur=JSON.parse(sessionStorage.getItem('mz_cur'))||null;
 const sv=()=>{localStorage.setItem('mz_db',JSON.stringify(db));rnd()};
-const st=(id,b)=>{document.querySelectorAll('.tab').forEach(e=>e.classList.remove('act'));document.querySelectorAll('.nbtn').forEach(e=>e.classList.remove('act'));document.getElementById('t-'+id).classList.add('act');b.classList.add('act')};
 const op=id=>document.getElementById(id).classList.add('sh'),cl=id=>document.getElementById(id).classList.remove('sh');
+const tglSet=()=>setMenu.classList.toggle('sh');
+const st=(id,b)=>{document.querySelectorAll('.tab').forEach(e=>e.classList.remove('act'));document.querySelectorAll('.nbtn').forEach(e=>e.classList.remove('act'));document.getElementById('t-'+id).classList.add('act');b.classList.add('act')};
+
+function doLogin(e){
+  e.preventDefault();
+  const u=uIn.value.trim(),p=pIn.value.trim();
+  if(u===db.adm.u&&p===db.adm.p){cur={role:'adm'};sessionStorage.setItem('mz_cur',JSON.stringify(cur));init();return;}
+  const mc=db.m.find(x=>x.u===u&&x.p===p);
+  if(mc){cur={role:'mrc',id:mc.id};sessionStorage.setItem('mz_cur',JSON.stringify(cur));init();return;}
+  loginErr.style.display='block';
+}
+function doLogout(){sessionStorage.removeItem('mz_cur');cur=null;location.reload();}
+
+function init(){
+  if(!cur){loginView.classList.remove('hid');appView.classList.add('hid');return;}
+  loginView.classList.add('hid');appView.classList.remove('hid');
+  if(cur.role==='adm'){
+    navTitle.innerText='🚀 شركة ميزو للشحن (المدير)';
+    admSetWrap.classList.remove('hid');mrcOutBtn.classList.add('hid');
+    admLinks.classList.remove('hid');admArea.classList.remove('hid');mrcArea.classList.add('hid');
+  }else{
+    const mc=db.m.find(x=>x.id===cur.id);
+    if(!mc){doLogout();return;}
+    navTitle.innerText='🏪 حساب: '+mc.n;
+    admSetWrap.classList.add('hid');mrcOutBtn.classList.remove('hid');
+    admLinks.classList.add('hid');admArea.classList.add('hid');mrcArea.classList.remove('hid');
+  }
+  rnd();
+}
+
+function opPass(tgt,id=''){setMenu.classList.remove('sh');passTgt.value=tgt;passId.value=id;newPassIn.value='';op('mPass');}
+function svPass(e){
+  e.preventDefault();const np=newPassIn.value.trim();if(!np)return;
+  if(passTgt.value==='adm')db.adm.p=np;
+  else{const mc=db.m.find(x=>x.id===passId.value);if(mc)mc.p=np;}
+  cl('mPass');sv();alert('تم تحديث كلمة المرور بنجاح');
+}
+
 function addD(e){e.preventDefault();db.d.push({id:Date.now()+'',n:dN.value,c:+dC.value});e.target.reset();cl('mD');sv()}
-function addM(e){e.preventDefault();db.m.push({id:Date.now()+'',n:mN.value});e.target.reset();cl('mM');sv()}
-function opS(){if(!db.d.length)return alert('أضف مندوب أولاً');if(!db.m.length){db.m.push({id:'0',n:'تاجر عام'});sv()}sD.innerHTML=db.d.map(x=>`<option value="${x.id}">${x.n}</option>`).join('');sM.innerHTML=db.m.map(x=>`<option value="${x.id}">${x.n}</option>`).join('');op('mS')}
-function addS(e){e.preventDefault();db.s.unshift({id:Date.now()+'',c:sC.value,m:sM.value,d:sD.value,p:+sP.value,f:+sF.value,st:'p'});e.target.reset();cl('mS');sv()}
-const upS=(id,v)=>{db.s.find(x=>x.id==id).st=v;sv()},del=(t,id)=>{if(confirm('حذف؟')){db[t]=db[t].filter(x=>x.id!=id);sv()}},clr=()=>{if(confirm('مسح الكل؟')){db={d:[],m:[],s:[]};sv()}};
+function addM(e){e.preventDefault();db.m.push({id:Date.now()+'',n:mN.value,u:mU.value.trim(),p:mP.value.trim()});e.target.reset();cl('mM');sv()}
+function opS(){if(!db.m.length)return alert('أنشئ حساب تاجر أولاً!');sM.innerHTML=db.m.map(x=>`<option value="${x.id}">${x.n}</option>`).join('');op('mS')}
+function addS(e){e.preventDefault();db.s.unshift({id:Date.now()+'',c:sC.value,m:sM.value,d:'',p:+sP.value,f:+sF.value,st:'w'});e.target.reset();cl('mS');sv()}
+function asgD(id,did){if(!did)return;const x=db.s.find(i=>i.id==id);x.d=did;x.st='p';sv()}
+function upS(id,v){const x=db.s.find(i=>i.id==id);x.st=v;if(v=='w')x.d='';sv()}
+const del=(t,id)=>{if(confirm('حذف؟')){db[t]=db[t].filter(x=>x.id!=id);sv()}},clr=()=>{if(confirm('مسح جميع البيانات؟')){db={adm:db.adm,d:[],m:[],s:[]};sv()}};
+const gn=(arr,id)=>(arr.find(i=>i.id==id)||{}).n||'-';
+
 function rnd(){
-const cf=flt.value;flt.innerHTML='<option value="ALL">جميع المناديب</option>'+db.d.map(x=>`<option value="${x.id}" ${cf==x.id?'selected':''}>${x.n}</option>`).join('');
-const fl=cf=='ALL'?db.s:db.s.filter(x=>x.d==cf),dl=fl.filter(x=>x.st=='d'),pn=fl.filter(x=>x.st=='p'),rt=fl.filter(x=>x.st=='r');
-const col=dl.reduce((a,b)=>a+b.p+b.f,0),md=dl.reduce((a,b)=>a+b.p,0),cm=dl.reduce((a,b)=>a+((db.d.find(x=>x.id==b.d)||{}).c||0),0);
-s1.innerText=fl.length;s2.innerText=dl.length;s3.innerText=pn.length;s4.innerText=rt.length;s5.innerText=col+' ج.م';s6.innerText=md+' ج.م';s7.innerText=(col-md)+' ج.م';s8.innerText=cm+' ج.م';
-bS.innerHTML=db.s.map(x=>`<tr><td>${x.c}</td><td>${(db.m.find(i=>i.id==x.m)||{}).n||'-'}</td><td>${(db.d.find(i=>i.id==x.d)||{}).n||'-'}</td><td>${x.p}</td><td>${x.f}</td><td><b>${x.p+x.f}</b></td><td><select onchange="upS('${x.id}',this.value)"><option value="p" ${x.st=='p'?'selected':''}>⏳ قيد التوصيل</option><option value="d" ${x.st=='d'?'selected':''}>✅ تم التسليم</option><option value="r" ${x.st=='r'?'selected':''}>❌ مرتجع</option></select></td><td><button onclick="del('s','${x.id}')">️</button></td></tr>`).join('');
-bD.innerHTML=db.d.map(x=>{const ds=db.s.filter(i=>i.d==x.id),dd=ds.filter(i=>i.st=='d'),dp=ds.filter(i=>i.st=='p'),cs=dd.reduce((a,b)=>a+b.p+b.f,0),tc=dp.reduce((a,b)=>a+b.p+b.f,0),c=dd.length*x.c;return`<tr><td><b>${x.n}</b></td><td>${dd.length}</td><td>${tc} ج.م</td><td>${cs} ج.م</td><td>${c} ج.م</td><td><b>${cs-c} ج.م</b></td><td><button onclick="del('d','${x.id}')">️</button></td></tr>`}).join('');
-bM.innerHTML=db.m.map(x=>{const md=db.s.filter(i=>i.m==x.id&&i.st=='d'),mp=db.s.filter(i=>i.m==x.id&&i.st=='p'),du=md.reduce((a,b)=>a+b.p,0);return`<tr><td><b>${x.n}</b></td><td>${md.length}</td><td>${mp.length}</td><td><b>${du} ج.م</b></td><td><button onclick="del('m','${x.id}')">️</button></td></tr>`}).join('');
+  if(!cur)return;
+  if(cur.role==='mrc'){
+    const ms=db.s.filter(x=>x.m===cur.id),md=ms.filter(x=>x.st==='d'),mp=ms.filter(x=>x.st==='w'||x.st==='p'),mr=ms.filter(x=>x.st==='r');
+    ms1.innerText=ms.length;ms2.innerText=md.length;ms3.innerText=mp.length;ms4.innerText=mr.length;
+    ms5.innerText=md.reduce((a,b)=>a+b.p,0)+' ج.م';
+    const stTxt={w:'🏭 بالمخزن',p:'🛵 قيد التوصيل',d:'✅ تم التسليم',r:'❌ مرتجع'};
+    bMrcView.innerHTML=ms.map(x=>`<tr><td><b>${x.c}</b></td><td>${x.p} ج.م</td><td>${x.f} ج.م</td><td><b>${stTxt[x.st]}</b></td></tr>`).join('');
+    return;
+  }
+  const cf=flt.value;flt.innerHTML='<option value="ALL">جميع المناديب</option>'+db.d.map(x=>`<option value="${x.id}" ${cf==x.id?'selected':''}>${x.n}</option>`).join('');
+  const wh=db.s.filter(x=>x.st=='w'),ret=db.s.filter(x=>x.st=='r'),act=db.s.filter(x=>x.st=='p'||x.st=='d');
+  const fl=cf=='ALL'?act:act.filter(x=>x.d==cf),dl=fl.filter(x=>x.st=='d'),pn=fl.filter(x=>x.st=='p');
+  const col=dl.reduce((a,b)=>a+b.p+b.f,0),md=dl.reduce((a,b)=>a+b.p,0),cm=dl.reduce((a,b)=>a+((db.d.find(x=>x.id==b.d)||{}).c||0),0);
+  s0.innerText=wh.length;s3.innerText=pn.length;s2.innerText=dl.length;s4.innerText=ret.length;s5.innerText=col+' ج.م';s6.innerText=md+' ج.م';s7.innerText=(col-md)+' ج.م';s8.innerText=cm+' ج.م';
+  const dOpts='<option value="">-- اختر مندوب --</option>'+db.d.map(x=>`<option value="${x.id}">${x.n}</option>`).join('');
+  bW.innerHTML=wh.map(x=>`<tr><td><b>${x.c}</b></td><td>${gn(db.m,x.m)}</td><td>${x.p}</td><td>${x.f}</td><td><b>${x.p+x.f}</b></td><td><select onchange="asgD('${x.id}',this.value)">${dOpts}</select></td><td><button onclick="del('s','${x.id}')">🗑️</button></td></tr>`).join('');
+  bS.innerHTML=act.map(x=>`<tr><td>${x.c}</td><td>${gn(db.m,x.m)}</td><td>${gn(db.d,x.d)}</td><td>${x.p}</td><td>${x.f}</td><td><b>${x.p+x.f}</b></td><td><select onchange="upS('${x.id}',this.value)"><option value="p" ${x.st=='p'?'selected':''}>⏳ قيد التوصيل</option><option value="d" ${x.st=='d'?'selected':''}>✅ تم التسليم</option><option value="w">🔄 إعادة للمخزن</option><option value="r">❌ مرتجع للمخزن</option></select></td><td><button onclick="del('s','${x.id}')">🗑️</button></td></tr>`).join('');
+  bR.innerHTML=ret.map(x=>`<tr><td><b>${x.c}</b></td><td>${gn(db.m,x.m)}</td><td>${gn(db.d,x.d)}</td><td>${x.p} ج.م</td><td><button class="bsync" onclick="upS('${x.id}','w')">🔄 إعادة للمخزن</button></td><td><button onclick="del('s','${x.id}')">🗑️</button></td></tr>`).join('');
+  bD.innerHTML=db.d.map(x=>{const ds=db.s.filter(i=>i.d==x.id),dd=ds.filter(i=>i.st=='d'),dp=ds.filter(i=>i.st=='p'),cs=dd.reduce((a,b)=>a+b.p+b.f,0),tc=dp.reduce((a,b)=>a+b.p+b.f,0),c=dd.length*x.c;return`<tr><td><b>${x.n}</b></td><td>${dd.length}</td><td>${tc} ج.م</td><td>${cs} ج.م</td><td>${c} ج.م</td><td><b>${cs-c} ج.م</b></td><td><button onclick="del('d','${x.id}')">🗑️</button></td></tr>`}).join('');
+  bM.innerHTML=db.m.map(x=>{const ms=db.s.filter(i=>i.m==x.id),md=ms.filter(i=>i.st=='d'),mp=ms.filter(i=>i.st=='w'||i.st=='p'),mr=ms.filter(i=>i.st=='r'),du=md.reduce((a,b)=>a+b.p,0);return`<tr><td><b>${x.n}</b></td><td>${x.u}</td><td>${x.p}</td><td>${md.length}</td><td>${mp.length}</td><td>${mr.length}</td><td><b>${du} ج.م</b></td><td><button class="bsync" onclick="opPass('mrc','${x.id}')">🔑 باسورد</button> <button onclick="del('m','${x.id}')">🗑️</button></td></tr>`}).join('');
 }
 function exp(){const a=document.createElement('a');a.href='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(db));a.download='mezo.json';a.click()}
-function imp(e){const r=new FileReader();r.onload=v=>{try{db=JSON.parse(v.target.result);sv();alert('تم!')}catch{alert('خطأ')}};if(e.target.files[0])r.readAsText(e.target.files[0])}
-rnd();
-</script></body></html>
-
+function imp(e){const r=new FileReader();r.onload=v=>{try{db=JSON.parse(v.target.result);if(!db.adm)db.adm={u:'admin',p:'1234'};sv();alert('تم!')}catch{alert('خطأ')}};if(e.target.files)r.readAsText(e.target.files)}
+init();
+</script>
+</body>
+</html>

@@ -103,7 +103,7 @@
     <div class="grid" style="grid-template-columns: 1fr;">
       <div>
         <label>اسم المستخدم أو البريد الإلكتروني</label>
-        <input type="text" id="loginUserInput" placeholder="أدخل اسم المستخدم أو الإيميل" autocomplete="username" />
+        <input type="text" id="loginUserInput" placeholder="أدخل اسم المستخدم أو البريد الإلكتروني" autocomplete="username" />
       </div>
       <div>
         <label>كلمة المرور</label>
@@ -381,15 +381,15 @@
 </div>
 
 <script>
-  // ضع بيانات مشروعك من Firebase هنا
   const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyDtp6WvkiOgNGi4Q7KWXSyPXFw5MDECD3Y",
+    authDomain: "speed-shipping-c5438.firebaseapp.com",
+    databaseURL: "https://speed-shipping-c5438-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "speed-shipping-c5438",
+    storageBucket: "speed-shipping-c5438.firebasestorage.app",
+    messagingSenderId: "189462819551",
+    appId: "1:189462819551:web:4516fd59884d9d8fcb2f6a",
+    measurementId: "G-85ZTZX3KWH"
   };
 
   firebase.initializeApp(firebaseConfig);
@@ -481,7 +481,6 @@
     state.internalUsers = Array.isArray(raw) ? raw : Object.values(raw || {});
   }
 
-  // دخول موحد بخانة واحدة لليوزر/الإيميل وكلمة المرور
   async function handleUnifiedLogin() {
     setLoginError("");
     const identifier = document.getElementById("loginUserInput").value.trim();
@@ -493,11 +492,6 @@
       return;
     }
 
-    if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY") {
-      setLoginError("بيانات Firebase غير مضبوطة في الكود بعد. ضع firebaseConfig الصحيح أولاً.");
-      return;
-    }
-
     btn.disabled = true;
     btn.textContent = "جاري الدخول...";
 
@@ -505,7 +499,6 @@
       const isEmail = identifier.includes("@");
 
       if (isEmail) {
-        // محاولة تسجيل الدخول كمالك عبر Firebase Auth أولاً
         try {
           const cred = await auth.signInWithEmailAndPassword(identifier, password);
           attachDatabaseListenerOnce();
@@ -513,12 +506,11 @@
             mode: "owner",
             role: "adm",
             username: cred.user.email,
-            name: "المالك (إدارة عليا)"
+            name: "المالك"
           };
           onSessionReady();
           return;
         } catch (authErr) {
-          // إذا لم يكن إيميل المالك في Firebase Auth، نتحقق إن كان إيميل حساب داخلي مع وجود جلسة Auth نشطة
           if (auth.currentUser) {
             await fetchInternalUsersOnce();
             const internalMatch = state.internalUsers.find(
@@ -537,14 +529,13 @@
               return;
             }
           }
-          setLoginError("تعذر تسجيل الدخول: تأكد من البريد الإلكتروني وكلمة المرور أو تفعيل Email/Password في Firebase.");
+          setLoginError("تعذر تسجيل الدخول: تأكد من البريد الإلكتروني وكلمة المرور.");
           return;
         }
       }
 
-      // دخول باسم مستخدم داخلي (يتطلب وجود جلسة Firebase مفتوحة لقراءة الحسابات الداخلية)
       if (!auth.currentUser) {
-        setLoginError("تعذر التحقق من الحساب الداخلي لعدم وجود جلسة سحابية نشطة. سجل دخول المالك بالبريد الإلكتروني أولاً.");
+        setLoginError("تعذر تسجيل الدخول بهذا الاسم حالياً. يجب فتح الجلسة أولاً بالبريد الإلكتروني وكلمة المرور.");
         return;
       }
 
@@ -568,7 +559,7 @@
       };
       onSessionReady();
     } catch (err) {
-      setLoginError("حدث خطأ أثناء تسجيل الدخول: " + (err.message || "يرجى المحاولة مرة أخرى"));
+      setLoginError("تعذر تسجيل الدخول: " + (err.message || "يرجى المحاولة مرة أخرى"));
     } finally {
       btn.disabled = false;
       btn.textContent = "تسجيل الدخول";
@@ -591,9 +582,9 @@
     document.getElementById("headerControls").classList.remove("hidden");
 
     const roleNames = {
-      adm: "مالك النظام (صلاحيات كاملة)",
+      adm: "مالك النظام",
       branch_manager: "مدير فرع",
-      accountant: "محاسب (تحصيل وتسوية يومية)",
+      accountant: "محاسب",
       drv: "مندوب",
       mrc: "تاجر"
     };
